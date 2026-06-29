@@ -44,10 +44,15 @@ the 2025 manual still requires the items #11 says are gone. Implications:
 - Anywhere a field is "removed for CY2026," treat that as a
   **reporting-year-scoped** behavior, not a schema deletion.
 
-This is the single most important reconciliation in #11 and should be
-confirmed with the project owner (domain call): **do we report a CY2025
-cycle at all, or are we greenfielding straight to CY2026?** The answer
-decides whether managed-care member months (below) are in or out of v1.
+**Resolution (owner-directed):** we do **not** pick one year. The product
+is **reporting-year-aware** — it shows each staff member the field set for
+the manual version in force for the data they are working on, keyed off the
+**encounter date of service** (or an explicit reporting-year context for
+patient-level attributes), never the data-entry timestamp. A late CY2025
+correction and CY2026 charting coexist in the same install. The full design
+is in [§8](#8-reporting-year-aware-field-rendering). Member-months and SOGI
+are therefore **captured in the schema but shown/validated per version**,
+not deleted.
 
 ---
 
@@ -208,25 +213,66 @@ scoped.
 
 ---
 
-## 5. Service/visit classification — Table 5 & Table 6A 🔲 specify next
+## 5. Service/visit classification — Table 5 & Table 6A ✅ spec'd
 
-Issue #11 lists this element but it is the least specified. Manual anchors
-confirmed:
+### 5.1 Table 5 service categories (verified against the form)
 
-- **Table 5: Staffing and Utilization** — FTEs allocated by *function* and
-  visits/patients by *service line*; "Selected Service Detail Addendum"
-  breaks out sub-services. Personnel allocated by FTE except physicians and
-  dentists.
-- **Table 6A: Selected Diagnoses and Services Rendered** — diagnosis/service
-  lines 1–20f, mapped from coded encounter data.
-- **Enabling services** appear as their own cost lines on Table 8A
-  (Lines 11a–11h) and personnel on Table 5 — confirming enabling services
-  are a first-class UDS service line, as #11 notes.
+The manual ("Instructions for Table 5") enumerates the service categories
+that carry visits and patients, each reported across **Column A** (FTE),
+**Column B** (clinic / in-person visits), **Column B2** (virtual visits),
+and **Column C** (unduplicated patients *within* that category):
 
-**Verdict:** 🔲 Not yet a field-level spec. This is the right next unit of
-work for #11 — map OpenEMR encounter categories / specialties / `clinical`
-vs `enabling` service flags to UDS service lines, and provider
-personnel-type → Table 5 line. Out of scope for the Snapshot pathway (#13).
+| UDS service category | Maps from (OpenEMR) |
+|----------------------|---------------------|
+| Medical | encounter category / provider specialty flagged medical |
+| Dental | dental encounters / dental module |
+| Mental health | behavioral-health encounters (MH) |
+| Substance use disorder (SUD) | behavioral-health encounters (SUD) |
+| Vision | optometry/ophthalmology encounters |
+| Other professional | other clinical encounters not above |
+| Enabling | case management, eligibility, outreach, transportation, interpretation, health education (non-clinical) |
+
+**Critical counting rule (differs from Tables 3A/3B/4/ZIP):** Table 5
+patient counts are **unduplicated *within* a service category but duplicated
+*across* categories** — a patient seen for medical and dental counts once in
+each. The reporting service must therefore count per-category, **not** reuse
+the global unduplicated patient set. This is the single biggest correctness
+trap in Table 5.
+
+**FTE (Column A) rules confirmed:**
+
+- Personnel are allocated by **function as annualized FTE**, *except*
+  physicians and dentists (reported by headcount/standard rules).
+- **DO NOT** report FTE for fee-for-service-paid individuals (no time
+  basis) — but their **visits still count** in Column B/B2 and their
+  patients in Column C. ⚠️ So provider FTE and provider visits are
+  **separately gated** — a provider can contribute visits without
+  contributing FTE. The data model must not assume FTE ⇒ visits or vice
+  versa.
+- FTE is reported only on the **Universal Report**, not Grant Reports.
+
+### 5.2 Table 6A — Selected Diagnoses and Services Rendered
+
+- Diagnosis/service **Lines 1–20f**, mapped from **coded encounter data**
+  (ICD-10 diagnoses, CPT/service codes) — this is a code-set mapping
+  problem, well-suited to the existing CQM/AMC engine rather than new
+  capture (consistent with epic #4's "wire 6B/7 to the CQM engine").
+- The manual notes (Changes & Highlights) that several 6A codes moved lines
+  year-over-year — another reason 6A mapping must be **manual-version-aware**
+  (see §8), keyed to the encounter's service date.
+
+### 5.3 Pharmacy caveat vs. issue #11
+
+Issue #11 lists "pharmacy" as a Table 5/6A service line. Per the manual,
+pharmacy surfaces as **Table 8A cost lines (8a Pharmacy not incl.
+pharmaceuticals / 8b Pharmaceuticals)** and within Table 6A services — it is
+**not** one of the seven Table 5 *utilization* service categories above.
+Treat pharmacy as a cost/6A element, not a Table 5 visit category.
+
+**Verdict:** service categories and counting rules confirmed against the
+manual. Implementation follow-up (epic #4, not the #13 Snapshot pathway):
+build the OpenEMR encounter-category / specialty → UDS-service-category map
+and the provider personnel-type → FTE map, both manual-version-aware.
 
 ---
 
@@ -253,9 +299,70 @@ quality guards, and good acceptance tests for #4):
 | 2 | Income | Add no-inference guard (never derive band from status/Medicaid) | correctness |
 | 3 | Payer classifier | Never emit "Unknown"; encode dually-eligible + managed-care tie-breaks | correctness |
 | 4 | Payer mapping | Resolve to Table 4 sub-lines (8a/8b/9a/10a/10b) if Table 4 output is in scope | depends on #4 scope |
-| 5 | Reporting year | Treat CY2026 removals (member months, SOGI) as reporting-year-scoped, not schema deletions | **needs owner decision** |
+| 5 | Reporting year | Reporting-year-aware rendering keyed off service date (§8); CY2026 removals are version-scoped, not schema deletions | **resolved** (§8) |
 | 6 | Awardee config | Capture 330g/h/i funding authorities to gate breakout lines | reporting-layer |
-| 7 | Service lines | Specify Table 5/6A mapping (next #11 work unit) | open |
+| 7 | Service lines | Table 5 categories + counting rules spec'd (§5); OpenEMR mapping is epic #4 follow-up | spec'd |
+| 8 | Table 5 counting | Count patients per-service-category (duplicated across, unduplicated within) — not the global patient set | **correctness trap** |
+| 9 | FTE vs visits | Provider FTE and provider visits are separately gated (FFS providers: visits yes, FTE no) | correctness |
 
-Items 1–3 are concrete corrections to the `OpenEMR\FQHC` enums/classifier
-in PR #1; items 4–5 need a scope/owner decision (see [§0](#0-which-manual-which-reporting-year)).
+Items 1–3 and 8–9 are concrete corrections to the `OpenEMR\FQHC`
+enums/classifier and the reporting service in PR #1; item 5 is resolved by
+the design in §8.
+
+---
+
+## 8. Reporting-year-aware field rendering
+
+**Goal:** staff entering or editing data automatically see the field set for
+the **manual version in force for that data**, so a late CY2025 correction
+and CY2026 charting coexist in one install without manual toggling and
+without misclassifying late/retrospective entries.
+
+### 8.1 Principle: key off the service date, never the entry date
+
+The UDS reporting year for a datum is the **calendar year of the encounter's
+date of service**, not when staff typed it. A visit dated 2025-12-30 entered
+on 2026-03-01 belongs to **CY2025** and must show CY2025 fields. Keying off
+the data-entry timestamp is the bug this design exists to prevent.
+
+- **Encounter-scoped data** → resolve the manual version from the
+  encounter's **date of service**.
+- **Patient-level annual attributes** (income, special-population status,
+  payer) → resolve from an **explicit reporting-year context** (the screen's
+  selected reporting period), defaulting to the current open period;
+  combined with the existing effective-dating so a patient active in both
+  2025 and 2026 carries the right value per year.
+
+### 8.2 Mechanism
+
+1. **Schema stores the superset.** No UDS field is ever physically removed.
+   "Removed for CY2026" (member months, SOGI) means *not shown / not
+   validated* for that version — the columns persist so prior years stay
+   reportable.
+2. **`UdsManualVersion` enum** — `Cy2025`, `Cy2026`, … (unit enum; runtime
+   state). Each future manual adds a case.
+3. **`ManualVersionResolver`** (injected, no globals) —
+   `fromServiceDate(DateTimeImmutable): UdsManualVersion` and
+   `fromReportingYear(ReportingYear): UdsManualVersion`. The calendar-year →
+   version mapping is a small versioned lookup.
+4. **Version-aware field sets** — each card/screen resolves "which fields,
+   enum cases, and validations apply?" via an **exhaustive `match`** on the
+   version (no `default`, so a new manual year fails the build until handled
+   — exactly the project's exhaustive-matching rule).
+5. **Same map drives reports** — Table generation projects the stored
+   superset onto the target year's layout using the identical version map,
+   so capture and reporting can never drift (and 6A line-number shifts, §5.2,
+   are handled in one place).
+
+### 8.3 Edge cases
+
+- **Cross-year patients:** effective-dated annual attributes + per-year
+  version filter resolve differing income/payer across 2025 and 2026.
+- **Standalone profile edits** (no encounter): require an explicit
+  reporting-year selector; default to the current open reporting period.
+- **New encounter dated today:** entry date and service date coincide, so
+  the default is correct — but the resolver still reads the *service date*
+  field, so back-dating immediately flips the field set.
+
+This generalizes to every future manual change, not just the 2025→2026
+transition, and is the recommended implementation of the §0 resolution.
