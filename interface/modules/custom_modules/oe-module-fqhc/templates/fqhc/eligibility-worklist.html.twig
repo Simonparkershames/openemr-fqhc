@@ -45,14 +45,16 @@
     <div class="fqhc-stack">
 
       <fqhc-card heading="Gaps by type">
-        <table class="fqhc-table">
-          <thead><tr><th>Gap</th><th>Patients</th></tr></thead>
-          <tbody>
-            {% for row in worklist.gapCounts %}
-              <tr><td>{{ row.label|e('html') }}</td><td>{{ row.count }}</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <div class="fqhc-table-wrap">
+          <table class="fqhc-table">
+            <thead><tr><th>Gap</th><th>Patients</th></tr></thead>
+            <tbody>
+              {% for row in worklist.gapCounts %}
+                <tr><td>{{ row.label|e('html') }}</td><td>{{ row.count }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </fqhc-card>
 
       {% if worklist.total == 0 %}
@@ -61,18 +63,20 @@
         </fqhc-card>
       {% else %}
         <fqhc-card heading="Patients needing follow-up">
-          <table class="fqhc-table">
-            <thead><tr><th>Patient</th><th>Gaps</th><th></th></tr></thead>
-            <tbody>
-              {% for row in worklist.rows %}
-                <tr>
-                  <td>{{ row.pid }}</td>
-                  <td>{{ row.gaps|join(', ')|e('html') }}</td>
-                  <td><a class="fqhc-button" href="{{ (patientBaseUrl ~ '?set_pid=' ~ row.pid)|e('html_attr') }}">Open patient</a></td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          <div class="fqhc-table-wrap">
+            <table class="fqhc-table">
+              <thead><tr><th>Patient</th><th>Gaps</th><th></th></tr></thead>
+              <tbody>
+                {% for row in worklist.rows %}
+                  <tr>
+                    <td>{{ row.pid }}</td>
+                    <td>{{ row.gaps|join(', ')|e('html') }}</td>
+                    <td><a class="fqhc-button" href="{{ (patientBaseUrl ~ '?set_pid=' ~ row.pid)|e('html_attr') }}">Open patient</a></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </fqhc-card>
       {% endif %}
 
