@@ -316,9 +316,14 @@ certified FHIR surface.
   reporting year, scoped per grantee and per site.
 - Every output row supports **drill-down to the underlying patients** so staff
   can fix data *before* submission (e.g., patients with Unknown FPL, missing
-  insurance classification, or unmapped service lines).
+  insurance classification, or unmapped service lines). **Shipped:** a
+  standalone worklist (`OpenEMR\FQHC\Reporting\DataQuality\*`, issue #28)
+  lists patients with missing age/sex, Unknown FPL band, or an unmapped
+  insurance code. Not yet shipped: drill-down inline from a specific report
+  row/cell to the patients behind it.
 - Year-round **data-quality worklists** (Phase 3) surface the same gaps
-  continuously rather than at reporting season.
+  continuously rather than at reporting season. The reporting-year worklist
+  above is the on-demand version of this; making it continuous is still open.
 - Numbers must be **reproducible and auditable** — store the FPL guideline
   version, payer map version, and measure value-set version used for a given
   report run.
