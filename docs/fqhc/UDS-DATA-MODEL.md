@@ -270,6 +270,22 @@ disparity stratifications (by race/ethnicity/sex/special-population) that Table
 7 requires. Treat the value-set/measure version as data so the annual eCQM
 bump is a config change, not a code change.
 
+**Shipped:** the measure map above and the Table 6B/7 report packaging exist
+as `OpenEMR\FQHC\Reporting\Clinical\*` — `UdsClinicalMeasure` (the map),
+`UdsMeasurePopulationCounts` (IPP/DENOM/NUMER/exclusions + rate), and
+`Table6bReport`/`Table6bReportBuilder`/`Table6bReportGenerator`, presented on
+the UDS report page behind a `CqmMeasureResultSource` interface. **Not yet
+shipped:** a live engine-backed `CqmMeasureResultSource`. The CQM/AMC engine
+(`ResultsCalculator`) computes counts per *population set*, and several of
+these eCQMs define more than one population set/stratification per measure
+(e.g. CMS117v14 has a separate set per vaccine combination) — wiring the real
+numbers requires picking the correct population set for each measure against
+the current-year eCQM specification, which is measure-by-measure clinical
+research, not a mechanical hookup. Until that lands, the report shows every
+measure as an honest "not yet computed" state (`PendingCqmMeasureResultSource`)
+rather than guess. Table 7's prenatal-care and low-birth-weight lines, and the
+race/ethnicity/sex disparity stratification, are also not yet built.
+
 ---
 
 ## 4. UDS+ patient-level submission (FHIR) — design for it now
@@ -331,6 +347,7 @@ data-element specs). The natural Phase 1 vertical slices, smallest-first:
 4. **Payer UDS classifier** — mapping table + "last visit" logic + member
    months.
 5. **First report tables** — ZIP, 3A, 3B, 4 from the above, with drill-down.
-6. **Clinical mapping** — wire 6B/7 to the CQM engine.
+6. **Clinical mapping** — wire 6B/7 to the CQM engine. Measure map + report
+   packaging shipped; live population-set wiring per measure still open (§3).
 
 Each slice is independently shippable and certification-safe.

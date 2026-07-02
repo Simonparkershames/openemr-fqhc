@@ -181,6 +181,53 @@
           <p class="fqhc-note">Patients are counted once per service category (duplicated across categories), so the patient total is not the unduplicated health-center count. Staffing/FTE (Column A) is not yet included.</p>
         </fqhc-card>
 
+        <fqhc-card heading="Table 6B — Clinical quality measures">
+          <table class="fqhc-table">
+            <thead><tr><th>Measure</th><th>eCQM</th><th>Denominator</th><th>Numerator</th><th>Rate</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for row in table6b.rows %}
+                <tr>
+                  <td>{{ row.label|e('html') }}</td>
+                  <td>{{ row.cmsId|e('html') }}</td>
+                  <td>{{ row.computed ? row.denominator : '—' }}</td>
+                  <td>{{ row.computed ? row.numerator : '—' }}</td>
+                  <td>{{ row.computed and row.rate is not null ? (row.rate * 100)|round(1) ~ '%' : '—' }}</td>
+                  <td>
+                    {% if row.computed %}
+                      <fqhc-status-badge variant="success">Computed</fqhc-status-badge>
+                    {% else %}
+                      <fqhc-status-badge variant="neutral">Not yet computed</fqhc-status-badge>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <p class="fqhc-note">Measures are mapped to their CY2026 CMS eCQM (docs/fqhc/UDS-DATA-MODEL.md §3); population counts are pending the CQM/AMC engine population-set wiring.</p>
+        </fqhc-card>
+
+        <fqhc-card heading="Table 7 — Health outcomes and disparities">
+          <table class="fqhc-table">
+            <thead><tr><th>Measure</th><th>Rate</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for row in table7.rows %}
+                <tr>
+                  <td>{{ row.label|e('html') }}</td>
+                  <td>{{ row.computed and row.rate is not null ? (row.rate * 100)|round(1) ~ '%' : '—' }}</td>
+                  <td>
+                    {% if row.computed %}
+                      <fqhc-status-badge variant="success">Computed</fqhc-status-badge>
+                    {% else %}
+                      <fqhc-status-badge variant="neutral">Not yet computed</fqhc-status-badge>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <p class="fqhc-note">Early entry into prenatal care and low birth weight are not eCQM-backed and are not yet represented on this table; disparity stratification by race/ethnicity/sex is not yet built.</p>
+        </fqhc-card>
+
       </div>
     {% endif %}
 
