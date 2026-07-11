@@ -3,9 +3,10 @@
 /**
  * FQHC module bootstrap class.
  *
- * Wires the module's event subscribers. For Step 1 this only adds a top-level
- * "FQHC" navigation item (additively, via the menu event) that opens the host
- * page. Nothing here modifies a certified code path.
+ * Wires the module's event subscribers. Adds a top-level "FQHC" navigation item
+ * (additively, via the menu event) that opens the FQHC Workspace home page, with
+ * child items for the Patient Snapshot, UDS Report, and Eligibility Worklist.
+ * Nothing here modifies a certified code path.
  *
  * @package   OpenEMR
  * @link      https://www.open-emr.org
@@ -26,6 +27,7 @@ class Bootstrap
 {
     public const MODULE_INSTALLATION_PATH = '/interface/modules/custom_modules/oe-module-fqhc';
     private const MENU_ID = 'fqhc0';
+    private const SNAPSHOT_MENU_ID = 'fqhc_snapshot0';
     private const REPORT_MENU_ID = 'fqhc_report0';
     private const ELIGIBILITY_WORKLIST_MENU_ID = 'fqhc_eligibility_worklist0';
 
@@ -40,9 +42,9 @@ class Bootstrap
     }
 
     /**
-     * Append a top-level "FQHC" menu item (opening the Patient Snapshot) with a
-     * "UDS Report" child. Guarded so repeated dispatches never duplicate the
-     * entry.
+     * Append a top-level "FQHC" menu item (opening the FQHC Workspace home page)
+     * with "Patient Snapshot", "UDS Report", and "Eligibility Worklist" children.
+     * Guarded so repeated dispatches never duplicate the entry.
      */
     public function addMenuItem(MenuEvent $event): MenuEvent
     {
@@ -59,8 +61,12 @@ class Bootstrap
         $fqhc->target = 'fqhc';
         $fqhc->menu_id = self::MENU_ID;
         $fqhc->label = xlt('FQHC');
-        $fqhc->url = self::MODULE_INSTALLATION_PATH . '/public/index.php';
-        $fqhc->children = [$this->reportMenuItem(), $this->eligibilityWorklistMenuItem()];
+        $fqhc->url = self::MODULE_INSTALLATION_PATH . '/public/home.php';
+        $fqhc->children = [
+            $this->snapshotMenuItem(),
+            $this->reportMenuItem(),
+            $this->eligibilityWorklistMenuItem(),
+        ];
         $fqhc->acl_req = ['patients', 'demo'];
         $fqhc->global_req = [];
 
@@ -68,6 +74,24 @@ class Bootstrap
         $event->setMenu($menu);
 
         return $event;
+    }
+
+    /**
+     * The "Patient Snapshot" child item that opens the per-patient UDS snapshot.
+     */
+    private function snapshotMenuItem(): stdClass
+    {
+        $snapshot = new stdClass();
+        $snapshot->requirement = 0;
+        $snapshot->target = 'fqhc-snapshot';
+        $snapshot->menu_id = self::SNAPSHOT_MENU_ID;
+        $snapshot->label = xlt('Patient Snapshot');
+        $snapshot->url = self::MODULE_INSTALLATION_PATH . '/public/index.php';
+        $snapshot->children = [];
+        $snapshot->acl_req = ['patients', 'demo'];
+        $snapshot->global_req = [];
+
+        return $snapshot;
     }
 
     /**
