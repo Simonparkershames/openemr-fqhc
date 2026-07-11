@@ -12,7 +12,7 @@ return [
     'name' => 'FQHC',
     'description' => 'UDS-oriented data capture and a modern, responsive, role-aware UI '
         . 'layered additively on the ONC-certified core.',
-    'version' => '0.2.0',
+    'version' => '0.3.0',
     'author' => 'OpenEMR FQHC project',
     'license' => 'GPL-3.0',
     'acl_category' => 'patients',
@@ -36,7 +36,7 @@ return [
             'label' => 'FQHC',
             'menu_id' => 'fqhc0',
             'acl' => ['patients', 'demo'],
-            'url' => '/interface/modules/custom_modules/oe-module-fqhc/public/index.php',
+            'url' => '/interface/modules/custom_modules/oe-module-fqhc/public/home.php',
         ],
     ],
 
