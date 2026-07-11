@@ -4,77 +4,76 @@ This roadmap sequences the work. It is intentionally not exhaustive — it makes
 clear **what we do next** and **what the longer-term deliverables are**, and it
 is mirrored in GitHub issues (one program epic linking workstream epics).
 
-## Phasing principle
+## Phasing principle (revised 2026-07)
 
-We sequence so that **certification safety and foundations come first**, then
-data capture, then experience — but the three workstreams overlap. Every phase
-keeps the certification suite green.
+The original plan ran compliance-first: foundations → UDS data capture →
+experience. Phases 0 and 1 delivered that — and taught us the next lesson:
+**the product is judged by its first session, not its report engine.** With
+the UDS engine largely built, the experience becomes the front of the queue.
+The revised sequencing optimizes for a **demo-ready, role-based product**: an
+FQHC evaluator should be able to log in and immediately see a viable
+alternative to the big commercial EHRs. Every phase still keeps the
+certification suite green.
 
 ---
 
-## Phase 0 — Foundations & guardrails (next steps, do now)
+## Phase 0 — Foundations & guardrails ✅ (done)
 
-The immediate work. Small, mostly non-code or low-risk, unblocks everything
-else.
+- Program documentation and issue structure ✅
+- Upstream-sync process (scheduled workflow, #9) ✅ and certification-impact
+  PR checklist (#19) ✅ — the **required** CI certification gate (#8) remains
+  open and worth enabling in parallel.
+- `OpenEMR\FQHC` namespace + `oe-module-fqhc` module skeleton ✅
+- UDS data-element specs validated against the 2025 manual, CY2026 PAL
+  tracked (#11) ✅
+- Design-system decision: Twig shells + **Web Components islands**, tokens as
+  CSS custom properties (#12) ✅
 
-- **Document the program** (this docs set) and open the issue structure. ✅ in
-  progress.
-- **Establish certification guardrails in CI** — make Inferno/certification and
-  the full test suites required to merge; add a "certification impact" PR
-  checklist item.
-- **Set up the upstream-sync process** — keep `master` tracking upstream
-  OpenEMR with periodic merge + full CI, so divergence stays small.
-- **Stand up the `OpenEMR\FQHC` namespace and module skeleton** — an installable
-  module shell (routes, ACL section, empty schema migration) proving the
-  extension pattern from [`ARCHITECTURE.md`](./ARCHITECTURE.md) end to end.
-- **Author UDS data-element specs to the current-year UDS Manual** — turn
-  [`UDS-REPORTING.md`](./UDS-REPORTING.md)'s gap list into concrete field specs
-  and table mappings.
-- **Design-system discovery & decision** — choose the component approach
-  (Principle: must coexist with the Angular/jQuery shell and not touch certified
-  pages), define initial tokens, and document the decision.
+## Phase 1 — UDS data capture & first reports ✅ (mostly done)
 
-## Phase 1 — UDS data capture & first report
+The starter pathway (#13 → #14 #15 #16 #17) and the report build-out:
 
-Close the structured-data gaps so a real UDS number can be produced.
+- Side tables + services for income/FPL, sliding-fee tier, special
+  populations, UDS payer classification ✅
+- **UDS Patient Snapshot** — see and edit every essential UDS field in a
+  modern responsive screen ✅
+- Report generation + UI for Tables 3A/3B/4, ZIP, and 5, with cross-table
+  reconciliation and a data-quality worklist ✅
+- Tables 6B/7 measure map + packaging ✅ — **live CQM population counts still
+  open** (#41)
+- Patient-level drill-down from report cells still open (#42)
 
-- New side tables + migrations: socioeconomic (household size/income → FPL %),
-  sliding-fee tier, special-population status, UDS payer classification.
-- Intake/demographics UI for the new fields (validated at the boundary,
-  computed FPL/SFDP — not free-typed).
-- A **UDS reporting service** that produces Table 3A/3B/4 and ZIP outputs from
-  demographics + new data, with patient-level drill-down for data cleanup.
-- Map the existing CQM/AMC measures to UDS Table 6B/7 and emit those tables.
-- Utilization/Table 5 counts from encounters/scheduling.
+The two open items move to Phase 3 — they are depth, not blockers.
 
-**Deliverable:** an FQHC can generate auditable UDS patient, clinical-quality,
-and utilization tables from data captured in the product.
+## Phase 2 — The demo-ready role-based experience 👈 (current — Milestone 2)
 
-## Phase 2 — Experience: design system + role workspaces
+Make the **whole first session** modern, not just the FQHC menu island. The
+plan is [`PATHWAY-2-ROLE-WORKSPACES.md`](./PATHWAY-2-ROLE-WORKSPACES.md),
+tracked under epic #6:
 
-Make it feel like a modern product, starting with the highest-traffic surfaces.
+1. Role workspace framework + post-login landing (#33)
+2. Curated role menus (#34)
+3. **Demo practice seed pack** — role accounts, ~50 realistic patients,
+   today's schedule (#35)
+4. Front-desk workspace (#36)
+5. MA/nurse workspace, tablet-first (#37)
+6. Provider workspace (#38)
+7. Manager/quality workspace (#39)
+8. In parallel: modern theme as FQHC default + coverage of the shell,
+   calendar, dashboard, messages (#40)
 
-- Ship the design-system foundation (tokens, core components, accessibility
-  baseline) as a layer over the existing themes.
-- Build **role-aware landing pages/workspaces** for provider, nurse/MA, front
-  desk, and eligibility/care-management roles on top of the existing ACL + menu
-  system.
-- Modernize and make responsive the top point-of-care screens (intake, rooming,
-  patient summary, check-in) to phone/tablet/desktop, each with a performance
-  budget.
-
-**Deliverable:** the daily-driver workflows are modern, role-specific, and
-fully responsive, with the certified core untouched.
+**Deliverable:** four demo roles each run their daily loop end-to-end on
+modern (or theme-polished) surfaces from seeded data — the out-of-the-box
+demo an FQHC can evaluate in 15 minutes.
 
 ## Phase 3 — Depth & polish
 
-Broaden coverage and harden.
-
-- Remaining role workspaces (behavioral health, billing, admin/quality).
-- **UDS dashboards** with year-round data-quality worklists (don't let problems
-  pile up until reporting season).
+- Finish UDS depth: live 6B/7 clinical measures (#41), patient drill-down
+  (#42), then the revenue/financial tables.
+- Remaining role workspaces: eligibility/enrollment expansion, behavioral
+  health (42 CFR Part 2), billing.
+- **UDS dashboards** with year-round data-quality worklists.
 - Patient-portal modernization for mobile-only patients.
-- Enabling-services and sensitive-data (42 CFR Part 2) workflows.
 - Performance pass across adopted surfaces; i18n coverage for new UI.
 
 ---
@@ -93,47 +92,29 @@ Broaden coverage and harden.
 - **Performance budgets** met on common workflows on real clinic hardware.
 - WCAG 2.1 AA accessibility and strong multilingual support across new UI.
 
-## Where to start — the UX-first starter pathway (chosen approach)
+## Working heuristics (unchanged)
 
-This project is built mostly by **one developer pairing with an AI assistant**,
-and we are starting **UX-first**: the first goal is to *see the essential
-UDS-required fields in a good-looking, responsive screen*, then make them
-editable, and grow the data/reporting behind that.
+This project is built mostly by **one developer pairing with an AI assistant**.
+Picking the next ticket:
 
-**Follow [`STARTER-PATHWAY.md`](./STARTER-PATHWAY.md)** (tracked as pathway epic
-**#13**). The ordered steps:
-
-1. **Host shell + minimal design system** (builds #10 + #12) — a modern,
-   responsive FQHC page exists.
-2. **UDS Patient Snapshot, read-only** (#14) — open a patient, see all the
-   essential UDS fields laid out beautifully; new fields show as empty-states.
-3. **Capture income & FPL band** (#15) — editable income card, live FPL band +
-   sliding-fee tier.
-4. **Capture special-population statuses** (#16).
-5. **Surface insurance as UDS payer category** (#17).
-
-After Step 5 you can open any patient and **see and edit every essential
-UDS-required field** in a modern responsive UI — the first milestone.
-
-Guardrail [#8 CI certification gate](https://github.com/Simonparkershames/openemr-fqhc/issues/8)
-is worth enabling early, in parallel; it does not block the pathway.
-
-**Heuristics for "is this the right next ticket?"**
-- Prefer tickets that are **unblocked**, **small enough to finish in a session**,
-  and **independently verifiable** (a test or a screen you can click).
+- Prefer tickets that are **unblocked**, **small enough to finish in a
+  session**, and **independently verifiable** (a test or a screen you can
+  click).
 - Prefer a thin **vertical slice** (data → service → one screen) over a broad
   horizontal layer — you learn more and ship something usable.
 - When two are equal, do the one that **unblocks the most** downstream work.
 - Keep the certification suite green at every step; never start a slice you
   can't finish behind a feature flag.
+- Responsive, WCAG 2.1 AA, and performance budgets are part of **every**
+  screen's definition of done (epic #7), not a separate phase.
 
-When in doubt, ask the assistant to "pick the next ticket" — it can apply these
-rules against the open issues and the pathway order.
+When in doubt, ask the assistant to "pick the next ticket" — it can apply
+these rules against the open issues and the pathway order.
 
 ## How we track progress
 
-- The **program epic** issue links the workstream epics and shows phase status.
-- Each workstream epic lists its near-term issues; "Phase 0" issues are the
-  actionable next steps.
+- The **program epic** (#2) links the workstream epics and shows phase status.
+- Each workstream epic lists its near-term issues; the Pathway-2 steps under
+  epic #6 are the actionable next steps.
 - This file is the human-readable source of truth for sequencing; the issues
   are the unit of execution.
