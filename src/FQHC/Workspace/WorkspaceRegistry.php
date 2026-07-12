@@ -63,11 +63,17 @@ final class WorkspaceRegistry
             WorkspaceRole::ClinicalSupport => new Workspace(
                 WorkspaceRole::ClinicalSupport,
                 'Clinical Support Workspace',
-                'Rooming, vitals, and follow-up worklists. A tablet-first MA/nurse home lands in issue #37.',
+                'The rooming worklist — checked-in patients to room, vitals, and screenings due (home.php routes this role to rooming.php).',
                 [
                     new WorkspaceCard(
+                        'Rooming Worklist',
+                        'Room checked-in patients and see allergies, meds, and screenings due.',
+                        self::MODULE_PUBLIC_PATH . '/rooming.php',
+                        'Open rooming',
+                    ),
+                    new WorkspaceCard(
                         'Flow Board',
-                        'See who is roomed and ready — work the visit queue in order.',
+                        'The full visit queue across every status and room.',
                         '/interface/patient_tracker/patient_tracker.php?skip_timeout_reset=1',
                         'Open flow board',
                     ),

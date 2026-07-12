@@ -1,0 +1,135 @@
+{#
+  MA/nurse rooming workspace (issue #37).
+
+  Tablet-first: one card per patient in two time-ordered queues — checked-in
+  patients waiting to be roomed, and roomed patients with (or waiting for)
+  the provider. Each card carries the clinical glance (active allergies,
+  active medications, due screenings) and one primary touch action: "Room
+  patient" (POSTs to the certified tracker write) or "Open encounter" for
+  vitals on the certified encounter screen.
+
+  Context:
+    dateDisplay     — human-readable today.
+    awaitingRooming — list of entry views (see rooming.php $entryView).
+    withCareTeam    — list of entry views.
+    roomOptions     — list of {code, label} from patient_flow_board_rooms.
+    cdrEnabled      — whether screenings-due are computed.
+    actionUrl       — absolute URL to rooming-action.php.
+    csrfToken       — CSRF token for the action form.
+
+  TwigContainer disables autoescaping, so values are escaped explicitly.
+
+  @license https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
+#}
+{% macro glance(entry, cdrEnabled) %}
+  <div class="fqhc-stack">
+    <div class="fqhc-cluster">
+      {% if entry.allergies is empty %}
+        <fqhc-status-badge variant="neutral">No known allergies</fqhc-status-badge>
+      {% else %}
+        {% for allergy in entry.allergies %}
+          <fqhc-status-badge variant="danger">{{ allergy|e('html') }}</fqhc-status-badge>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <p class="fqhc-note">
+      {% if entry.medications is empty %}
+        No active medications on file.
+      {% else %}
+        Medications ({{ entry.medications|length }}): {{ entry.medications|slice(0, 4)|join(', ')|e('html') }}{% if entry.medications|length > 4 %} +{{ entry.medications|length - 4 }} more{% endif %}
+      {% endif %}
+    </p>
+    {% if cdrEnabled %}
+      <div class="fqhc-cluster">
+        {% if entry.screenings is empty %}
+          <fqhc-status-badge variant="success">No screenings due</fqhc-status-badge>
+        {% else %}
+          {% for screening in entry.screenings %}
+            <fqhc-status-badge variant="{{ screening.variant|e('html_attr') }}">{{ screening.label|e('html') }} — {{ screening.statusLabel|e('html') }}</fqhc-status-badge>
+          {% endfor %}
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+{% import _self as ui %}
+
+<div class="fqhc-root">
+  <div class="fqhc-container">
+
+    <fqhc-page-header
+      heading="Rooming — Today"
+      subheading="{{ dateDisplay|e('html_attr') }} · room, vitals, screenings">
+      <div slot="actions" class="fqhc-cluster">
+        <fqhc-status-badge variant="warning">Waiting: {{ awaitingRooming|length }}</fqhc-status-badge>
+        <fqhc-status-badge variant="info">With care team: {{ withCareTeam|length }}</fqhc-status-badge>
+      </div>
+    </fqhc-page-header>
+
+    <div class="fqhc-stack">
+
+      <fqhc-card heading="Waiting to be roomed">
+        {% if awaitingRooming is empty %}
+          <fqhc-empty-state message="No checked-in patients are waiting. Arrivals appear here the moment the front desk checks them in."></fqhc-empty-state>
+        {% else %}
+          <div class="fqhc-grid">
+            {% for entry in awaitingRooming %}
+              <fqhc-card heading="{{ entry.timeDisplay|e('html_attr') }} — {{ entry.patientName|e('html_attr') }}">
+                <p class="fqhc-note">{{ entry.categoryName|e('html') }}{% if entry.providerName %} · {{ entry.providerName|e('html') }}{% endif %}</p>
+                {{ ui.glance(entry, cdrEnabled) }}
+                <form method="post" action="{{ actionUrl|e('html_attr') }}" class="fqhc-inline-form">
+                  <input type="hidden" name="csrf_token_form" value="{{ csrfToken|e('html_attr') }}" />
+                  <input type="hidden" name="eid" value="{{ entry.eventId }}" />
+                  <input type="hidden" name="statustype" value="&lt;" />
+                  {% if roomOptions is not empty %}
+                    <div class="fqhc-field">
+                      <label for="roomnum-{{ entry.eventId }}">Room</label>
+                      <select id="roomnum-{{ entry.eventId }}" name="roomnum">
+                        <option value="">Unassigned</option>
+                        {% for option in roomOptions %}
+                          <option value="{{ option.code|e('html_attr') }}">{{ option.label|e('html') }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  {% endif %}
+                  <button type="submit" class="fqhc-button" onclick="top.restoreSession()">Room patient</button>
+                </form>
+                <a class="fqhc-link-button" href="{{ entry.chartUrl|e('html_attr') }}" onclick="top.restoreSession()">Open chart</a>
+              </fqhc-card>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </fqhc-card>
+
+      <fqhc-card heading="Roomed — with care team">
+        {% if withCareTeam is empty %}
+          <fqhc-empty-state message="No patients are in exam rooms right now."></fqhc-empty-state>
+        {% else %}
+          <div class="fqhc-grid">
+            {% for entry in withCareTeam %}
+              <fqhc-card heading="{{ entry.timeDisplay|e('html_attr') }} — {{ entry.patientName|e('html_attr') }}">
+                <div class="fqhc-cluster">
+                  {% if entry.roomLabel %}
+                    <fqhc-status-badge variant="info">{{ entry.roomLabel|e('html') }}</fqhc-status-badge>
+                  {% endif %}
+                  <span class="fqhc-note">{{ entry.categoryName|e('html') }}{% if entry.providerName %} · {{ entry.providerName|e('html') }}{% endif %}</span>
+                </div>
+                {{ ui.glance(entry, cdrEnabled) }}
+                <div class="fqhc-cluster">
+                  {% if entry.encounterUrl %}
+                    <a class="fqhc-button" href="{{ entry.encounterUrl|e('html_attr') }}" onclick="top.restoreSession()">Open encounter — vitals</a>
+                  {% else %}
+                    <a class="fqhc-button" href="{{ entry.chartUrl|e('html_attr') }}" onclick="top.restoreSession()">Open chart — vitals</a>
+                  {% endif %}
+                  <a class="fqhc-link-button" href="{{ entry.chartUrl|e('html_attr') }}" onclick="top.restoreSession()">Open chart</a>
+                </div>
+              </fqhc-card>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </fqhc-card>
+
+    </div>
+
+  </div>
+</div>
