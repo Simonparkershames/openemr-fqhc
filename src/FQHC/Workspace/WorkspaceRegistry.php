@@ -32,23 +32,29 @@ final class WorkspaceRegistry
             WorkspaceRole::FrontDesk => new Workspace(
                 WorkspaceRole::FrontDesk,
                 'Front Desk Workspace',
-                'Today\'s schedule, check-in, and patient lookup. A purpose-built front-desk home lands in issue #36.',
+                'Today\'s appointments, arrival readiness, and check-in — the full arrival loop on one surface (home.php routes this role to frontdesk.php).',
                 [
                     new WorkspaceCard(
                         'Calendar',
-                        'Today\'s appointment schedule: book, confirm, and manage visits.',
+                        'Book, confirm, and manage visits on the appointment schedule.',
                         '/interface/main/main_info.php',
                         'Open calendar',
                     ),
                     new WorkspaceCard(
                         'Flow Board',
-                        'Live view of who is checked in and where they are in the visit.',
+                        'Check patients in and track where they are in the visit.',
                         '/interface/patient_tracker/patient_tracker.php?skip_timeout_reset=1',
                         'Open flow board',
                     ),
                     new WorkspaceCard(
+                        'New Patient',
+                        'Register a new patient before their first visit.',
+                        '/interface/new/new.php',
+                        'Register patient',
+                    ),
+                    new WorkspaceCard(
                         'Patient Finder',
-                        'Look up an existing patient or register a new one.',
+                        'Look up an existing patient by name or chart number.',
                         '/interface/main/finder/dynamic_finder.php',
                         'Find a patient',
                     ),
