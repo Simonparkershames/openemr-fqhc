@@ -1,0 +1,126 @@
+[
+  {
+    "label": "Home",
+    "menu_id": "fqhc0",
+    "target": "fqhc",
+    "url": "/interface/modules/custom_modules/oe-module-fqhc/public/index.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "UDS Report",
+    "menu_id": "fqhc_report0",
+    "target": "fqhc-report",
+    "url": "/interface/modules/custom_modules/oe-module-fqhc/public/report.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Eligibility Worklist",
+    "menu_id": "fqhc_eligibility_worklist0",
+    "target": "fqhc-eligibility-worklist",
+    "url": "/interface/modules/custom_modules/oe-module-fqhc/public/eligibility-worklist.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Calendar",
+    "menu_id": "cal0",
+    "target": "cal",
+    "url": "/interface/main/main_info.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "appt"]
+  },
+  {
+    "label": "Finder",
+    "menu_id": "fin0",
+    "target": "fin",
+    "url": "/interface/main/finder/dynamic_finder.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Clinical Measures",
+    "menu_id": "rep_cqm0",
+    "target": "rep",
+    "url": "/interface/reports/cqm.php?type=standard",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "med"]
+  },
+  {
+    "label": "Appointments Report",
+    "menu_id": "rep_appt0",
+    "target": "rep",
+    "url": "/interface/reports/appointments_report.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "appt"]
+  },
+  {
+    "label": "Encounters Report",
+    "menu_id": "rep_enc0",
+    "target": "rep",
+    "url": "/interface/reports/encounters_report.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["encounters", "coding_a"]
+  },
+  {
+    "label": "Patient List",
+    "menu_id": "rep_plist0",
+    "target": "rep",
+    "url": "/interface/reports/patient_list.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Messages",
+    "menu_id": "msg0",
+    "target": "msg",
+    "url": "/interface/main/messages/messages.php?form_active=1",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "notes"]
+  },
+  {
+    "label": "More",
+    "menu_id": "fqhc_mgr_more",
+    "children": [
+      {
+        "label": "Daily Report",
+        "menu_id": "rep_daily0",
+        "target": "rep",
+        "url": "/interface/reports/daily_summary_report.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["acct", "rep_a"]
+      },
+      {
+        "label": "Alerts Log",
+        "menu_id": "rep_cdr0",
+        "target": "rep",
+        "url": "/interface/reports/cdr_log.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["patients", "med"]
+      },
+      {
+        "label": "Users",
+        "menu_id": "adm_users0",
+        "target": "adm",
+        "url": "/interface/usergroup/usergroup_admin.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["admin", "users"]
+      }
+    ],
+    "requirement": 0
+  }
+]
