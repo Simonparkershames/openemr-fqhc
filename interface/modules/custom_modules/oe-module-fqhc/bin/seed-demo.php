@@ -49,30 +49,15 @@ if (php_sapi_name() !== 'cli') {
     exit("This script can only be run from the command line.\n");
 }
 
-/**
- * Parse "--key=value" / "--flag" arguments into a map.
- *
- * @param list<string> $argv
- * @return array<string, string|bool>
- */
-$parseArgs = static function (array $argv): array {
-    $args = [];
-    foreach (array_slice($argv, 1) as $arg) {
-        if (!str_starts_with($arg, '--')) {
-            continue;
-        }
-        $body = substr($arg, 2);
-        if (str_contains($body, '=')) {
-            [$key, $value] = explode('=', $body, 2);
-            $args[$key] = $value;
-        } else {
-            $args[$body] = true;
-        }
-    }
-    return $args;
-};
+// Parse options with getopt() (reads argv internally, so this stays a clean
+// CLI boundary): --yes is a flag; the rest take values.
+$options = getopt('', ['yes', 'site:', 'admin:', 'admin-pass:', 'demo-pass:']);
+$options = is_array($options) ? $options : [];
 
-$args = $parseArgs($argv);
+$optString = static function (array $options, string $key, string $default): string {
+    $value = $options[$key] ?? null;
+    return is_string($value) ? $value : $default;
+};
 
 $fail = static function (string $message): never {
     fwrite(STDERR, "\n  ✗ " . $message . "\n\n");
@@ -87,16 +72,14 @@ if (getenv('FQHC_ALLOW_DEMO_SEED') !== '1') {
         . "Never run it in production.",
     );
 }
-if (($args['yes'] ?? false) !== true) {
+if (!array_key_exists('yes', $options)) {
     $fail('Refusing to run without --yes (confirms you intend to seed demo data).');
 }
 
-$site = is_string($args['site'] ?? null) ? $args['site'] : 'default';
-$adminUsername = is_string($args['admin'] ?? null) ? $args['admin'] : 'admin';
+$site = $optString($options, 'site', 'default');
+$adminUsername = $optString($options, 'admin', 'admin');
 
-$adminPassword = is_string($args['admin-pass'] ?? null)
-    ? $args['admin-pass']
-    : (getenv('FQHC_DEMO_ADMIN_PASSWORD') ?: '');
+$adminPassword = $optString($options, 'admin-pass', getenv('FQHC_DEMO_ADMIN_PASSWORD') ?: '');
 if ($adminPassword === '') {
     $fail(
         "Administrator password required to create demo accounts.\n"
@@ -104,11 +87,13 @@ if ($adminPassword === '') {
     );
 }
 
-$demoPassword = is_string($args['demo-pass'] ?? null)
-    ? $args['demo-pass']
-    : (getenv('FQHC_DEMO_USER_PASSWORD') ?: 'DemoPass123!');
+$demoPassword = $optString($options, 'demo-pass', getenv('FQHC_DEMO_USER_PASSWORD') ?: 'DemoPass123!');
 
 // --- Bootstrap OpenEMR for the requested site. ---
+// globals.php resolves the multisite id from $_GET['site'] (its $_SERVER host
+// fallback is unavailable under CLI). Setting it here is the established
+// CLI-entry-point pattern used across contrib/util/*.cli.php; this is the
+// outermost boundary, before any application code runs.
 $_GET['site'] = $site;
 $ignoreAuth = true;
 $sessionAllowWrite = true;

@@ -49,7 +49,7 @@ final class DemoDataSetTest extends TestCase
         self::assertGreaterThanOrEqual(50, count($patients), 'The demo needs a clinic-sized panel.');
 
         $ids = array_map(static fn ($p): string => $p->externalId, $patients);
-        self::assertSame(count($ids), count(array_unique($ids)), 'External ids must be unique.');
+        self::assertSame($ids, array_values(array_unique($ids)), 'External ids must be unique.');
         foreach ($ids as $id) {
             self::assertStringStartsWith(DemoDataSet::PATIENT_ID_PREFIX, $id);
         }
@@ -190,8 +190,13 @@ final class DemoDataSetTest extends TestCase
         $providers = array_filter($users, static fn ($u): bool => $u->isProvider);
         self::assertGreaterThanOrEqual(2, count($providers), 'Need at least two providers for a multi-provider schedule.');
 
+        // Each role account lands in the ACL group its curated menu expects.
+        $groupsByUser = [];
         foreach ($users as $user) {
-            self::assertNotEmpty($user->aclGroups, "User {$user->username} must belong to an ACL group.");
+            $groupsByUser[$user->username] = $user->aclGroups;
         }
+        self::assertContains('Physicians', $groupsByUser['provider'] ?? []);
+        self::assertContains('Front Office', $groupsByUser['frontdesk'] ?? []);
+        self::assertContains('Administrators', $groupsByUser['manager'] ?? []);
     }
 }

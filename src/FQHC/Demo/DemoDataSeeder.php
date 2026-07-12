@@ -410,8 +410,9 @@ final class DemoDataSeeder
             );
 
             if (!$created) {
+                $error = $this->authUtils->getErrorMessage();
                 $result->addWarning(
-                    'Could not create demo user ' . $user->username . ': ' . $this->authUtils->getErrorMessage(),
+                    'Could not create demo user ' . $user->username . ': ' . (is_string($error) ? $error : ''),
                 );
                 continue;
             }
