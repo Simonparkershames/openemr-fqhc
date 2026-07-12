@@ -76,7 +76,7 @@ final class UdsReportGeneratorTest extends TestCase
             /**
              * @param list<ReportingPatient> $patients
              */
-            public function __construct(private array $patients)
+            public function __construct(private readonly array $patients)
             {
             }
 

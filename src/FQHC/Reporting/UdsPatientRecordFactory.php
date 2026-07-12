@@ -23,7 +23,7 @@ namespace OpenEMR\FQHC\Reporting;
 
 use OpenEMR\FQHC\Payer\UdsPayerClassifier;
 
-final class UdsPatientRecordFactory
+final readonly class UdsPatientRecordFactory
 {
     private UdsRaceClassifier $raceClassifier;
     private UdsEthnicityClassifier $ethnicityClassifier;
