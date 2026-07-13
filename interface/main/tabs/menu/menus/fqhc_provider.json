@@ -1,0 +1,127 @@
+[
+  {
+    "label": "Home",
+    "menu_id": "fqhc0",
+    "target": "fqhc",
+    "url": "/interface/modules/custom_modules/oe-module-fqhc/public/index.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Calendar",
+    "menu_id": "cal0",
+    "target": "cal",
+    "url": "/interface/main/main_info.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "appt"]
+  },
+  {
+    "label": "Flow",
+    "menu_id": "flb0",
+    "target": "flb",
+    "url": "/interface/patient_tracker/patient_tracker.php?skip_timeout_reset=1",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "appt"],
+    "global_req_strict": ["!disable_pat_trkr", "!disable_calendar"]
+  },
+  {
+    "label": "Finder",
+    "menu_id": "fin0",
+    "target": "fin",
+    "url": "/interface/main/finder/dynamic_finder.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Patient Dashboard",
+    "menu_id": "dem0",
+    "target": "pat",
+    "url": "/interface/patient_file/summary/demographics.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Current Visit",
+    "menu_id": "enc_cur0",
+    "target": "enc",
+    "url": "/interface/patient_file/encounter/encounter_top.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "appt"]
+  },
+  {
+    "label": "Fee Sheet",
+    "menu_id": "fee0",
+    "target": "enc",
+    "url": "/interface/patient_file/encounter/load_form.php?formname=fee_sheet",
+    "children": [],
+    "requirement": 0,
+    "acl_req": [["encounters", "coding", "write"], ["encounters", "coding_a", "write"]]
+  },
+  {
+    "label": "Pending Review",
+    "menu_id": "ord_rev0",
+    "target": "enc",
+    "url": "/interface/orders/orders_results.php?review=1",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "lab"]
+  },
+  {
+    "label": "Patient Results",
+    "menu_id": "ord_res0",
+    "target": "enc",
+    "url": "/interface/orders/orders_results.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "lab"]
+  },
+  {
+    "label": "Messages",
+    "menu_id": "msg0",
+    "target": "msg",
+    "url": "/interface/main/messages/messages.php?form_active=1",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "notes"]
+  },
+  {
+    "label": "More",
+    "menu_id": "fqhc_prov_more",
+    "children": [
+      {
+        "label": "Visit History",
+        "menu_id": "enc_hist0",
+        "target": "enc",
+        "url": "/interface/patient_file/history/encounters.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["patients", "appt"]
+      },
+      {
+        "label": "Clinical Reports",
+        "menu_id": "rep_clin0",
+        "target": "rep",
+        "url": "/interface/reports/clinical_reports.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["patients", "med"]
+      },
+      {
+        "label": "Clinical Measures",
+        "menu_id": "rep_cqm0",
+        "target": "rep",
+        "url": "/interface/reports/cqm.php?type=standard",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["patients", "med"]
+      }
+    ],
+    "requirement": 0
+  }
+]

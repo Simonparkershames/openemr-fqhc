@@ -1,0 +1,108 @@
+[
+  {
+    "label": "Home",
+    "menu_id": "fqhc0",
+    "target": "fqhc",
+    "url": "/interface/modules/custom_modules/oe-module-fqhc/public/index.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Eligibility Worklist",
+    "menu_id": "fqhc_eligibility_worklist0",
+    "target": "fqhc-eligibility-worklist",
+    "url": "/interface/modules/custom_modules/oe-module-fqhc/public/eligibility-worklist.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Finder",
+    "menu_id": "fin0",
+    "target": "fin",
+    "url": "/interface/main/finder/dynamic_finder.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Register Patient",
+    "menu_id": "pat0",
+    "target": "pat",
+    "url": "/interface/new/new.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo", "write", "addonly"]
+  },
+  {
+    "label": "Patient Dashboard",
+    "menu_id": "dem0",
+    "target": "pat",
+    "url": "/interface/patient_file/summary/demographics.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Eligibility Inquiry (270)",
+    "menu_id": "rep_elig0",
+    "target": "rep",
+    "url": "/interface/billing/edi_270.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Eligibility Response (271)",
+    "menu_id": "rep_elig1",
+    "target": "rep",
+    "url": "/interface/billing/edi_271.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "UDS Report",
+    "menu_id": "fqhc_report0",
+    "target": "fqhc-report",
+    "url": "/interface/modules/custom_modules/oe-module-fqhc/public/report.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Messages",
+    "menu_id": "msg0",
+    "target": "msg",
+    "url": "/interface/main/messages/messages.php?form_active=1",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "notes"]
+  },
+  {
+    "label": "More",
+    "menu_id": "fqhc_elig_more",
+    "children": [
+      {
+        "label": "Patient List",
+        "menu_id": "rep_plist0",
+        "target": "rep",
+        "url": "/interface/reports/patient_list.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["patients", "demo"]
+      },
+      {
+        "label": "Appointments Report",
+        "menu_id": "rep_appt0",
+        "target": "rep",
+        "url": "/interface/reports/appointments_report.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["patients", "appt"]
+      }
+    ],
+    "requirement": 0
+  }
+]

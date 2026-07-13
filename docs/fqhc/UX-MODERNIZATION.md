@@ -62,6 +62,12 @@ screen, rather than rewriting the shell.
 Today's roles filter menus; we want roles that change the *whole* experience —
 the landing view, the default actions, the density, and the data surfaced.
 
+> **This is now the project's current focus** (Milestone 2). The ordered plan
+> is [`PATHWAY-2-ROLE-WORKSPACES.md`](./PATHWAY-2-ROLE-WORKSPACES.md): role
+> workspace framework (#33) → curated role menus (#34) → demo seed pack
+> (#35) → front-desk (#36), MA (#37), provider (#38), and manager (#39)
+> workspaces, with theme coverage (#40) in parallel.
+
 Target FQHC roles (each gets a purpose-built home/workspace, not just a menu):
 
 - **Provider / clinician** — schedule, patient summary, open encounters,
@@ -80,12 +86,19 @@ Target FQHC roles (each gets a purpose-built home/workspace, not just a menu):
   screening tools, warm-handoff tracking.
 - **Billing** — claims, payer mix, UDS revenue inputs.
 - **Administrator / quality** — UDS dashboards, data-quality worklists,
-  staffing/utilization, configuration.
+  staffing/utilization, configuration. **First slice shipped:** the FQHC
+  Workspace home (`public/home.php`) with a live UDS data-health metric and
+  nav cards — it evolves into this role's workspace under #39.
 
 Implementation builds on the existing ACL + JSON-menu system (so we inherit
 certified access control) and adds **role-aware landing pages and workspaces**
 as new modules. Roles are configurable per site because FQHCs combine duties
 differently.
+
+**Curated per-role menus shipped (issue #34):** a short, task-relevant menu per
+role (front desk, MA, provider, eligibility, billing, manager, admin), each
+leading with the role's Home. See [`ROLE-MENUS.md`](./ROLE-MENUS.md) for the
+files and assignment. The purpose-built workspaces behind each Home are #33/#36–39.
 
 ## Responsive: phone, tablet, desktop
 
