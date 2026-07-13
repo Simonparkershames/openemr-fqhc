@@ -11,15 +11,9 @@ This is the first pathway step (issues #10 + #12, pathway #13). It provides:
 
 - **An installable module** (`OpenEMR\Modules\Fqhc`) that registers itself and
   adds a top-level **FQHC** menu item via the menu event — no certified code
-  touched. The menu opens the **FQHC Workspace** home, with **Patient
-  Snapshot**, **UDS Report**, and **Eligibility Worklist** children.
-- **Host pages** rendering the OpenEMR shell + FQHC Twig content + Web Component
-  islands:
-  - `public/home.php` — the FQHC Workspace landing page (epic #6, first slice):
-    a live UDS data-health metric plus quick-action cards to the tools below.
-  - `public/index.php` — the per-patient UDS Patient Snapshot.
-  - `public/report.php` — the UDS report tables.
-  - `public/eligibility-worklist.php` — the data-quality worklist.
+  touched.
+- **A host page** (`public/index.php`) rendering the OpenEMR shell + FQHC Twig
+  content + Web Component islands.
 - **The design-system foundation:**
   - `public/assets/css/tokens.css` — design tokens as CSS custom properties
     (the single source of truth for the look & feel).
@@ -27,6 +21,28 @@ This is the first pathway step (issues #10 + #12, pathway #13). It provides:
   - `public/assets/js/fqhc-components.js` — dependency-free Web Components
     (`fqhc-page-header`, `fqhc-card`, `fqhc-field-row`, `fqhc-status-badge`,
     `fqhc-empty-state`).
+
+## Role workspace framework (issue #33)
+
+Each FQHC role gets its own workspace home, served by `public/home.php`
+through the workspace registry (`OpenEMR\FQHC\Workspace\WorkspaceRegistry`):
+
+- **Role resolution** (`WorkspaceResolver`): the per-user override global
+  `fqhc_workspace_override` (`frontdesk` | `clinical` | `provider` |
+  `manager`) wins; otherwise the user's certified ACL group maps
+  Physicians → provider, Clinicians → clinical, Front Office → frontdesk,
+  Administrators → manager. Unmapped users see the manager/quality home
+  (the module's original home) when visiting the page, and keep the
+  default Calendar/Messages landing at login.
+- **Post-login landing**: the global `fqhc_workspace_login_landing`
+  (Admin → Config → FQHC, default **off** so upstream behavior is
+  unchanged) makes the user's workspace the initial tab after login. It is
+  implemented via the tabs-page render event — purely additive; the default
+  tabs stay open behind the workspace tab.
+- Both globals are user-editable, so individual users can opt out or pick a
+  different workspace under their own settings.
+- The individual role workspaces (#36–#39) plug into the registry by
+  replacing their starter card sets.
 
 ## Architecture notes
 

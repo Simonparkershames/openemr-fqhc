@@ -1,18 +1,18 @@
 <?php
 
 /**
- * FQHC module — FQHC Workspace home page (epic #6, first slice).
+ * FQHC module — role workspace home (issue #33).
  *
- * The landing surface for the top-level "FQHC" menu item: a modern, responsive
- * workspace that gathers the FQHC tools already built (Patient Snapshot, UDS
- * Report, Eligibility Worklist) and surfaces a live UDS data-health metric for
- * the most recently completed reporting year, so problems are visible year-round
- * rather than only at reporting time.
+ * Resolves the logged-in user to a workspace via the workspace registry
+ * (per-user override first, then certified ACL group membership) and renders
+ * that role's home: heading, tagline, and card set. Users that resolve to no
+ * role see the manager/quality workspace — the generalization of the module's
+ * original home page. The manager home also shows a live UDS data-health
+ * metric from the eligibility worklist.
  *
- * A role-aware variant (provider/nurse/front-desk workspaces) builds on this
- * shell later; this slice is the shared home every role starts from. It reuses
- * the reporting services (epic #4) and the design system — nothing here touches
- * a certified code path.
+ * Session state (username) is read here at the entry point and parsed into
+ * typed values passed to the domain layer — superglobals do not leak past
+ * this boundary.
  *
  * @package   OpenEMR
  * @link      https://www.open-emr.org
@@ -25,14 +25,20 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../../../globals.php';
 
+use OpenEMR\Common\Acl\AclExtended;
 use OpenEMR\Common\Acl\AclMain;
+use OpenEMR\Common\Session\SessionWrapperFactory;
 use OpenEMR\Common\Twig\TwigContainer;
 use OpenEMR\Core\Header;
 use OpenEMR\Core\OEGlobalsBag;
 use OpenEMR\FQHC\DesignSystem\DesignSystemAssets;
 use OpenEMR\FQHC\Reporting\DataQuality\DataQualityWorklistGenerator;
-use OpenEMR\FQHC\Reporting\DataQuality\DataQualityWorklistPresenter;
 use OpenEMR\FQHC\Reporting\ReportingPatientRepository;
+use OpenEMR\FQHC\Workspace\WorkspaceCard;
+use OpenEMR\FQHC\Workspace\WorkspaceGlobals;
+use OpenEMR\FQHC\Workspace\WorkspaceRegistry;
+use OpenEMR\FQHC\Workspace\WorkspaceResolver;
+use OpenEMR\FQHC\Workspace\WorkspaceRole;
 
 if (!AclMain::aclCheckCore('patients', 'demo')) {
     echo xlt('Access denied');
@@ -40,29 +46,68 @@ if (!AclMain::aclCheckCore('patients', 'demo')) {
 }
 
 $globals = OEGlobalsBag::getInstance();
-$publicBaseUrl = $globals->getString('webroot') . '/interface/modules/custom_modules/oe-module-fqhc/public';
+$webroot = $globals->getString('webroot');
+$publicBaseUrl = $webroot . '/interface/modules/custom_modules/oe-module-fqhc/public';
 $assets = new DesignSystemAssets(__DIR__, $publicBaseUrl);
 
-// Data-health headline covers the most recently completed calendar year — the
-// same default the UDS report and worklist pages use.
-$year = (int) date('Y') - 1;
+$session = SessionWrapperFactory::getInstance()->getActiveSession();
+$authUser = $session->get('authUser');
+$username = is_string($authUser) ? $authUser : '';
 
-$worklist = (new DataQualityWorklistGenerator(new ReportingPatientRepository()))->generateForYear($year);
-$view = (new DataQualityWorklistPresenter())->present($worklist);
+$groupTitles = [];
+if ($username !== '') {
+    $rawTitles = AclExtended::aclGetGroupTitles($username);
+    if (is_array($rawTitles)) {
+        foreach ($rawTitles as $rawTitle) {
+            if (is_string($rawTitle)) {
+                $groupTitles[] = $rawTitle;
+            }
+        }
+    }
+}
 
-// Absolute URLs to the sibling FQHC tools this workspace links out to.
-$links = [
-    'snapshot' => $publicBaseUrl . '/index.php',
-    'report' => $publicBaseUrl . '/report.php',
-    'worklist' => $publicBaseUrl . '/eligibility-worklist.php',
-];
+// The override global is user-editable, so the bag already carries the
+// logged-in user's value (interface/globals.php applies user_settings rows).
+$override = $globals->getString(WorkspaceGlobals::WORKSPACE_OVERRIDE);
+
+$registry = new WorkspaceRegistry();
+$role = (new WorkspaceResolver())->resolve($override, $groupTitles);
+$workspace = $role !== null ? $registry->forRole($role) : $registry->defaultWorkspace();
+
+$cards = array_map(
+    static fn(WorkspaceCard $card): array => [
+        'title' => $card->title,
+        'description' => $card->description,
+        'url' => $webroot . $card->url,
+        'ctaLabel' => $card->ctaLabel,
+    ],
+    $workspace->cards,
+);
+
+// Live UDS data-health metric for the manager/quality home.
+$dataHealth = null;
+if ($workspace->role === WorkspaceRole::Manager) {
+    $worklistYear = (int) date('Y') - 1;
+    $worklist = (new DataQualityWorklistGenerator(new ReportingPatientRepository()))
+        ->generateForYear($worklistYear);
+    $dataHealth = [
+        'year' => $worklistYear,
+        'total' => $worklist->total(),
+        'worklistUrl' => $publicBaseUrl . '/eligibility-worklist.php?year=' . $worklistYear,
+    ];
+}
 
 $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ->getTwig()
     ->render('fqhc/home.html.twig', [
-        'year' => $year,
-        'worklist' => $view,
-        'links' => $links,
+        'workspace' => [
+            'roleKey' => $workspace->role->value,
+            'roleLabel' => $workspace->role->label(),
+            'heading' => $workspace->heading,
+            'tagline' => $workspace->tagline,
+        ],
+        'cards' => $cards,
+        'dataHealth' => $dataHealth,
     ]);
 ?>
 <!DOCTYPE html>

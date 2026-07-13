@@ -1,15 +1,17 @@
 {#
-  FQHC Workspace home page (epic #6, first slice).
+  Role workspace home (issue #33).
 
-  The landing surface for the top-level "FQHC" menu item: a live UDS data-health
-  headline for the most recently completed reporting year, plus quick-action
-  cards linking to the FQHC tools. Server-rendered shell + design-system
-  components.
+  Shared template every role workspace renders through: a page header naming
+  the role, an optional live data-health card (manager/quality only for now),
+  and the workspace's card set from the registry.
 
   Context:
-    year     — most recently completed calendar year (int).
-    worklist — view model from OpenEMR\FQHC\Reporting\DataQuality\DataQualityWorklistPresenter::present().
-    links    — map of absolute URLs: snapshot, report, worklist.
+    workspace  — {roleKey, roleLabel, heading, tagline} from the resolved
+                 OpenEMR\FQHC\Workspace\Workspace.
+    cards      — list of {title, description, url, ctaLabel}; urls are
+                 absolute (webroot already prefixed by the entry point).
+    dataHealth — null, or {year, total, worklistUrl} for the live UDS
+                 data-health metric.
 
   TwigContainer disables autoescaping, so values are escaped explicitly.
 
@@ -19,49 +21,37 @@
   <div class="fqhc-container">
 
     <fqhc-page-header
-      heading="FQHC Workspace"
-      subheading="Your health center's tools and UDS data health in one place.">
+      heading="{{ workspace.heading|e('html_attr') }}"
+      subheading="{{ workspace.tagline|e('html_attr') }}">
       <div slot="actions" class="fqhc-cluster">
-        {% if worklist.total == 0 %}
-          <fqhc-status-badge variant="success">Data healthy</fqhc-status-badge>
-        {% else %}
-          <fqhc-status-badge variant="warning">{{ worklist.total }} to review</fqhc-status-badge>
-        {% endif %}
+        <fqhc-status-badge>{{ workspace.roleLabel|e('html') }}</fqhc-status-badge>
       </div>
     </fqhc-page-header>
 
-    <fqhc-card heading="UDS data quality — {{ year }}">
-      {% if worklist.total == 0 %}
-        <fqhc-empty-state message="No patients had a UDS data-quality gap in {{ year }}."></fqhc-empty-state>
-      {% else %}
-        <div class="fqhc-metric-value">{{ worklist.total }}</div>
-        <div class="fqhc-metric-label">patient(s) with a UDS data-quality gap in {{ year }}</div>
-        <div class="fqhc-home-rows">
-          {% for row in worklist.gapCounts %}
-            <fqhc-field-row label="{{ row.label|e('html_attr') }}" value="{{ row.count }}"></fqhc-field-row>
-          {% endfor %}
-        </div>
-      {% endif %}
-      <div class="fqhc-cluster fqhc-home-actions">
-        <a class="fqhc-button" href="{{ links.worklist|e('html_attr') }}">Open eligibility worklist</a>
-        <a href="{{ links.report|e('html_attr') }}">View full UDS report</a>
-      </div>
-    </fqhc-card>
+    <div class="fqhc-stack">
 
-    <p class="fqhc-section-heading">Tools</p>
-    <div class="fqhc-grid">
-      <a class="fqhc-nav-card" href="{{ links.snapshot|e('html_attr') }}">
-        <span class="fqhc-nav-card-title">Patient Snapshot</span>
-        <span class="fqhc-nav-card-desc">Every essential UDS field for the currently selected patient — income &amp; FPL, special populations, and payer category.</span>
-      </a>
-      <a class="fqhc-nav-card" href="{{ links.report|e('html_attr') }}">
-        <span class="fqhc-nav-card-title">UDS Report</span>
-        <span class="fqhc-nav-card-desc">Generate the patient, clinical-quality, and utilization tables (3A/3B/4, ZIP, 5, 6B/7) for a reporting year.</span>
-      </a>
-      <a class="fqhc-nav-card" href="{{ links.worklist|e('html_attr') }}">
-        <span class="fqhc-nav-card-title">Eligibility Worklist</span>
-        <span class="fqhc-nav-card-desc">Patients with a data-quality gap to follow up on, so problems don't pile up until reporting season.</span>
-      </a>
+      {% if dataHealth %}
+        <fqhc-card heading="UDS data health — {{ dataHealth.year }}">
+          {% if dataHealth.total == 0 %}
+            <fqhc-status-badge variant="success">No data-quality gaps</fqhc-status-badge>
+            <p class="fqhc-note">Every {{ dataHealth.year }} patient has complete UDS demographics, income, and payer data.</p>
+          {% else %}
+            <fqhc-status-badge variant="warning">{{ dataHealth.total }} patient(s) with gaps</fqhc-status-badge>
+            <p class="fqhc-note">Gaps in demographics, income, or payer mapping distort UDS counts until resolved.</p>
+            <a class="fqhc-button" href="{{ dataHealth.worklistUrl|e('html_attr') }}">Open eligibility worklist</a>
+          {% endif %}
+        </fqhc-card>
+      {% endif %}
+
+      <div class="fqhc-grid">
+        {% for card in cards %}
+          <fqhc-card heading="{{ card.title|e('html_attr') }}">
+            <p>{{ card.description|e('html') }}</p>
+            <a class="fqhc-button" href="{{ card.url|e('html_attr') }}">{{ card.ctaLabel|e('html') }}</a>
+          </fqhc-card>
+        {% endfor %}
+      </div>
+
     </div>
 
   </div>
