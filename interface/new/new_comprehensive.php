@@ -451,10 +451,12 @@ $constraints = LBF_Validation::generate_validate_constraints("DEM");
                         // default to "now" (e.g. Financial Review Date) with today's date.
                         // Scoped to this registration form so editing an existing patient
                         // never silently stamps a blank review date with today.
+                        $frowDataType = is_array($frow) ? ($frow['data_type'] ?? null) : null;
+                        $frowDefaultValue = is_array($frow) ? ($frow['default_value'] ?? '') : '';
                         if (
                             ($currvalue === null || $currvalue === '')
-                            && (int) ($frow['data_type'] ?? 0) === 4
-                            && ($frow['default_value'] ?? '') === 'now'
+                            && is_numeric($frowDataType) && (int) $frowDataType === 4
+                            && $frowDefaultValue === 'now'
                         ) {
                             $currvalue = date('Y-m-d');
                         }

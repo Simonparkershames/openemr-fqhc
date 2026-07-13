@@ -19,7 +19,7 @@ declare(strict_types=1);
 
 namespace OpenEMR\FQHC\Reporting\Clinical;
 
-final class Table6bReportGenerator
+final readonly class Table6bReportGenerator
 {
     private Table6bReportBuilder $builder;
 

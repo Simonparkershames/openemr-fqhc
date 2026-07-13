@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace OpenEMR\FQHC\Reporting;
 
-final class UdsReportGenerator
+final readonly class UdsReportGenerator
 {
     private UdsPatientRecordFactory $recordFactory;
     private Table3aReportBuilder $table3aBuilder;

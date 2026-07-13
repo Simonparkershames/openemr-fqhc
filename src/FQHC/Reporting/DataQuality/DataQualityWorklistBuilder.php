@@ -24,7 +24,7 @@ use OpenEMR\FQHC\Payer\UdsPayerClassifier;
 use OpenEMR\FQHC\Reporting\ReportingPatient;
 use OpenEMR\FQHC\Reporting\UdsSexClassifier;
 
-final class DataQualityWorklistBuilder
+final readonly class DataQualityWorklistBuilder
 {
     private UdsSexClassifier $sexClassifier;
     private UdsPayerClassifier $payerClassifier;

@@ -69,7 +69,7 @@ final class Table5ReportGeneratorTest extends TestCase
             /**
              * @param list<Table5VisitRecord> $visits
              */
-            public function __construct(private array $visits)
+            public function __construct(private readonly array $visits)
             {
             }
 

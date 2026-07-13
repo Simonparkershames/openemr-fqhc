@@ -1,0 +1,129 @@
+{#
+  Front desk workspace (issue #36).
+
+  Today's appointments with each patient's place in the arrival loop, the
+  arrival-readiness gaps to close at check-in, day navigation, and quick
+  actions into the certified calendar/flow-board/finder/new-patient screens.
+  Server-rendered shell + design-system components; the schedule table uses
+  the .fqhc-table style, which collapses to card-per-row on phones.
+
+  Context:
+    date               — selected day (Y-m-d).
+    dateDisplay        — human-readable selected day.
+    isToday            — whether the selected day is today.
+    prevDateUrl / nextDateUrl / todayUrl — day navigation links.
+    total              — appointment count for the day.
+    needsAttention     — active appointments with a readiness gap.
+    summary            — list of {label, count, variant} phase chips.
+    rows               — list of appointment view rows (see frontdesk.php).
+    quickActions       — list of {title, description, url, ctaLabel}.
+    patientBaseUrl     — absolute URL to demographics.php.
+    appointmentBaseUrl — absolute URL to add_edit_event.php.
+
+  TwigContainer disables autoescaping, so values are escaped explicitly.
+
+  @license https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
+#}
+<div class="fqhc-root">
+  <div class="fqhc-container">
+
+    <fqhc-page-header
+      heading="Front Desk — {{ isToday ? 'Today' : dateDisplay|e('html_attr') }}"
+      subheading="{{ total }} appointment(s){{ isToday ? '' : ' on ' ~ dateDisplay|e('html_attr') }} · arrive, verify, check in">
+      <div slot="actions" class="fqhc-cluster">
+        {% if needsAttention > 0 %}
+          <fqhc-status-badge variant="warning">{{ needsAttention }} need(s) attention at check-in</fqhc-status-badge>
+        {% elseif total > 0 %}
+          <fqhc-status-badge variant="success">All arrivals ready</fqhc-status-badge>
+        {% endif %}
+      </div>
+    </fqhc-page-header>
+
+    <div class="fqhc-row-between">
+      <div class="fqhc-cluster">
+        {% for chip in summary %}
+          <fqhc-status-badge variant="{{ chip.variant|e('html_attr') }}">{{ chip.label|e('html') }}: {{ chip.count }}</fqhc-status-badge>
+        {% endfor %}
+      </div>
+      <div class="fqhc-cluster">
+        <a class="fqhc-link-button" href="{{ prevDateUrl|e('html_attr') }}">&larr; Previous day</a>
+        {% if not isToday %}
+          <a class="fqhc-link-button" href="{{ todayUrl|e('html_attr') }}">Today</a>
+        {% endif %}
+        <a class="fqhc-link-button" href="{{ nextDateUrl|e('html_attr') }}">Next day &rarr;</a>
+      </div>
+    </div>
+
+    <div class="fqhc-stack">
+
+      <fqhc-card heading="Schedule — {{ dateDisplay|e('html_attr') }}">
+        {% if rows is empty %}
+          <fqhc-empty-state message="No appointments on {{ dateDisplay|e('html_attr') }}. Book one from the calendar below."></fqhc-empty-state>
+        {% else %}
+          <div class="fqhc-table-wrap">
+            <table class="fqhc-table">
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Time</th>
+                  <th>Provider</th>
+                  <th>Visit</th>
+                  <th>Status</th>
+                  <th>Arrival readiness</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in rows %}
+                  <tr>
+                    <td>
+                      <a href="{{ (patientBaseUrl ~ '?set_pid=' ~ row.pid)|e('html_attr') }}" onclick="top.restoreSession()">{{ row.patientName|e('html') }}</a>
+                    </td>
+                    <td data-label="Time">
+                      {{ row.timeDisplay|e('html') }}{% if row.durationMinutes > 0 %} <span class="fqhc-note">({{ row.durationMinutes }} min)</span>{% endif %}
+                    </td>
+                    <td data-label="Provider">{{ row.providerName|default('—')|e('html') }}</td>
+                    <td data-label="Visit">{{ row.categoryName|default('—')|e('html') }}</td>
+                    <td data-label="Status">
+                      <fqhc-status-badge variant="{{ row.phaseVariant|e('html_attr') }}">{{ row.phaseLabel|e('html') }}</fqhc-status-badge>
+                      <span class="fqhc-note">{{ row.statusTitle|e('html') }}</span>
+                    </td>
+                    <td data-label="Arrival readiness">
+                      {% if not row.phaseActive %}
+                        <span class="fqhc-note">—</span>
+                      {% elseif row.ready %}
+                        <fqhc-status-badge variant="success">Ready</fqhc-status-badge>
+                      {% else %}
+                        {% for flag in row.flags %}
+                          <fqhc-status-badge variant="warning">{{ flag|e('html') }}</fqhc-status-badge>
+                        {% endfor %}
+                      {% endif %}
+                    </td>
+                    <td>
+                      <span class="fqhc-cluster">
+                        <a class="fqhc-button" href="#"
+                           onclick="top.restoreSession(); dlgopen({{ ((appointmentBaseUrl ~ '?eid=' ~ row.eventId)|json_encode)|e('html_attr') }}, '_blank', 775, 500); return false;">Appointment</a>
+                        <a class="fqhc-link-button" href="{{ (patientBaseUrl ~ '?set_pid=' ~ row.pid)|e('html_attr') }}" onclick="top.restoreSession()">Open chart</a>
+                      </span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </fqhc-card>
+
+      <div class="fqhc-grid">
+        {% for card in quickActions %}
+          <fqhc-card heading="{{ card.title|e('html_attr') }}">
+            <p>{{ card.description|e('html') }}</p>
+            <a class="fqhc-button" href="{{ card.url|e('html_attr') }}" onclick="top.restoreSession()">{{ card.ctaLabel|e('html') }}</a>
+          </fqhc-card>
+        {% endfor %}
+      </div>
+
+    </div>
+
+  </div>
+</div>

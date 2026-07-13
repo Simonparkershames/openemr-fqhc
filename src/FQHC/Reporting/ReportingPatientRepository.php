@@ -32,7 +32,7 @@ use OpenEMR\FQHC\Payer\PatientPayerRepository;
 use OpenEMR\FQHC\Snapshot\AgeCalculator;
 use OpenEMR\FQHC\SpecialPopulation\PatientSpecialPopulationRepository;
 
-final class ReportingPatientRepository implements ReportingPatientSource
+final readonly class ReportingPatientRepository implements ReportingPatientSource
 {
     private PatientPayerRepository $payerRepository;
     private PatientIncomeRepository $incomeRepository;
