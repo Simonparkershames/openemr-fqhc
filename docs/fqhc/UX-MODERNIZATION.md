@@ -95,6 +95,11 @@ certified access control) and adds **role-aware landing pages and workspaces**
 as new modules. Roles are configurable per site because FQHCs combine duties
 differently.
 
+**Curated per-role menus shipped (issue #34):** a short, task-relevant menu per
+role (front desk, MA, provider, eligibility, billing, manager, admin), each
+leading with the role's Home. See [`ROLE-MENUS.md`](./ROLE-MENUS.md) for the
+files and assignment. The purpose-built workspaces behind each Home are #33/#36–39.
+
 ## Responsive: phone, tablet, desktop
 
 - **Mobile/tablet-first layout** for newly adopted screens, with a single

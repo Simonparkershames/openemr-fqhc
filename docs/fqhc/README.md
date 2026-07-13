@@ -50,6 +50,7 @@ project closes those gaps.
 | [`UDS-REPORTING.md`](./UDS-REPORTING.md) | UDS data elements, where OpenEMR already captures them, and the gaps. |
 | [`UDS-DATA-MODEL.md`](./UDS-DATA-MODEL.md) | **The concrete OpenEMR changes for UDS** — field specs, proposed schema, FHIR/UDS+ notes. |
 | [`UX-MODERNIZATION.md`](./UX-MODERNIZATION.md) | Design system, role-based interfaces, and responsive strategy. |
+| [`ROLE-MENUS.md`](./ROLE-MENUS.md) | Curated per-role menus (#34): the shipped menu files and how a site assigns them. |
 | [`ROADMAP.md`](./ROADMAP.md) | Phased plan: immediate next steps and longer-term deliverables. |
 | [`PATHWAY-2-ROLE-WORKSPACES.md`](./PATHWAY-2-ROLE-WORKSPACES.md) | **Current path** — the demo-ready role-based experience (Milestone 2). |
 | [`STARTER-PATHWAY.md`](./STARTER-PATHWAY.md) | Milestone 1 (complete): essential UDS fields in a modern UI. |

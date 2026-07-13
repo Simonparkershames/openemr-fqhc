@@ -1,0 +1,135 @@
+[
+  {
+    "label": "Home",
+    "menu_id": "fqhc0",
+    "target": "fqhc",
+    "url": "/interface/modules/custom_modules/oe-module-fqhc/public/index.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Config",
+    "menu_id": "adm_cfg0",
+    "target": "adm",
+    "url": "/interface/super/edit_globals.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["admin", "super"]
+  },
+  {
+    "label": "Users",
+    "menu_id": "adm_users0",
+    "target": "adm",
+    "url": "/interface/usergroup/usergroup_admin.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["admin", "users"]
+  },
+  {
+    "label": "ACL",
+    "menu_id": "adm_acl0",
+    "target": "adm",
+    "url": "/interface/usergroup/adminacl.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["admin", "acl"]
+  },
+  {
+    "label": "Facilities",
+    "menu_id": "adm_fac0",
+    "target": "adm",
+    "url": "/interface/usergroup/facilities.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["admin", "users"]
+  },
+  {
+    "label": "Forms Admin",
+    "menu_id": "adm_forms0",
+    "target": "adm",
+    "url": "/interface/forms_admin/forms_admin.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["admin", "forms"]
+  },
+  {
+    "label": "Lists",
+    "menu_id": "adm_lists0",
+    "target": "adm",
+    "url": "/interface/super/edit_list.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["admin", "super"]
+  },
+  {
+    "label": "Modules",
+    "menu_id": "adm_mod0",
+    "target": "adm",
+    "url": "/interface/modules/zend_modules/public/Installer",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["admin", "manage_modules"]
+  },
+  {
+    "label": "UDS Report",
+    "menu_id": "fqhc_report0",
+    "target": "fqhc-report",
+    "url": "/interface/modules/custom_modules/oe-module-fqhc/public/report.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "Finder",
+    "menu_id": "fin0",
+    "target": "fin",
+    "url": "/interface/main/finder/dynamic_finder.php",
+    "children": [],
+    "requirement": 0,
+    "acl_req": ["patients", "demo"]
+  },
+  {
+    "label": "More",
+    "menu_id": "fqhc_adm_more",
+    "children": [
+      {
+        "label": "Layouts",
+        "menu_id": "adm_lay0",
+        "target": "adm",
+        "url": "/interface/super/edit_layout.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["admin", "super"]
+      },
+      {
+        "label": "Address Book",
+        "menu_id": "adm_addr0",
+        "target": "adm",
+        "url": "/interface/usergroup/addrbook_list.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["admin", "practice"]
+      },
+      {
+        "label": "Logs",
+        "menu_id": "adm_logs0",
+        "target": "adm",
+        "url": "/interface/logview/logview.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["admin", "users"]
+      },
+      {
+        "label": "Backup",
+        "menu_id": "adm_bak0",
+        "target": "adm",
+        "url": "/interface/main/backup.php",
+        "children": [],
+        "requirement": 0,
+        "acl_req": ["admin", "super"]
+      }
+    ],
+    "requirement": 0
+  }
+]
