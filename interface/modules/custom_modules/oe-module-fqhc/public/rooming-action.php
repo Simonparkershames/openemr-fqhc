@@ -41,7 +41,7 @@ $globals = OEGlobalsBag::getInstance();
 $publicBaseUrl = $globals->getString('webroot') . '/interface/modules/custom_modules/oe-module-fqhc/public';
 $backUrl = $publicBaseUrl . '/rooming.php';
 
-if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') !== 'POST') {
     header('Location: ' . $backUrl);
     exit;
 }

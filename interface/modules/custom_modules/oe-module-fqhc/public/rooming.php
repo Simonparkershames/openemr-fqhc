@@ -99,24 +99,25 @@ $glanceByPid = [];
 foreach ($worklistPids as $pid) {
     $screenings = [];
     if ($cdrEnabled) {
-        $actions = test_rules_clinic('', 'passive_alert', $date . ' 00:00:00', 'reminders-due', (string) $pid);
-        if (is_array($actions)) {
-            foreach ($actions as $action) {
-                if (!is_array($action)) {
-                    continue;
-                }
-                $category = $action['category'] ?? '';
-                $item = $action['item'] ?? '';
-                $label = trim(
-                    (is_string($category) ? (string) getListItemTitle('rule_action_category', $category) : '')
-                    . ': '
-                    . (is_string($item) ? (string) getListItemTitle('rule_action', $item) : ''),
-                    ': '
-                );
-                $screening = $screeningFactory->fromRuleAction($action, $label);
-                if ($screening instanceof ScreeningDue) {
-                    $screenings[] = $screening;
-                }
+        // Provider 0 = entire clinic (legacy "blank" semantics of test_rules_clinic).
+        $actions = test_rules_clinic(0, 'passive_alert', $date . ' 00:00:00', 'reminders-due', $pid);
+        foreach ($actions as $action) {
+            if (!is_array($action)) {
+                continue;
+            }
+            $category = $action['category'] ?? '';
+            $item = $action['item'] ?? '';
+            $categoryTitle = is_string($category) ? getListItemTitle('rule_action_category', $category) : '';
+            $itemTitle = is_string($item) ? getListItemTitle('rule_action', $item) : '';
+            $label = trim(
+                (is_string($categoryTitle) ? $categoryTitle : '')
+                . ': '
+                . (is_string($itemTitle) ? $itemTitle : ''),
+                ': '
+            );
+            $screening = $screeningFactory->fromRuleAction($action, $label);
+            if ($screening instanceof ScreeningDue) {
+                $screenings[] = $screening;
             }
         }
     }

@@ -20,6 +20,7 @@ use OpenEMR\FQHC\FrontDesk\FrontDeskDayBuilder;
 use OpenEMR\FQHC\FrontDesk\ScheduleRow;
 use OpenEMR\FQHC\Rooming\PatientGlance;
 use OpenEMR\FQHC\Rooming\RoomingQueueEntry;
+use OpenEMR\FQHC\Rooming\RoomingWorklist;
 use OpenEMR\FQHC\Rooming\RoomingWorklistBuilder;
 use OpenEMR\FQHC\Rooming\ScreeningDue;
 use OpenEMR\FQHC\Rooming\ScreeningDueStatus;
@@ -60,7 +61,7 @@ final class RoomingWorklistBuilderTest extends TestCase
      * @param array<int, int> $encounters
      * @param array<int, PatientGlance> $glances
      */
-    private function build(array $rows, array $rooms = [], array $encounters = [], array $glances = [])
+    private function build(array $rows, array $rooms = [], array $encounters = [], array $glances = []): RoomingWorklist
     {
         $day = (new FrontDeskDayBuilder())->build('2026-07-12', $rows);
 
