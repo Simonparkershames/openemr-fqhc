@@ -44,6 +44,22 @@ through the workspace registry (`OpenEMR\FQHC\Workspace\WorkspaceRegistry`):
 - The individual role workspaces (#36–#39) plug into the registry by
   replacing their starter card sets.
 
+## Front desk workspace (issue #36)
+
+`public/frontdesk.php` is the front-desk role's home — `home.php` routes
+front-desk users there. It shows the selected day's patient appointments
+(read via the certified calendar's own `fetchAppointments()`, so recurring
+events and calendar filters behave exactly like the calendar) with each
+patient's place in the arrival loop (expected → arrived → with care team → checked
+out, from the site's `apptstat` codes via
+`OpenEMR\FQHC\FrontDesk\AppointmentStatusClassifier`), plus the
+**arrival-readiness gaps** to close at check-in: missing DOB or sex, no
+insurance on file, and no sliding-fee income determination — the same data
+the UDS eligibility worklist reads, surfaced while the patient is at the
+desk. Day navigation, quick actions (calendar, flow board, new patient,
+finder), and per-row deep links into the certified appointment dialog and
+patient chart complete the loop; no certified screen is modified.
+
 ## Architecture notes
 
 - **Domain/services** live in the core tree under `OpenEMR\FQHC\`

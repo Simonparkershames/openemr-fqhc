@@ -74,6 +74,14 @@ $registry = new WorkspaceRegistry();
 $role = (new WorkspaceResolver())->resolve($override, $groupTitles);
 $workspace = $role !== null ? $registry->forRole($role) : $registry->defaultWorkspace();
 
+// The front-desk role has a purpose-built home (issue #36); the shared
+// card-grid template below serves the roles whose dedicated workspaces
+// haven't landed yet.
+if ($workspace->role === WorkspaceRole::FrontDesk) {
+    header('Location: ' . $publicBaseUrl . '/frontdesk.php');
+    exit;
+}
+
 $cards = array_map(
     static fn(WorkspaceCard $card): array => [
         'title' => $card->title,
