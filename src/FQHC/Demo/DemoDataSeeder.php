@@ -42,7 +42,7 @@ use OpenEMR\Services\PatientService;
 use OpenEMR\Services\UserService;
 use Psr\Clock\ClockInterface;
 
-final class DemoDataSeeder
+final readonly class DemoDataSeeder
 {
     private const TELEHEALTH_POS_CODE = 11;
     private const SCHEDULE_CATEGORY = 5; // Office Visit
@@ -61,17 +61,17 @@ final class DemoDataSeeder
     ];
 
     public function __construct(
-        private readonly DemoDataSet $dataSet,
-        private readonly ClockInterface $clock,
-        private readonly PatientService $patientService,
-        private readonly AppointmentService $appointmentService,
-        private readonly EncounterService $encounterService,
-        private readonly InsuranceCompanyService $insuranceCompanyService,
-        private readonly InsuranceService $insuranceService,
-        private readonly UserService $userService,
-        private readonly PatientIncomeRepository $incomeRepository,
-        private readonly PatientSpecialPopulationRepository $specialPopulationRepository,
-        private readonly AuthUtils $authUtils,
+        private DemoDataSet $dataSet,
+        private ClockInterface $clock,
+        private PatientService $patientService,
+        private AppointmentService $appointmentService,
+        private EncounterService $encounterService,
+        private InsuranceCompanyService $insuranceCompanyService,
+        private InsuranceService $insuranceService,
+        private UserService $userService,
+        private PatientIncomeRepository $incomeRepository,
+        private PatientSpecialPopulationRepository $specialPopulationRepository,
+        private AuthUtils $authUtils,
     ) {
     }
 

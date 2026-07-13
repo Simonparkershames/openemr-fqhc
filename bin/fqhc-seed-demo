@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 /**
@@ -97,7 +98,7 @@ $demoPassword = $optString($options, 'demo-pass', getenv('FQHC_DEMO_USER_PASSWOR
 $_GET['site'] = $site;
 $ignoreAuth = true;
 $sessionAllowWrite = true;
-require_once __DIR__ . '/../../../../globals.php';
+require_once __DIR__ . '/../interface/globals.php';
 
 // Establish the acting administrator in the session so the ACL check behind
 // user creation resolves against a real admin identity.

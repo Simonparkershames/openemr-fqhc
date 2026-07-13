@@ -89,7 +89,7 @@ the administrator's own password (OpenEMR verifies it before creating accounts):
 ```bash
 FQHC_ALLOW_DEMO_SEED=1 \
 FQHC_DEMO_ADMIN_PASSWORD='<admin password>' \
-php interface/modules/custom_modules/oe-module-fqhc/bin/seed-demo.php \
+php bin/fqhc-seed-demo \
     --yes --admin=admin
 ```
 
