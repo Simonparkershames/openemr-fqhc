@@ -116,6 +116,41 @@ Review the diff before committing. See the
 [fixtures README](tests/Tests/Isolated/Common/Twig/fixtures/render/README.md)
 for details on adding new test cases.
 
+## Visual previews (no Docker)
+
+To visually proof a Twig template change without the Docker stack, use the
+`tools/preview/` toolkit. It renders templates through the same isolated path
+as the render tests (`TwigContainer`, translation disabled, `setupHeader()`
+stubbed) and screenshots them with the pre-installed Chromium.
+
+**One-time setup** (a SessionStart hook does this automatically on the web):
+
+```bash
+composer install --no-dev --no-scripts --prefer-source   # provides vendor/
+npm install playwright --no-save                          # screenshots only
+```
+
+Note: the environment injects an invalid `"proxy-injected"` github-oauth
+placeholder into Composer's global `auth.json`; clear it (set `github-oauth`
+to `{}`) if `composer install` reports an invalid token. Use `--no-dev` — the
+egress proxy blocks `phpstan`'s dist download.
+
+**Screenshot a template in one command:**
+
+```bash
+tools/preview/preview.sh portal/login/autologin.html.twig \
+    tools/preview/params/autologin.json --full
+# -> tools/preview/out/preview-*.png  (send these to the user inline)
+```
+
+Copy realistic parameters from `renderCaseProvider()` in
+`tests/Tests/Isolated/Common/Twig/TwigTemplateRenderTest.php` into a
+`tools/preview/params/*.json` file. `setupHeader()` is stubbed, so previews are
+unstyled unless you pass `--css=/public/themes/style_light.css` (after
+`npm run gulp-build`). See `tools/preview/README.md` for the full workflow,
+including `render.php` (HTML only) and `bundle.mjs` (self-contained HTML for
+Artifacts).
+
 ## Code Quality
 
 These run on the host (requires local PHP/Node):
