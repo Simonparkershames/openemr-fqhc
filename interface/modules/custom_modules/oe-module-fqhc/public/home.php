@@ -74,11 +74,15 @@ $registry = new WorkspaceRegistry();
 $role = (new WorkspaceResolver())->resolve($override, $groupTitles);
 $workspace = $role !== null ? $registry->forRole($role) : $registry->defaultWorkspace();
 
-// The front-desk role has a purpose-built home (issue #36); the shared
-// card-grid template below serves the roles whose dedicated workspaces
-// haven't landed yet.
+// Roles with a purpose-built home route there (front desk #36, clinical
+// support #37); the shared card-grid template below serves the roles whose
+// dedicated workspaces haven't landed yet.
 if ($workspace->role === WorkspaceRole::FrontDesk) {
     header('Location: ' . $publicBaseUrl . '/frontdesk.php');
+    exit;
+}
+if ($workspace->role === WorkspaceRole::ClinicalSupport) {
+    header('Location: ' . $publicBaseUrl . '/rooming.php');
     exit;
 }
 

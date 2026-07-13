@@ -60,6 +60,24 @@ desk. Day navigation, quick actions (calendar, flow board, new patient,
 finder), and per-row deep links into the certified appointment dialog and
 patient chart complete the loop; no certified screen is modified.
 
+## MA/nurse rooming workspace (issue #37)
+
+`public/rooming.php` is the clinical-support role's home — `home.php`
+routes MAs/nurses there. Tablet-first (one card per patient, large touch
+targets), it shows two time-ordered queues built from the same day/phase
+services as the front-desk workspace: checked-in patients **waiting to be
+roomed** and roomed patients **with the care team**. Each card carries the
+point-of-care glance — active allergies and medications from the certified
+`lists` table, and **screenings due** from the certified CDR engine
+(`test_rules_clinic`, gated by `enable_cdr` + `enable_cdr_crw` and limited
+to worklist patients). The "Room patient" button posts to
+`public/rooming-action.php`, which replicates the certified flow-board
+status popup exactly — encounter carry-forward, same-day auto-create on
+check-in statuses, then `manage_tracker_status()` — so tracker history,
+the calendar mirror, and room assignment behave identically to the flow
+board. Vitals are entered on the certified encounter screen the roomed
+card links to.
+
 ## Architecture notes
 
 - **Domain/services** live in the core tree under `OpenEMR\FQHC\`
