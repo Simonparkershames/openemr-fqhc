@@ -1,6 +1,12 @@
 # Starter Pathway: Essential UDS Fields in a Modern UI (UX-first)
 
-This is the **chosen first path** for the project. The goal is concrete and
+> **Status: ✅ complete.** All five steps shipped (epic #13, closed). The
+> project's current path is
+> [`PATHWAY-2-ROLE-WORKSPACES.md`](./PATHWAY-2-ROLE-WORKSPACES.md) — the
+> demo-ready role-based experience. This document is kept as the record of
+> Milestone 1.
+
+This was the **chosen first path** for the project. The goal is concrete and
 visible: **open a patient and see all the essential UDS-required fields in a
 good-looking, responsive screen** — then make those fields editable. We build
 the experience first and grow the data/reporting behind it.

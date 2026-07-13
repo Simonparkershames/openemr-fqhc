@@ -22,9 +22,6 @@ This is the first pathway step (issues #10 + #12, pathway #13). It provides:
     (`fqhc-page-header`, `fqhc-card`, `fqhc-field-row`, `fqhc-status-badge`,
     `fqhc-empty-state`).
 
-The page previews the shape of the upcoming **UDS Patient Snapshot** (#14):
-reused demographics shown as data, new UDS fields shown as empty-states.
-
 ## Role workspace framework (issue #33)
 
 Each FQHC role gets its own workspace home, served by `public/home.php`
