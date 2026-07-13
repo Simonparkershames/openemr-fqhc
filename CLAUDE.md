@@ -119,21 +119,24 @@ for details on adding new test cases.
 ## Visual previews (no Docker)
 
 To visually proof a Twig template change without the Docker stack, use the
-`tools/preview/` toolkit. It renders templates through the same isolated path
-as the render tests (`TwigContainer`, translation disabled, `setupHeader()`
-stubbed) and screenshots them with the pre-installed Chromium.
+`tools/preview/` toolkit. It renders templates through the application's own
+`TwigContainer`, and by default emits the **real** config-driven `<head>` (the
+same `config/config.yaml` theme CSS, Bootstrap, and scripts the running app
+loads) so previews match a Docker instance rather than merely looking styled.
 
-**One-time setup** (a SessionStart hook does this automatically on the web):
+**One-time setup** (a SessionStart hook installs vendor/ and Playwright on the web):
 
 ```bash
-composer install --no-dev --no-scripts --prefer-source   # provides vendor/
-npm install playwright --no-save                          # screenshots only
+composer install --no-dev --no-scripts --prefer-source   # vendor/ + TwigContainer
+npm install playwright --no-save                          # screenshots / diffs
+npm run gulp-build                                        # public/themes/*.css (styling)
 ```
 
 Note: the environment injects an invalid `"proxy-injected"` github-oauth
 placeholder into Composer's global `auth.json`; clear it (set `github-oauth`
 to `{}`) if `composer install` reports an invalid token. Use `--no-dev` — the
-egress proxy blocks `phpstan`'s dist download.
+egress proxy blocks `phpstan`'s dist download. Without `gulp-build` the real
+theme link is emitted but resolves to a missing file (unstyled).
 
 **Screenshot a template in one command:**
 
@@ -145,11 +148,14 @@ tools/preview/preview.sh portal/login/autologin.html.twig \
 
 Copy realistic parameters from `renderCaseProvider()` in
 `tests/Tests/Isolated/Common/Twig/TwigTemplateRenderTest.php` into a
-`tools/preview/params/*.json` file. `setupHeader()` is stubbed, so previews are
-unstyled unless you pass `--css=/public/themes/style_light.css` (after
-`npm run gulp-build`). See `tools/preview/README.md` for the full workflow,
-including `render.php` (HTML only) and `bundle.mjs` (self-contained HTML for
-Artifacts).
+`tools/preview/params/*.json` file.
+
+**Fidelity.** Full-page templates reach near-parity; embedded partials
+(dashboard cards), JS/Angular-driven UI, and real-data layouts can still differ
+and should be certified with `tools/preview/paritydiff.mjs` (pixel-diff of the
+preview vs. the live app during a one-time Docker run). See
+`tools/preview/README.md` for the full workflow, including `render.php`
+(HTML only) and `bundle.mjs` (self-contained HTML for Artifacts).
 
 ## Code Quality
 

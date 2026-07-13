@@ -3,10 +3,11 @@
 /**
  * Router for the standalone Twig preview dev-server.
  *
- * Runs OpenEMR Twig templates through the isolated TwigContainer while serving
- * the repository's real /public assets, so Bootstrap CSS, images, and JS
- * resolve and the preview looks like the running application -- all without a
- * database or the Docker stack.
+ * Renders OpenEMR Twig templates through the application's own Twig + Header
+ * pipeline while serving the repository's real /public assets, so previews match
+ * a live Docker instance as closely as possible without a database. By default
+ * the <head> carries the real config-driven assets (theme CSS, Bootstrap,
+ * scripts); see bootstrap.php for fidelity guarantees and known deltas.
  *
  * Start it from the repository root:
  *   php -S 127.0.0.1:8400 tools/preview/serve.php
@@ -15,15 +16,15 @@
  *   http://127.0.0.1:8400/?t=portal/login/autologin.html.twig&p=tools/preview/params/autologin.json
  *
  * Query parameters:
- *   t   template name (required), e.g. portal/login/autologin.html.twig
- *   p   JSON parameter file, repo-relative, e.g. tools/preview/params/autologin.json
- *   css comma-separated stylesheet URLs to inject into <head>. Because
- *       setupHeader() is stubbed, isolated previews carry no application CSS;
- *       point this at a built theme (e.g. /public/themes/style_light.css after
- *       `npm run gulp-build`) to preview a template with real styling.
+ *   t     template name (required), e.g. portal/login/autologin.html.twig
+ *   p     JSON parameter file, repo-relative
+ *   theme main theme CSS filename (default style_light.css) to match your instance
+ *   stub  set to 1 to use the lightweight header stub (structure only, no styling)
+ *   css   comma-separated *extra* stylesheet URLs to inject (rarely needed now
+ *         that the real theme loads by default)
  *
  * Any request whose path maps to an existing file under the repository root
- * (for example /public/images/logo-full-con.png) is served as-is; every other
+ * (for example /public/themes/style_light.css) is served as-is; every other
  * request renders the template named by the "t" query parameter.
  *
  * @package   OpenEMR
@@ -37,13 +38,9 @@ declare(strict_types=1);
 
 namespace OpenEMR\Tools\Preview;
 
-use OpenEMR\Common\Twig\TwigContainer;
-use Twig\Environment;
-use Twig\TwigFunction;
+require_once __DIR__ . '/bootstrap.php';
 
-require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
-
-$root = dirname(__DIR__, 2);
+$root = preview_root();
 $uriPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $uriPath = is_string($uriPath) ? rawurldecode($uriPath) : '/';
 
@@ -57,53 +54,6 @@ if (
     && is_file($candidate)
 ) {
     return false; // Let PHP's built-in server serve the file.
-}
-
-/**
- * Build a Twig environment wired for isolated preview rendering.
- *
- * Mirrors tools/preview/render.php and the isolated render test: translation
- * disabled, setupHeader() stubbed.
- */
-function previewEnvironment(string $root): Environment
-{
-    $GLOBALS['fileroot'] ??= $root;
-    $GLOBALS['date_display_format'] ??= 0;
-    $GLOBALS['disable_translation'] = true;
-
-    $twig = (new TwigContainer())->getTwig();
-    $twig->addFunction(new TwigFunction(
-        'setupHeader',
-        static fn (): string => '<!-- setupHeader stub -->',
-        ['is_safe' => ['html']]
-    ));
-
-    return $twig;
-}
-
-/**
- * Decode a JSON parameter file into template variables.
- *
- * @return array<string, mixed>
- */
-function loadParameters(string $root, ?string $relPath): array
-{
-    if ($relPath === null || $relPath === '') {
-        return [];
-    }
-
-    $full = realpath($root . '/' . ltrim($relPath, '/'));
-    if ($full === false || !str_starts_with($full, $root . DIRECTORY_SEPARATOR) || !is_file($full)) {
-        return [];
-    }
-
-    $decoded = json_decode((string) file_get_contents($full), true);
-    if (!is_array($decoded)) {
-        return [];
-    }
-
-    /** @var array<string, mixed> $decoded */
-    return $decoded;
 }
 
 /**
@@ -130,6 +80,8 @@ function cssLinks(?string $cssParam): string
 $template = isset($_GET['t']) && is_string($_GET['t']) ? $_GET['t'] : null;
 $paramsFile = isset($_GET['p']) && is_string($_GET['p']) ? $_GET['p'] : null;
 $css = isset($_GET['css']) && is_string($_GET['css']) ? $_GET['css'] : null;
+$theme = isset($_GET['theme']) && is_string($_GET['theme']) ? $_GET['theme'] : 'style_light.css';
+$stub = isset($_GET['stub']) && $_GET['stub'] === '1';
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -144,12 +96,13 @@ if ($template === null) {
 }
 
 try {
-    $html = previewEnvironment($root)->render($template, loadParameters($root, $paramsFile));
+    $html = preview_twig(!$stub, '', $theme)->render($template, preview_load_params(
+        $paramsFile !== null ? $root . '/' . ltrim($paramsFile, '/') : null
+    ));
+
     $links = cssLinks($css);
     if ($links !== '') {
-        // Inject stylesheet links just before </head> so a stubbed setupHeader()
-        // does not leave the preview unstyled. Fall back to prepending when the
-        // template has no </head> (e.g. a bare partial).
+        // Optional extra stylesheets, injected just before </head>.
         $html = str_contains($html, '</head>')
             ? str_replace('</head>', $links . '</head>', $html)
             : $links . $html;
