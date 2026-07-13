@@ -18,7 +18,7 @@ declare(strict_types=1);
 
 namespace OpenEMR\FQHC\Payer;
 
-final class UdsPayerSummaryFactory
+final readonly class UdsPayerSummaryFactory
 {
     private UdsPayerClassifier $classifier;
 

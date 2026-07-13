@@ -724,7 +724,7 @@ function generate_form_field($frow, $currvalue): void
         // explicitly configured as numeric are affected.
         $inputType = 'text';
         $numericAttrs = '';
-        $validationRule = $frow['validation'] ?? '';
+        $validationRule = is_array($frow) ? ($frow['validation'] ?? '') : '';
         if ($validationRule === 'pos_num') {
             $inputType = 'number';
             $numericAttrs = " min='0' step='0.01'";

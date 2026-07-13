@@ -22,7 +22,7 @@ namespace OpenEMR\FQHC\Reporting\DataQuality;
 
 use OpenEMR\FQHC\Reporting\ReportingPatientSource;
 
-final class DataQualityWorklistGenerator
+final readonly class DataQualityWorklistGenerator
 {
     private DataQualityWorklistBuilder $builder;
 

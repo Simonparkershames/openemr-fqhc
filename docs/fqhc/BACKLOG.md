@@ -22,7 +22,27 @@
 | TASK-0.4 UDS data-element specs | [#11](https://github.com/Simonparkershames/openemr-fqhc/issues/11) |
 | TASK-0.5 Design-system foundation decision | [#12](https://github.com/Simonparkershames/openemr-fqhc/issues/12) |
 
-### UX-first starter pathway (chosen first path — see [`STARTER-PATHWAY.md`](./STARTER-PATHWAY.md))
+### Pathway 2 — demo-ready role-based experience (current — see [`PATHWAY-2-ROLE-WORKSPACES.md`](./PATHWAY-2-ROLE-WORKSPACES.md))
+
+| Step | Issue |
+|------|-------|
+| 1 — Role workspace framework + post-login landing | [#33](https://github.com/Simonparkershames/openemr-fqhc/issues/33) |
+| 2 — Curated role-based menus | [#34](https://github.com/Simonparkershames/openemr-fqhc/issues/34) |
+| 3 — Demo practice seed pack (accounts, patients, schedule) | [#35](https://github.com/Simonparkershames/openemr-fqhc/issues/35) |
+| 4 — Front Desk workspace | [#36](https://github.com/Simonparkershames/openemr-fqhc/issues/36) |
+| 5 — MA/nurse workspace (tablet-first) | [#37](https://github.com/Simonparkershames/openemr-fqhc/issues/37) |
+| 6 — Provider workspace | [#38](https://github.com/Simonparkershames/openemr-fqhc/issues/38) |
+| 7 — Manager/quality workspace | [#39](https://github.com/Simonparkershames/openemr-fqhc/issues/39) |
+| 8 (parallel) — Modern theme default + shell/calendar/dashboard coverage | [#40](https://github.com/Simonparkershames/openemr-fqhc/issues/40) |
+
+### UDS depth (remaining epic #4 work, follows or interleaves with Pathway 2)
+
+| Item | Issue |
+|------|-------|
+| Tables 6B/7 live CQM population counts | [#41](https://github.com/Simonparkershames/openemr-fqhc/issues/41) |
+| Patient-level drill-down from report cells | [#42](https://github.com/Simonparkershames/openemr-fqhc/issues/42) |
+
+### UX-first starter pathway (Milestone 1 — ✅ complete, see [`STARTER-PATHWAY.md`](./STARTER-PATHWAY.md))
 
 | Step | Issue |
 |------|-------|

@@ -27,7 +27,7 @@ namespace OpenEMR\FQHC\Reporting;
 
 use OpenEMR\Common\Database\QueryUtils;
 
-final class Table5VisitRepository implements Table5VisitSource
+final readonly class Table5VisitRepository implements Table5VisitSource
 {
     /**
      * Calendar categories that never represent a countable patient visit.

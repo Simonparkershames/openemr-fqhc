@@ -19,7 +19,7 @@ declare(strict_types=1);
 
 namespace OpenEMR\FQHC\Reporting;
 
-final class Table5ReportGenerator
+final readonly class Table5ReportGenerator
 {
     private Table5ReportBuilder $builder;
 
