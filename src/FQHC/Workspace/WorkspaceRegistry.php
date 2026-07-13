@@ -1,0 +1,152 @@
+<?php
+
+/**
+ * Registry of role workspace homes (issue #33): role key → workspace
+ * definition (heading, tagline, card set) rendered by the shared home
+ * template in oe-module-fqhc.
+ *
+ * The manager/quality workspace generalizes the module's original home —
+ * the UDS surfaces (snapshot, report, eligibility worklist) that previously
+ * sat behind the single top-level FQHC menu item. The other roles start from
+ * the existing core surfaces for their daily loop; their dedicated
+ * workspaces land in issues #36–#38 and plug in here.
+ *
+ * @package   OpenEMR
+ * @link      https://www.open-emr.org
+ * @author    Claude Code
+ * @copyright Copyright (c) 2026 OpenEMR FQHC project
+ * @license   https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
+ */
+
+declare(strict_types=1);
+
+namespace OpenEMR\FQHC\Workspace;
+
+final class WorkspaceRegistry
+{
+    private const MODULE_PUBLIC_PATH = '/interface/modules/custom_modules/oe-module-fqhc/public';
+
+    public function forRole(WorkspaceRole $role): Workspace
+    {
+        return match ($role) {
+            WorkspaceRole::FrontDesk => new Workspace(
+                WorkspaceRole::FrontDesk,
+                'Front Desk Workspace',
+                'Today\'s schedule, check-in, and patient lookup. A purpose-built front-desk home lands in issue #36.',
+                [
+                    new WorkspaceCard(
+                        'Calendar',
+                        'Today\'s appointment schedule: book, confirm, and manage visits.',
+                        '/interface/main/main_info.php',
+                        'Open calendar',
+                    ),
+                    new WorkspaceCard(
+                        'Flow Board',
+                        'Live view of who is checked in and where they are in the visit.',
+                        '/interface/patient_tracker/patient_tracker.php?skip_timeout_reset=1',
+                        'Open flow board',
+                    ),
+                    new WorkspaceCard(
+                        'Patient Finder',
+                        'Look up an existing patient or register a new one.',
+                        '/interface/main/finder/dynamic_finder.php',
+                        'Find a patient',
+                    ),
+                ],
+            ),
+            WorkspaceRole::ClinicalSupport => new Workspace(
+                WorkspaceRole::ClinicalSupport,
+                'Clinical Support Workspace',
+                'Rooming, vitals, and follow-up worklists. A tablet-first MA/nurse home lands in issue #37.',
+                [
+                    new WorkspaceCard(
+                        'Flow Board',
+                        'See who is roomed and ready — work the visit queue in order.',
+                        '/interface/patient_tracker/patient_tracker.php?skip_timeout_reset=1',
+                        'Open flow board',
+                    ),
+                    new WorkspaceCard(
+                        'Messages',
+                        'Clinical messages and patient follow-up tasks assigned to you.',
+                        '/interface/main/messages/messages.php?form_active=1',
+                        'Open messages',
+                    ),
+                    new WorkspaceCard(
+                        'Eligibility Worklist',
+                        'Patients with UDS data-quality gaps to close during intake.',
+                        self::MODULE_PUBLIC_PATH . '/eligibility-worklist.php',
+                        'Open worklist',
+                    ),
+                ],
+            ),
+            WorkspaceRole::Provider => new Workspace(
+                WorkspaceRole::Provider,
+                'Provider Workspace',
+                'Your schedule, inbox, and charts. A visit-centered provider home lands in issue #38.',
+                [
+                    new WorkspaceCard(
+                        'Calendar',
+                        'Your appointment schedule for today.',
+                        '/interface/main/main_info.php',
+                        'Open calendar',
+                    ),
+                    new WorkspaceCard(
+                        'Messages',
+                        'Results, refills, and patient messages awaiting your review.',
+                        '/interface/main/messages/messages.php?form_active=1',
+                        'Open messages',
+                    ),
+                    new WorkspaceCard(
+                        'Patient Finder',
+                        'Open a patient chart by name or chart number.',
+                        '/interface/main/finder/dynamic_finder.php',
+                        'Find a patient',
+                    ),
+                ],
+            ),
+            WorkspaceRole::Manager => new Workspace(
+                WorkspaceRole::Manager,
+                'Manager & Quality Workspace',
+                'UDS reporting and data health for the center. Consolidates into a full quality home in issue #39.',
+                [
+                    new WorkspaceCard(
+                        'UDS Report',
+                        'Run and review the UDS patient-characteristics and utilization tables.',
+                        self::MODULE_PUBLIC_PATH . '/report.php',
+                        'Open UDS report',
+                    ),
+                    new WorkspaceCard(
+                        'Eligibility Worklist',
+                        'Patients with data-quality gaps that would distort UDS counts.',
+                        self::MODULE_PUBLIC_PATH . '/eligibility-worklist.php',
+                        'Open worklist',
+                    ),
+                    new WorkspaceCard(
+                        'UDS Patient Snapshot',
+                        'The essential UDS fields for the currently selected patient.',
+                        self::MODULE_PUBLIC_PATH . '/index.php',
+                        'Open snapshot',
+                    ),
+                ],
+            ),
+        };
+    }
+
+    /**
+     * The workspace shown when no role-specific one applies — the
+     * manager/quality home, which generalizes the module's original
+     * single home page.
+     */
+    public function defaultWorkspace(): Workspace
+    {
+        return $this->forRole(WorkspaceRole::Manager);
+    }
+
+    /**
+     * @return non-empty-list<Workspace>
+     */
+    public function all(): array
+    {
+        return array_map($this->forRole(...), WorkspaceRole::cases());
+    }
+}

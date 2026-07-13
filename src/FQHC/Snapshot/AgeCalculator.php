@@ -4,7 +4,7 @@
  * Pure age-in-years calculation from a stored date of birth.
  *
  * Takes the "as of" date as a parameter so it is deterministic and unit-testable
- * (no hidden clock). Returns null for missing or unparseable dates rather than
+ * (no hidden clock). Returns null for missing or unparsable dates rather than
  * guessing — UDS age bands must not be fabricated from bad data.
  *
  * @package   OpenEMR

@@ -74,7 +74,7 @@ final class Table6bReportGeneratorTest extends TestCase
             /**
              * @param array<string, UdsMeasurePopulationCounts> $results
              */
-            public function __construct(private array $results)
+            public function __construct(private readonly array $results)
             {
             }
 

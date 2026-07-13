@@ -52,7 +52,8 @@ project closes those gaps.
 | [`UX-MODERNIZATION.md`](./UX-MODERNIZATION.md) | Design system, role-based interfaces, and responsive strategy. |
 | [`ROLE-MENUS.md`](./ROLE-MENUS.md) | Curated per-role menus (#34): the shipped menu files and how a site assigns them. |
 | [`ROADMAP.md`](./ROADMAP.md) | Phased plan: immediate next steps and longer-term deliverables. |
-| [`STARTER-PATHWAY.md`](./STARTER-PATHWAY.md) | **Start here** — the UX-first path to seeing essential UDS fields in a modern UI. |
+| [`PATHWAY-2-ROLE-WORKSPACES.md`](./PATHWAY-2-ROLE-WORKSPACES.md) | **Current path** — the demo-ready role-based experience (Milestone 2). |
+| [`STARTER-PATHWAY.md`](./STARTER-PATHWAY.md) | Milestone 1 (complete): essential UDS fields in a modern UI. |
 | [`BACKLOG.md`](./BACKLOG.md) | The filed issue set and its mapping. |
 | [`reference/`](./reference/) | Source documents (e.g. the CY2026 UDS Proposed PAL). |
 
@@ -69,5 +70,25 @@ to draft new ones before filing).
 
 ## Status
 
-Planning. No FQHC-specific code has been written yet — this documentation set
-and the linked issues define the work before any core code is touched.
+**Milestone 1 complete; Milestone 2 (role-based demo experience) in progress.**
+
+Shipped so far (all additive to the certified core):
+
+- The `oe-module-fqhc` module with design tokens, Web Components, and a
+  responsive design-system layer, plus a selectable modern theme
+  (`style_fqhc_modern`) for login/finder/new-patient/demographics.
+- The **UDS Patient Snapshot** — every essential UDS field visible and
+  editable per patient (income/FPL + sliding-fee tier, special populations,
+  UDS payer category), backed by side tables and services in `src/FQHC/`.
+- **UDS reporting**: Tables 3A/3B/4, ZIP Code, and 5 generated from live data
+  with a report UI and cross-table reconciliation; Tables 6B/7 measure map
+  and packaging (live CQM wiring still open, #41).
+- First role surfaces: the eligibility data-quality worklist and the FQHC
+  Workspace home with a live UDS data-health metric.
+- Guardrails: scheduled upstream-sync workflow and a certification-impact PR
+  checklist.
+
+Current work follows
+[`PATHWAY-2-ROLE-WORKSPACES.md`](./PATHWAY-2-ROLE-WORKSPACES.md): per-role
+workspaces (front desk, MA, provider, manager), curated role menus, a demo
+seed pack, and modern-theme coverage of every screen on the demo path.

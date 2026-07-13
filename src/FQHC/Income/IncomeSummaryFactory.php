@@ -23,7 +23,7 @@ use OpenEMR\FQHC\Fpl\FplCalculator;
 use OpenEMR\FQHC\Fpl\IncomeDetermination;
 use OpenEMR\FQHC\Fpl\SlidingFeeSchedule;
 
-final class IncomeSummaryFactory
+final readonly class IncomeSummaryFactory
 {
     private FplCalculator $calculator;
     private SlidingFeeSchedule $schedule;
