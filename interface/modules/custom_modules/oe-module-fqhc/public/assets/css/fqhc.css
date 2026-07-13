@@ -191,6 +191,81 @@
   box-shadow: var(--fqhc-focus-ring);
 }
 
+/* ----- Workspace home (epic #6) ----- */
+
+/* Section label preceding a group of cards (e.g. "Tools"), styled like an
+   fqhc-card heading so the home page reads as one system. */
+.fqhc-section-heading {
+  margin: var(--fqhc-space-6) 0 0;
+  font-size: var(--fqhc-font-size-xs);
+  font-weight: var(--fqhc-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fqhc-color-primary-strong);
+}
+
+/* Headline metric (the data-health number) inside a card. */
+.fqhc-metric-value {
+  font-size: var(--fqhc-font-size-2xl);
+  font-weight: var(--fqhc-font-weight-semibold);
+  color: var(--fqhc-color-primary-strong);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.fqhc-metric-label {
+  margin-top: var(--fqhc-space-1);
+  color: var(--fqhc-text-muted);
+  font-size: var(--fqhc-font-size-sm);
+}
+
+.fqhc-home-rows {
+  margin-top: var(--fqhc-space-3);
+}
+
+.fqhc-home-actions {
+  margin-top: var(--fqhc-space-4);
+}
+
+/* Quick-action navigation card — a whole card that is itself a link. Kept as a
+   plain anchor (not the fqhc-card web component) so the entire tile is a single
+   focusable, keyboard-activatable target. */
+.fqhc-nav-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fqhc-space-2);
+  height: 100%;
+  padding: var(--fqhc-space-4) var(--fqhc-space-5);
+  background: var(--fqhc-surface-card);
+  border: 1px solid var(--fqhc-border);
+  border-radius: var(--fqhc-radius-lg);
+  box-shadow: var(--fqhc-shadow-sm);
+  transition: box-shadow var(--fqhc-transition), transform var(--fqhc-transition),
+    border-color var(--fqhc-transition);
+}
+
+.fqhc-root a.fqhc-nav-card,
+.fqhc-root a.fqhc-nav-card:hover {
+  text-decoration: none;
+}
+
+.fqhc-root a.fqhc-nav-card:hover {
+  box-shadow: var(--fqhc-shadow-md);
+  border-color: var(--fqhc-border-strong);
+  transform: translateY(-1px);
+}
+
+.fqhc-nav-card-title {
+  font-size: var(--fqhc-font-size-lg);
+  font-weight: var(--fqhc-font-weight-semibold);
+  color: var(--fqhc-color-primary-strong);
+}
+
+.fqhc-nav-card-desc {
+  color: var(--fqhc-text-muted);
+  font-size: var(--fqhc-font-size-sm);
+}
+
 /* Tabular report data. The design system has no table component, so report
    tables use this style inside an fqhc-card. fqhc-card clips overflow, so a
    table wider than its card (common on narrow viewports with several
