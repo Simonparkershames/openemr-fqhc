@@ -32,7 +32,22 @@ final class FrontDeskDayBuilderTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $overrides
+     * @param array{
+     *     eventId?: int,
+     *     pid?: int,
+     *     firstName?: string,
+     *     lastName?: string,
+     *     sexCode?: ?string,
+     *     dateOfBirth?: ?string,
+     *     startTime?: string,
+     *     durationSeconds?: int,
+     *     providerName?: string,
+     *     categoryName?: string,
+     *     statusCode?: string,
+     *     statusTitle?: string,
+     *     hasInsuranceOnFile?: bool,
+     *     hasIncomeDetermination?: bool
+     * } $overrides
      */
     private static function row(array $overrides = []): ScheduleRow
     {

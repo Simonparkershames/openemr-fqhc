@@ -76,7 +76,11 @@ final readonly class FrontDeskScheduleRepository
             if (!is_numeric($eventId) || (int) $eventId <= 0) {
                 continue;
             }
-            $pid = (int) $record['pid'];
+            $pidRaw = $record['pid'] ?? null;
+            if (!is_numeric($pidRaw)) {
+                continue;
+            }
+            $pid = (int) $pidRaw;
 
             $providerName = trim(
                 $this->stringOrEmpty($record['ufname'] ?? null)
