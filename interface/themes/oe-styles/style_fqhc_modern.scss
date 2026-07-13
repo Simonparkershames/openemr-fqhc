@@ -4,12 +4,15 @@
 *   Based on the Light Theme, restyled with the FQHC module's design tokens
 *   (see interface/modules/custom_modules/oe-module-fqhc/public/assets/css/tokens.css)
 *   so the certified core screens (login, patient finder, new patient,
-*   demographics) share the same visual language as the newer FQHC module
-*   screens: a teal/slate palette, Inter-first type, softer radius and
-*   elevation than stock Bootstrap 4.
+*   demographics, tabs shell, calendar, patient dashboard, message center)
+*   share the same visual language as the newer FQHC module screens: a
+*   teal/slate palette, Inter-first type, softer radius and elevation than
+*   stock Bootstrap 4.
 *
 *   This is purely additive — selectable from Administration > Globals >
-*   Appearance > Theme. The certified default theme is untouched.
+*   Appearance > Theme (and installed as the site default by the FQHC
+*   module's SQL for new FQHC configurations). The certified default
+*   theme is untouched.
 *
 */
 
@@ -235,7 +238,171 @@ body.patient-demographic .card {
 }
 
 body.patient-demographic .card-title {
+  font-weight: 600;
   padding: 0.25rem 0.25rem 0;
+}
+
+/* ------------------------------------------------------------------
+ * Shared chrome: navbars and dropdown panels
+ * Both stock "navbar-light bg-light" navbars (the tabs-shell menu in
+ * interface/main/tabs/main.php and the patient chart nav from
+ * src/Menu/PatientMenuRole.php) become a white surface with a hairline
+ * bottom border instead of Bootstrap's gray wash.
+ * ------------------------------------------------------------------ */
+
+.navbar.navbar-light.bg-light {
+  background-color: $white !important; // .bg-light sets its color with !important
+  border-bottom: 1px solid $gray-200;
+}
+
+.dropdown-menu {
+  border: 1px solid $gray-200;
+  border-radius: $border-radius-sm;
+  box-shadow: $box-shadow;
+}
+
+/* ------------------------------------------------------------------
+ * Tabs shell (interface/main/tabs/main.php). Its layout stylesheet
+ * (tabs_style_full.css / tabs_style_compact.css) is a separate file that
+ * can load after this theme, so every override below is anchored to the
+ * shell's IDs (#mainMenu, #tabs_div, #attendantData) to win on
+ * specificity rather than order.
+ * ------------------------------------------------------------------ */
+
+/* Top menu entries: quieter type, teal-wash hover instead of the
+   dark-block hover and hardcoded #cce3f8 section hover in tabs_style_*. */
+#mainMenu .menuLabel {
+  border-radius: $border-radius-sm;
+  color: $gray-700;
+  font-weight: 600;
+}
+
+#mainMenu .menuSection:hover {
+  background-color: rgba($blue, 0.08);
+  border-radius: $border-radius-sm;
+}
+
+#mainMenu .menuLabel:hover,
+#mainMenu .menuEntries li .menuLabel:hover {
+  background-color: rgba($blue, 0.1);
+  color: $secondary-color; // teal-800 on the wash: > 4.5:1 contrast
+}
+
+/* Dropdown menu panels (top-level and nested submenus) */
+#mainMenu .menuEntries {
+  background-color: $white;
+  border: 1px solid $gray-200;
+  border-radius: $border-radius-sm;
+  box-shadow: $box-shadow;
+  padding: 0.25rem 0;
+}
+
+/* Tab strip: chosen tab reads as a white card with the teal top accent
+   (the 4px top border already picks up --primary from this palette);
+   unchosen tabs recede to quiet text on the page background. */
+#tabs_div .tabControls {
+  padding: 0.375rem 0.75rem 0;
+}
+
+#tabs_div .tabSpan {
+  background-color: $white;
+  border-left-color: $gray-200;
+  border-radius: $border-radius-sm $border-radius-sm 0 0;
+  border-right-color: $gray-200;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+}
+
+#tabs_div .tabNotchosen,
+#tabs_div .tabsNoHover {
+  background-color: transparent;
+  border-bottom-color: $gray-300;
+  color: $gray-600;
+  font-weight: 500;
+}
+
+#tabs_div .tabNotchosen:hover {
+  color: $secondary-color;
+  opacity: 100%;
+}
+
+/* Patient banner under the menu */
+#attendantData {
+  border-bottom: 1px solid $gray-200;
+}
+
+/* ------------------------------------------------------------------
+ * Calendar (interface/main/calendar). The ajax_calendar_sass.scss partial
+ * is compiled into this theme with the FQHC palette; these rules refine
+ * geometry and fix low-contrast picker states it inherits.
+ * ------------------------------------------------------------------ */
+
+#topToolbarRight {
+  background-color: $white;
+}
+
+#viewPicker .currentview {
+  background-color: rgba($blue, 0.08);
+  border-radius: $border-radius-sm;
+}
+
+/* The partial renders the selected/highlighted dates as light text on a
+   lightened teal (fails WCAG AA); use solid teal / teal wash instead. */
+#datePicker .currentDate,
+#datePicker .tdDatePickerHighlightCurrent {
+  background-color: $blue;
+  color: $white;
+}
+
+#datePicker .tdDatePickerHighlight {
+  background-color: rgba($blue, 0.15);
+  color: $gray-900;
+}
+
+#bigCal {
+  background-color: $white;
+}
+
+#bigCal .providerday {
+  border-color: $gray-200;
+}
+
+#bigCal .event_appointment {
+  border: 1px solid $gray-300;
+  border-radius: $border-radius-sm;
+}
+
+/* ------------------------------------------------------------------
+ * Message center (interface/main/messages/messages.php). Its legacy
+ * reminder_style.css loads after the theme, so overrides lean on the
+ * page's own IDs for specificity.
+ * ------------------------------------------------------------------ */
+
+#main-nav-pills {
+  background-color: $white !important; // overrides .bg-light's !important
+  border: 1px solid $gray-200;
+  border-radius: $border-radius;
+  padding: 0.25rem;
+}
+
+#main-nav-pills .nav-link {
+  border-radius: $border-radius-sm;
+  color: $gray-600;
+  font-weight: 600;
+}
+
+#main-nav-pills .nav-link.active {
+  color: $white; // background comes from $primary via Bootstrap's nav-pills
+}
+
+#messages-div .jumbotron {
+  background-color: $white;
+  border: 1px solid $gray-200;
+  border-radius: $border-radius;
+}
+
+#messages-div table.table {
+  background-color: $white;
 }
 
 /* Last: BS4/OpenEMR helper overrides */
