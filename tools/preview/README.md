@@ -15,14 +15,22 @@ emits. The goal is that a preview looks like a real Docker instance, not merely
 
 ```bash
 composer install --no-dev --no-scripts --prefer-source   # vendor/ + TwigContainer
+npm install --ignore-scripts                              # sass toolchain for themes
 npm install playwright --no-save                          # screenshots / diffs
-npm run gulp-build                                        # public/themes/*.css (styling)
+tools/preview/build-themes.sh                             # public/themes/style_light.css
 ```
 
-Chromium is pre-installed in the cloud environment at `/opt/pw-browsers/chromium`
-(no `playwright install`). Locally, set `PLAYWRIGHT_CHROMIUM_PATH` if Chromium
-lives elsewhere. Without `gulp-build`, the real theme `<link>` is still emitted
-but resolves to a missing file, so the page renders unstyled.
+On the web, the SessionStart hook runs all four automatically. Chromium is
+pre-installed at `/opt/pw-browsers/chromium` (no `playwright install`); locally,
+set `PLAYWRIGHT_CHROMIUM_PATH` if Chromium lives elsewhere.
+
+Use `tools/preview/build-themes.sh`, **not** `npm run gulp-build`: the stock
+gulp build's `ingest` step fetches vendor assets from external URLs the egress
+proxy blocks, so it fails in this sandbox. `build-themes.sh` compiles the theme
+directly from `node_modules` (Bootstrap + FontAwesome SCSS + FQHC tokens). Pass
+theme names to build others, e.g. `tools/preview/build-themes.sh style_dark.css`.
+Without a built theme, the real `<link>` is still emitted but resolves to a
+missing file, so the page renders unstyled.
 
 ## What's here
 
@@ -34,6 +42,7 @@ but resolves to a missing file, so the page renders unstyled.
 | `shoot.mjs`     | Screenshot a preview URL at one or more viewports (PNG). |
 | `paritydiff.mjs`| Certify a preview against the live app: pixel-diff preview vs. Docker. |
 | `bundle.mjs`    | Inline CSS/images into a single self-contained HTML file for an Artifact. |
+| `build-themes.sh`| Compile theme CSS without the (sandbox-broken) gulp pipeline. |
 | `bootstrap.php` | Shared setup: real header + theme globals (the fidelity core). |
 | `params/`       | Example JSON parameter files (template variables). |
 

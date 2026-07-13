@@ -48,10 +48,24 @@ if [ ! -f vendor/autoload.php ]; then
     composer install --no-dev --no-scripts --no-interaction --prefer-source
 fi
 
+# Install the JS toolchain (sass etc.) for theme builds. --ignore-scripts skips
+# the postinstall asset fetch (napa), which the egress proxy blocks; the preview
+# theme build does not need those vendor assets.
+if [ ! -x node_modules/.bin/sass ]; then
+    npm install --ignore-scripts --no-audit --no-fund
+fi
+
 # Ensure the Playwright npm package is available for screenshots. Chromium
 # itself is pre-installed in the web environment (PLAYWRIGHT_BROWSERS_PATH).
+# Kept separate from the toolchain install because it is not in package.json.
 if ! node -e "require('playwright')" >/dev/null 2>&1; then
     npm install playwright --no-save --no-audit --no-fund
+fi
+
+# Build the default theme so previews are styled out of the box. Best-effort:
+# a failure here must not break session startup. Skips when already built.
+if [ ! -f public/themes/style_light.css ] && [ -x node_modules/.bin/sass ]; then
+    ./tools/preview/build-themes.sh || echo "theme build skipped (run tools/preview/build-themes.sh manually)"
 fi
 
 echo "Twig preview toolkit ready: tools/preview/preview.sh <template> [params.json]"

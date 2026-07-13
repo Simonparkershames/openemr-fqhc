@@ -128,15 +128,18 @@ loads) so previews match a Docker instance rather than merely looking styled.
 
 ```bash
 composer install --no-dev --no-scripts --prefer-source   # vendor/ + TwigContainer
+npm install --ignore-scripts                              # sass toolchain for themes
 npm install playwright --no-save                          # screenshots / diffs
-npm run gulp-build                                        # public/themes/*.css (styling)
+tools/preview/build-themes.sh                             # public/themes/style_light.css
 ```
 
 Note: the environment injects an invalid `"proxy-injected"` github-oauth
 placeholder into Composer's global `auth.json`; clear it (set `github-oauth`
 to `{}`) if `composer install` reports an invalid token. Use `--no-dev` — the
-egress proxy blocks `phpstan`'s dist download. Without `gulp-build` the real
-theme link is emitted but resolves to a missing file (unstyled).
+egress proxy blocks `phpstan`'s dist download. Use `build-themes.sh`, not
+`npm run gulp-build` — the stock gulp build fetches vendor assets the proxy
+blocks and fails in the sandbox. Without a built theme the real link is emitted
+but resolves to a missing file (unstyled).
 
 **Screenshot a template in one command:**
 
