@@ -1,0 +1,9 @@
+{
+    "pagetitle": "Telehealth Login",
+    "images_static_relative": "/public/images",
+    "pin_required": 1,
+    "action": "/portal/autologin",
+    "csrf_token": "preview-csrf-token",
+    "service_auth": "preview-auth-value",
+    "target": "https://example.com/telehealth"
+}

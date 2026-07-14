@@ -116,6 +116,50 @@ Review the diff before committing. See the
 [fixtures README](tests/Tests/Isolated/Common/Twig/fixtures/render/README.md)
 for details on adding new test cases.
 
+## Visual previews (no Docker)
+
+To visually proof a Twig template change without the Docker stack, use the
+`tools/preview/` toolkit. It renders templates through the application's own
+`TwigContainer`, and by default emits the **real** config-driven `<head>` (the
+same `config/config.yaml` theme CSS, Bootstrap, and scripts the running app
+loads) so previews match a Docker instance rather than merely looking styled.
+
+**One-time setup** (a SessionStart hook installs vendor/ and Playwright on the web):
+
+```bash
+composer install --no-dev --no-scripts --prefer-source   # vendor/ + TwigContainer
+npm install --ignore-scripts                              # sass toolchain for themes
+npm install playwright --no-save                          # screenshots / diffs
+tools/preview/build-themes.sh                             # public/themes/style_light.css
+```
+
+Note: the environment injects an invalid `"proxy-injected"` github-oauth
+placeholder into Composer's global `auth.json`; clear it (set `github-oauth`
+to `{}`) if `composer install` reports an invalid token. Use `--no-dev` — the
+egress proxy blocks `phpstan`'s dist download. Use `build-themes.sh`, not
+`npm run gulp-build` — the stock gulp build fetches vendor assets the proxy
+blocks and fails in the sandbox. Without a built theme the real link is emitted
+but resolves to a missing file (unstyled).
+
+**Screenshot a template in one command:**
+
+```bash
+tools/preview/preview.sh portal/login/autologin.html.twig \
+    tools/preview/params/autologin.json --full
+# -> tools/preview/out/preview-*.png  (send these to the user inline)
+```
+
+Copy realistic parameters from `renderCaseProvider()` in
+`tests/Tests/Isolated/Common/Twig/TwigTemplateRenderTest.php` into a
+`tools/preview/params/*.json` file.
+
+**Fidelity.** Full-page templates reach near-parity; embedded partials
+(dashboard cards), JS/Angular-driven UI, and real-data layouts can still differ
+and should be certified with `tools/preview/paritydiff.mjs` (pixel-diff of the
+preview vs. the live app during a one-time Docker run). See
+`tools/preview/README.md` for the full workflow, including `render.php`
+(HTML only) and `bundle.mjs` (self-contained HTML for Artifacts).
+
 ## Code Quality
 
 These run on the host (requires local PHP/Node):
