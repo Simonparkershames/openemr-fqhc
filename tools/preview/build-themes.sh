@@ -22,24 +22,24 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-cd "$ROOT"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+cd "${ROOT}"
 
 SASS="node_modules/.bin/sass"
-if [[ ! -x "$SASS" ]]; then
-    echo "sass not found ($SASS). Run: npm install --ignore-scripts" >&2
+if [[ ! -x "${SASS}" ]]; then
+    echo "sass not found (${SASS}). Run: npm install --ignore-scripts" >&2
     exit 1
 fi
 
 # Bridge vendor SCSS the themes @import from /public/assets (gulp's ingest step).
 mkdir -p public/assets public/assets/css public/themes
-[[ -e node_modules/bootstrap ]] && ln -sfn "$ROOT/node_modules/bootstrap" public/assets/bootstrap
-[[ -e node_modules/@fortawesome ]] && ln -sfn "$ROOT/node_modules/@fortawesome" public/assets/@fortawesome
+[[ -e node_modules/bootstrap ]] && ln -sfn "${ROOT}/node_modules/bootstrap" public/assets/bootstrap
+[[ -e node_modules/@fortawesome ]] && ln -sfn "${ROOT}/node_modules/@fortawesome" public/assets/@fortawesome
 
 # FQHC design tokens the light theme imports from /public/assets/css/tokens.css.
 TOKENS_SRC="interface/modules/custom_modules/oe-module-fqhc/public/assets/css/tokens.css"
-if [[ -f "$TOKENS_SRC" && ! -f public/assets/css/tokens.css ]]; then
-    cp "$TOKENS_SRC" public/assets/css/tokens.css
+if [[ -f "${TOKENS_SRC}" && ! -f public/assets/css/tokens.css ]]; then
+    cp "${TOKENS_SRC}" public/assets/css/tokens.css
 fi
 
 themes=("$@")
@@ -48,7 +48,7 @@ themes=("$@")
 for css in "${themes[@]}"; do
     name="${css%.css}"
     src="interface/themes/oe-styles/${name}.scss"
-    if [[ ! -f "$src" ]]; then
+    if [[ ! -f "${src}" ]]; then
         echo "Skipping ${css}: no source at ${src}" >&2
         continue
     fi
@@ -58,13 +58,14 @@ for css in "${themes[@]}"; do
     # directory so the theme's relative @imports resolve.
     tmp="interface/themes/oe-styles/_preview_${name}.scss"
     {
+        # shellcheck disable=SC2016 # literal SCSS variable; $ must not be expanded by the shell
         echo '$compact-theme: false;'
-        sed 's#// bs4import#@import "public/assets/bootstrap/scss/bootstrap";#' "$src"
-    } > "$tmp"
+        sed 's#// bs4import#@import "public/assets/bootstrap/scss/bootstrap";#' "${src}"
+    } > "${tmp}"
 
-    "$SASS" --load-path=. --load-path=node_modules --quiet --quiet-deps \
-        "$tmp" "public/themes/${css}"
-    rm -f "$tmp"
+    "${SASS}" --load-path=. --load-path=node_modules --quiet --quiet-deps \
+        "${tmp}" "public/themes/${css}"
+    rm -f "${tmp}"
 
     size=$(wc -c < "public/themes/${css}")
     echo "built public/themes/${css} (${size} bytes)"

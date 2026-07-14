@@ -26,8 +26,8 @@ set -euo pipefail
 
 # Resolve repository root from this script's location so it works from anywhere.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-cd "$ROOT"
+ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+cd "${ROOT}"
 
 if [[ $# -lt 1 || "$1" == -* ]]; then
     grep '^#' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' | sed '1d'
@@ -46,13 +46,13 @@ CSS=""
 SHOOT_ARGS=()
 
 for arg in "$@"; do
-    case "$arg" in
-        --css=*)      CSS="${CSS:+$CSS,}${arg#--css=}" ;;
+    case "${arg}" in
+        --css=*)      CSS="${CSS:+${CSS},}${arg#--css=}" ;;
         --port=*)     PORT="${arg#--port=}" ;;
-        --viewport=*) SHOOT_ARGS+=("$arg") ;;
+        --viewport=*) SHOOT_ARGS+=("${arg}") ;;
         --full)       SHOOT_ARGS+=("--full") ;;
-        --out=*)      SHOOT_ARGS+=("$arg") ;;
-        *) echo "Unknown option: $arg" >&2; exit 1 ;;
+        --out=*)      SHOOT_ARGS+=("${arg}") ;;
+        *) echo "Unknown option: ${arg}" >&2; exit 1 ;;
     esac
 done
 
@@ -62,15 +62,16 @@ if [[ ! -f vendor/autoload.php ]]; then
 fi
 
 # Build the preview URL.
+# shellcheck disable=SC2016 # single-quoted PHP source; $argv must not be expanded by the shell
 urlencode() { php -r 'echo rawurlencode($argv[1]);' "$1"; }
-URL="http://127.0.0.1:${PORT}/?t=$(urlencode "$TEMPLATE")"
-[[ -n "$PARAMS" ]] && URL="${URL}&p=$(urlencode "$PARAMS")"
-[[ -n "$CSS" ]] && URL="${URL}&css=$(urlencode "$CSS")"
+URL="http://127.0.0.1:${PORT}/?t=$(urlencode "${TEMPLATE}")"
+[[ -n "${PARAMS}" ]] && URL="${URL}&p=$(urlencode "${PARAMS}")"
+[[ -n "${CSS}" ]] && URL="${URL}&css=$(urlencode "${CSS}")"
 
 # Start the dev-server and guarantee teardown on any exit.
 php -S "127.0.0.1:${PORT}" tools/preview/serve.php >/dev/null 2>&1 &
 SERVER_PID=$!
-cleanup() { kill "$SERVER_PID" 2>/dev/null || true; }
+cleanup() { kill "${SERVER_PID}" 2>/dev/null || true; }
 trap cleanup EXIT
 
 # Wait for the server to accept connections (up to ~5s).
@@ -83,4 +84,4 @@ for _ in $(seq 1 50); do
 done
 
 PLAYWRIGHT_CHROMIUM_PATH="${PLAYWRIGHT_CHROMIUM_PATH:-/opt/pw-browsers/chromium}" \
-    node tools/preview/shoot.mjs "$URL" "${SHOOT_ARGS[@]}"
+    node tools/preview/shoot.mjs "${URL}" "${SHOOT_ARGS[@]}"
