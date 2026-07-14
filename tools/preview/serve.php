@@ -107,6 +107,9 @@ try {
             ? str_replace('</head>', $links . '</head>', $html)
             : $links . $html;
     }
+    // nosemgrep: echoed-request -- $html is Twig-rendered output (autoescaped); the only manually
+    // concatenated request input ($css, via cssLinks()) is htmlspecialchars(ENT_QUOTES)-escaped there.
+    // Dev-only preview server, bound to 127.0.0.1; not application runtime.
     echo $html;
 } catch (\Throwable $e) {
     http_response_code(500);
