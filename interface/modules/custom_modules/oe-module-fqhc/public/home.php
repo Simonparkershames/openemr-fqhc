@@ -100,18 +100,17 @@ $cards = array_map(
     $workspace->cards,
 );
 
-// Live UDS data-health metric for the manager/quality home.
-$dataHealth = null;
-if ($workspace->role === WorkspaceRole::Manager) {
-    $worklistYear = (int) date('Y') - 1;
-    $worklist = (new DataQualityWorklistGenerator(new ReportingPatientRepository()))
-        ->generateForYear($worklistYear);
-    $dataHealth = [
-        'year' => $worklistYear,
-        'total' => $worklist->total(),
-        'worklistUrl' => $publicBaseUrl . '/eligibility-worklist.php?year=' . $worklistYear,
-    ];
-}
+// Every role with a purpose-built home has redirected above, so the only
+// workspace still rendered by the shared card-grid template is the
+// manager/quality home — which carries the live UDS data-health metric.
+$worklistYear = (int) date('Y') - 1;
+$worklist = (new DataQualityWorklistGenerator(new ReportingPatientRepository()))
+    ->generateForYear($worklistYear);
+$dataHealth = [
+    'year' => $worklistYear,
+    'total' => $worklist->total(),
+    'worklistUrl' => $publicBaseUrl . '/eligibility-worklist.php?year=' . $worklistYear,
+];
 
 $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ->getTwig()
