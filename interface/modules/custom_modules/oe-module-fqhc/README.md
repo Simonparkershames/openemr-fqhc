@@ -78,6 +78,36 @@ the calendar mirror, and room assignment behave identically to the flow
 board. Vitals are entered on the certified encounter screen the roomed
 card links to.
 
+## Provider workspace (issue #38)
+
+`public/provider.php` is the provider role's home — `home.php` routes
+providers there. It puts the whole provider day on one design-system
+surface, denser than the front-desk view as clinicians expect:
+
+- **Today's schedule** — the day filtered to the logged-in provider (matched
+  on the calendar's `pc_aid`), reusing the same day/phase services as the
+  front-desk and rooming workspaces, each row carrying its live rooming
+  status and a one-click path into the note (a roomed patient's open
+  encounter). The schedule is a `.fqhc-table` that collapses to card-per-row
+  on phones.
+- **Open encounters** — encounters opened today for which this provider is
+  the responsible clinician (`form_encounter.provider_id`), still awaiting a
+  note. Scoped to the current day rather than a signed/unsigned flag so it
+  doesn't depend on the optional esign feature.
+- **Results to review** — reports that have come back for tests this provider
+  ordered and are still pending review
+  (`procedure_report.review_status = 'received'`), abnormal results flagged.
+- **Care gaps** — due reminders across the day's panel from the certified CDR
+  engine (`test_rules_clinic`, gated by `enable_cdr` + `enable_cdr_crw`),
+  ordered by urgency. These are the same reminders that drive the UDS
+  clinical tables, so the daily loop meets the compliance story here.
+
+Every action is a deep link to a certified surface (the encounter screen,
+the chart, the message center); the workspace itself is read-only. The pure
+`ProviderDayBuilder` and `CareGapPanelBuilder` (`src/FQHC/Provider/`) keep
+the filtering and ordering rules unit-testable; the SQL and CDR calls live
+at the `provider.php` boundary and in the `Provider` repositories.
+
 ## Architecture notes
 
 - **Domain/services** live in the core tree under `OpenEMR\FQHC\`

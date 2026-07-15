@@ -1,0 +1,158 @@
+{#
+  Provider workspace (issue #38).
+
+  A calmer provider day on one design-system surface: today's schedule with
+  live rooming status and a one-click path into the note, the encounters
+  opened today still awaiting documentation, results that have come back for
+  review, and the care gaps across the day's panel — including the UDS
+  clinical-measure reminders that tie the daily loop to the compliance story.
+
+  The schedule is a dense table that collapses to card-per-row on phones (the
+  .fqhc-table pattern); the inbox-style panels sit beside it. Every action is
+  a deep link to a certified surface — the workspace is read-only.
+
+  Context:
+    dateDisplay      — human-readable today.
+    hasProvider      — whether the session resolved to a provider id.
+    schedule         — list of schedule row views (see provider.php).
+    scheduledCount / readyCount / checkedOutCount — header chip counts.
+    openEncounters   — list of open-encounter views.
+    results          — list of result-to-review views.
+    careGaps         — list of care-gap views.
+    cdrEnabled       — whether care gaps were computed.
+    messagesUrl      — absolute URL to the certified message center.
+
+  TwigContainer disables autoescaping, so values are escaped explicitly.
+
+  @license https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
+#}
+<div class="fqhc-root">
+  <div class="fqhc-container">
+
+    <fqhc-page-header
+      heading="My Day"
+      subheading="{{ dateDisplay|e('html_attr') }} · schedule, encounters, results, care gaps">
+      <div slot="actions" class="fqhc-cluster">
+        <fqhc-status-badge variant="info">Scheduled: {{ scheduledCount }}</fqhc-status-badge>
+        <fqhc-status-badge variant="warning">In a room: {{ readyCount }}</fqhc-status-badge>
+        <fqhc-status-badge variant="success">Seen: {{ checkedOutCount }}</fqhc-status-badge>
+      </div>
+    </fqhc-page-header>
+
+    {% if not hasProvider %}
+      <fqhc-card>
+        <fqhc-empty-state message="This workspace shows the schedule and inbox for a provider account. Your login isn't linked to a provider, so there's nothing scheduled to you."></fqhc-empty-state>
+      </fqhc-card>
+    {% endif %}
+
+    <div class="fqhc-stack">
+
+      <fqhc-card heading="Today's schedule">
+        {% if schedule is empty %}
+          <fqhc-empty-state message="No visits are scheduled to you today. Patients appear here as the front desk books and checks them in."></fqhc-empty-state>
+        {% else %}
+          <div class="fqhc-table-wrap">
+            <table class="fqhc-table">
+              <thead>
+                <tr><th>Patient</th><th>Time</th><th>Visit</th><th>Status</th><th>Room</th><th>Chart</th></tr>
+              </thead>
+              <tbody>
+                {% for row in schedule %}
+                  <tr>
+                    <td>
+                      {% if row.readyForProvider and row.encounterUrl %}
+                        <a href="{{ row.encounterUrl|e('html_attr') }}" onclick="top.restoreSession()">{{ row.patientName|e('html') }}</a>
+                      {% else %}
+                        <a href="{{ row.chartUrl|e('html_attr') }}" onclick="top.restoreSession()">{{ row.patientName|e('html') }}</a>
+                      {% endif %}
+                    </td>
+                    <td data-label="Time">{{ row.timeDisplay|e('html') }}</td>
+                    <td data-label="Visit">{{ row.categoryName|e('html') }}</td>
+                    <td data-label="Status">
+                      <fqhc-status-badge variant="{{ row.phaseVariant|e('html_attr') }}">{{ row.phaseLabel|e('html') }}</fqhc-status-badge>
+                    </td>
+                    <td data-label="Room">{{ row.roomLabel ? row.roomLabel|e('html') : '—' }}</td>
+                    <td data-label="Chart">
+                      {% if row.encounterUrl %}
+                        <a class="fqhc-link-button" href="{{ row.encounterUrl|e('html_attr') }}" onclick="top.restoreSession()">Open note</a>
+                      {% else %}
+                        <a class="fqhc-link-button" href="{{ row.chartUrl|e('html_attr') }}" onclick="top.restoreSession()">Open chart</a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </fqhc-card>
+
+      <fqhc-card heading="Open encounters — awaiting your note">
+        {% if openEncounters is empty %}
+          <fqhc-empty-state message="No visits are waiting to be documented. Encounters you start today appear here until they're finished."></fqhc-empty-state>
+        {% else %}
+          <div class="fqhc-stack">
+            {% for encounter in openEncounters %}
+              <div class="fqhc-row-between">
+                <div>
+                  <strong>{{ encounter.patientName|e('html') }}</strong>
+                  <span class="fqhc-note">{{ encounter.timeDisplay|e('html') }}{% if encounter.reason %} · {{ encounter.reason|e('html') }}{% endif %}</span>
+                </div>
+                <a class="fqhc-link-button" href="{{ encounter.encounterUrl|e('html_attr') }}" onclick="top.restoreSession()">Open note</a>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </fqhc-card>
+
+      <fqhc-card heading="Results to review">
+        {% if results is empty %}
+          <fqhc-empty-state message="No lab or diagnostic results are waiting for your review."></fqhc-empty-state>
+          <a class="fqhc-link-button" href="{{ messagesUrl|e('html_attr') }}" onclick="top.restoreSession()">Open message center</a>
+        {% else %}
+          <div class="fqhc-stack">
+            {% for result in results %}
+              <div class="fqhc-row-between">
+                <div>
+                  <strong>{{ result.patientName|e('html') }}</strong>
+                  <span class="fqhc-note">{{ result.testName|e('html') }}{% if result.reportedDisplay %} · {{ result.reportedDisplay|e('html') }}{% endif %}</span>
+                </div>
+                <div class="fqhc-cluster">
+                  {% if result.isAbnormal %}
+                    <fqhc-status-badge variant="danger">Abnormal</fqhc-status-badge>
+                  {% endif %}
+                  <a class="fqhc-link-button" href="{{ result.chartUrl|e('html_attr') }}" onclick="top.restoreSession()">Open chart</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </fqhc-card>
+
+      <fqhc-card heading="Care gaps on today's panel">
+        {% if not cdrEnabled %}
+          <fqhc-empty-state message="Clinical reminders are turned off for this site, so care gaps aren't computed. Enable the CDR reminder engine to surface UDS clinical-measure gaps here."></fqhc-empty-state>
+        {% elseif careGaps is empty %}
+          <fqhc-status-badge variant="success">No open care gaps on today's panel</fqhc-status-badge>
+        {% else %}
+          <div class="fqhc-stack">
+            {% for gap in careGaps %}
+              <div class="fqhc-row-between">
+                <div>
+                  <strong>{{ gap.patientName|e('html') }}</strong>
+                  <span class="fqhc-note">{{ gap.label|e('html') }}</span>
+                </div>
+                <div class="fqhc-cluster">
+                  <fqhc-status-badge variant="{{ gap.variant|e('html_attr') }}">{{ gap.statusLabel|e('html') }}</fqhc-status-badge>
+                  <a class="fqhc-link-button" href="{{ gap.chartUrl|e('html_attr') }}" onclick="top.restoreSession()">Open chart</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </fqhc-card>
+
+    </div>
+
+  </div>
+</div>

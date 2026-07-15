@@ -87,6 +87,8 @@ final readonly class FrontDeskScheduleRepository
                 . ' '
                 . $this->stringOrEmpty($record['ulname'] ?? null)
             );
+            $providerIdRaw = $record['pc_aid'] ?? null;
+            $providerId = is_numeric($providerIdRaw) ? (int) $providerIdRaw : 0;
             $statusCode = $this->stringOrEmpty($record['pc_apptstatus'] ?? null);
             $duration = $record['pc_duration'] ?? null;
 
@@ -99,6 +101,7 @@ final readonly class FrontDeskScheduleRepository
                 $this->stringOrNull($record['DOB'] ?? null),
                 $this->stringOrEmpty($record['pc_startTime'] ?? null),
                 is_numeric($duration) ? (int) $duration : 0,
+                $providerId,
                 $providerName,
                 $this->stringOrEmpty($record['pc_catname'] ?? null),
                 $statusCode,
