@@ -66,6 +66,10 @@ $providerId = is_numeric($authUserId) ? (int) $authUserId : 0;
 
 $today = new DateTimeImmutable('today');
 $date = $today->format('Y-m-d');
+// Capture the display string before any legacy include: appointments.inc.php
+// pulls in encounter_events.inc.php, whose top-level `$today = date('Y-m-d')`
+// clobbers this global, so anything needed from it must be read up front.
+$dateDisplay = $today->format('l, F j, Y');
 
 // The certified calendar owns the day query (recurrence expansion, filters).
 require_once $globals->getString('srcdir') . '/appointments.inc.php';
@@ -203,7 +207,7 @@ $careGapView = array_map(
 $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ->getTwig()
     ->render('fqhc/provider.html.twig', [
-        'dateDisplay' => $today->format('l, F j, Y'),
+        'dateDisplay' => $dateDisplay,
         'hasProvider' => $providerId > 0,
         'schedule' => $scheduleView,
         'scheduledCount' => $providerDay->total(),
