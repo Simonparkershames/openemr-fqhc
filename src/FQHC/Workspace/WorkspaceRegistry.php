@@ -94,13 +94,13 @@ final class WorkspaceRegistry
             WorkspaceRole::Provider => new Workspace(
                 WorkspaceRole::Provider,
                 'Provider Workspace',
-                'Your schedule, inbox, and charts. A visit-centered provider home lands in issue #38.',
+                'Your day on one surface — today\'s schedule with rooming status, encounters awaiting a note, results to review, and care gaps (home.php routes this role to provider.php).',
                 [
                     new WorkspaceCard(
-                        'Calendar',
-                        'Your appointment schedule for today.',
-                        '/interface/main/main_info.php',
-                        'Open calendar',
+                        'My Day',
+                        'Today\'s schedule, open encounters, results, and care gaps.',
+                        self::MODULE_PUBLIC_PATH . '/provider.php',
+                        'Open my day',
                     ),
                     new WorkspaceCard(
                         'Messages',

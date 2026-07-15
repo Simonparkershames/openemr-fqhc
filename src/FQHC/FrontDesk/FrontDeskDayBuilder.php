@@ -56,6 +56,7 @@ final readonly class FrontDeskDayBuilder
             $this->formatTime($row->startTime),
             $row->startTime,
             intdiv($row->durationSeconds, 60),
+            $row->providerId,
             $row->providerName,
             $row->categoryName,
             $row->statusTitle,
