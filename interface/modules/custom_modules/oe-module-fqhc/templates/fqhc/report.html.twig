@@ -10,10 +10,51 @@
     yearOptions — list<int> of selectable years.
     report      — view model from OpenEMR\FQHC\Reporting\UdsReportPresenter::present().
 
+  Every non-empty cell can be expanded to the patients behind it, each linking
+  to that patient's UDS Snapshot to fix data-quality gaps (drill-down, #42).
+
   TwigContainer disables autoescaping, so values are escaped explicitly.
 
   @license https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
 #}
+{% import _self as ui %}
+
+{#
+  Render the patient-level drill-down for a table: a collapsed panel whose
+  entries are one collapsible cell each, listing the contributing patients with
+  a link to their Snapshot. Emits nothing when the table has no non-empty cell.
+#}
+{% macro drilldown(cells, snapshotUrl) %}
+  {% if cells is not empty %}
+    <details class="fqhc-drilldown">
+      <summary class="fqhc-drilldown-summary">Patient-level detail</summary>
+      <div class="fqhc-drilldown-body fqhc-stack">
+        {% for cell in cells %}
+          <details class="fqhc-drilldown-cell">
+            <summary>{{ cell.label|e('html') }} <span class="fqhc-drilldown-count">{{ cell.count }}</span></summary>
+            <div class="fqhc-table-wrap">
+              <table class="fqhc-table">
+                <thead><tr><th>Patient</th><th>Date of birth</th><th>UDS Snapshot</th></tr></thead>
+                <tbody>
+                  {% for patient in cell.patients %}
+                    <tr>
+                      <td data-label="Patient">{{ patient.name|e('html') }}</td>
+                      <td data-label="Date of birth">{{ patient.dob ? patient.dob|e('html') : '—' }}</td>
+                      <td data-label="UDS Snapshot">
+                        <a class="fqhc-link" href="{{ (snapshotUrl ~ '?pid=' ~ patient.pid)|e('html') }}">Open</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+    </details>
+  {% endif %}
+{% endmacro %}
+
 <div class="fqhc-root">
   <div class="fqhc-container">
 
@@ -71,6 +112,7 @@
               <tfoot><tr><th>Total patients</th><th data-label="Patients">{{ report.income.total }}</th></tr></tfoot>
             </table>
           </div>
+          {{ ui.drilldown(report.drilldown.income, snapshotUrl) }}
         </fqhc-card>
 
         <fqhc-card heading="Table 4 — Principal third-party medical insurance">
@@ -90,6 +132,7 @@
               <tfoot><tr><th>Total patients</th><th></th><th></th><th data-label="Total">{{ report.insurance.total }}</th></tr></tfoot>
             </table>
           </div>
+          {{ ui.drilldown(report.drilldown.insurance, snapshotUrl) }}
         </fqhc-card>
 
         <fqhc-card heading="Table 4 — Special populations">
@@ -103,6 +146,7 @@
               </tbody>
             </table>
           </div>
+          {{ ui.drilldown(report.drilldown.specialPopulations, snapshotUrl) }}
         </fqhc-card>
 
         <fqhc-card heading="Table 3A — Patients by age and by sex">
@@ -124,6 +168,7 @@
               </tfoot>
             </table>
           </div>
+          {{ ui.drilldown(report.drilldown.ageSex, snapshotUrl) }}
         </fqhc-card>
 
         <fqhc-card heading="Table 3B — Race and Hispanic/Latino ethnicity">
@@ -147,6 +192,7 @@
             </table>
           </div>
           <fqhc-field-row label="Best served in a language other than English" value="{{ report.race.language }}"></fqhc-field-row>
+          {{ ui.drilldown(report.drilldown.race|merge(report.drilldown.language), snapshotUrl) }}
         </fqhc-card>
 
         <fqhc-card heading="Patients by ZIP Code">
@@ -170,6 +216,7 @@
               </tfoot>
             </table>
           </div>
+          {{ ui.drilldown(report.drilldown.zip, snapshotUrl) }}
         </fqhc-card>
 
         <fqhc-card heading="Table 5 — Utilization by service category">
@@ -193,6 +240,7 @@
             </table>
           </div>
           <p class="fqhc-note">Patients are counted once per service category (duplicated across categories), so the patient total is not the unduplicated health-center count. Staffing/FTE (Column A) is not yet included.</p>
+          {{ ui.drilldown(table5.drilldown, snapshotUrl) }}
         </fqhc-card>
 
         <fqhc-card heading="Table 6B — Clinical quality measures">

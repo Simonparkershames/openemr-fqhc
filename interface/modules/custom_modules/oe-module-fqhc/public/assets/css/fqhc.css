@@ -406,3 +406,71 @@
     display: none;
   }
 }
+
+/* UDS report drill-down (#42): the patients behind each report cell, revealed
+   on demand so the tables stay scannable while every count stays auditable. */
+.fqhc-drilldown {
+  margin-top: var(--fqhc-space-4);
+  border-top: 1px solid var(--fqhc-border);
+  padding-top: var(--fqhc-space-3);
+}
+
+.fqhc-drilldown > summary,
+.fqhc-drilldown-cell > summary {
+  cursor: pointer;
+  font-size: var(--fqhc-font-size-sm);
+  font-weight: var(--fqhc-font-weight-semibold);
+  color: var(--fqhc-color-accent);
+  padding: var(--fqhc-space-2) 0;
+}
+
+.fqhc-drilldown > summary:focus-visible,
+.fqhc-drilldown-cell > summary:focus-visible {
+  outline: none;
+  box-shadow: var(--fqhc-focus-ring);
+  border-radius: var(--fqhc-radius-sm);
+}
+
+.fqhc-drilldown-body {
+  margin-top: var(--fqhc-space-3);
+}
+
+.fqhc-drilldown-cell {
+  border: 1px solid var(--fqhc-border);
+  border-radius: var(--fqhc-radius-sm);
+  padding: 0 var(--fqhc-space-3) var(--fqhc-space-2);
+  background: var(--fqhc-surface-card);
+}
+
+.fqhc-drilldown-cell > summary {
+  color: var(--fqhc-text);
+}
+
+.fqhc-drilldown-count {
+  display: inline-block;
+  min-width: 1.5rem;
+  margin-left: var(--fqhc-space-2);
+  padding: 0 var(--fqhc-space-2);
+  font-size: var(--fqhc-font-size-xs);
+  font-weight: var(--fqhc-font-weight-semibold);
+  color: var(--fqhc-text-muted);
+  background: var(--fqhc-surface-page);
+  border-radius: 999px;
+  text-align: center;
+}
+
+.fqhc-link {
+  color: var(--fqhc-color-accent);
+  font-weight: var(--fqhc-font-weight-semibold);
+  text-decoration: none;
+}
+
+.fqhc-link:hover {
+  text-decoration: underline;
+}
+
+.fqhc-link:focus-visible {
+  outline: none;
+  box-shadow: var(--fqhc-focus-ring);
+  border-radius: var(--fqhc-radius-sm);
+}
