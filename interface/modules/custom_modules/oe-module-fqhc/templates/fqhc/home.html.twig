@@ -1,17 +1,24 @@
 {#
-  Role workspace home (issue #33).
+  Role workspace home (issues #33, #39).
 
-  Shared template every role workspace renders through: a page header naming
-  the role, an optional live data-health card (manager/quality only for now),
-  and the workspace's card set from the registry.
+  The shared workspace template. Front desk, clinical support, and provider
+  redirect to purpose-built pages before reaching it, so in practice this now
+  renders the manager/quality home: a page header, the UDS data-health metric
+  with its open-gap breakdown, a year-over-year utilization snapshot, and the
+  report/worklist/snapshot shortcuts.
 
   Context:
-    workspace  — {roleKey, roleLabel, heading, tagline} from the resolved
-                 OpenEMR\FQHC\Workspace\Workspace.
-    cards      — list of {title, description, url, ctaLabel}; urls are
-                 absolute (webroot already prefixed by the entry point).
-    dataHealth — null, or {year, total, worklistUrl} for the live UDS
-                 data-health metric.
+    workspace   — {roleKey, roleLabel, heading, tagline} from the resolved
+                  OpenEMR\FQHC\Workspace\Workspace.
+    cards       — list of {title, description, url, ctaLabel}; urls are
+                  absolute (webroot already prefixed by the entry point).
+    dataHealth  — null, or {year, total, gapCounts, worklistUrl} for the live
+                  UDS data-health metric; gapCounts is a list of
+                  {label, count} for the gap types that occur.
+    utilization — null, or {year, priorYear, currentVisits, priorVisits,
+                  visitsDelta, hasActivity, categories} where categories is a
+                  list of {label, current, prior, delta} for active service
+                  lines. The year-over-year UDS Table 5 utilization snapshot.
 
   TwigContainer disables autoescaping, so values are escaped explicitly.
 
@@ -38,7 +45,61 @@
           {% else %}
             <fqhc-status-badge variant="warning">{{ dataHealth.total }} patient(s) with gaps</fqhc-status-badge>
             <p class="fqhc-note">Gaps in demographics, income, or payer mapping distort UDS counts until resolved.</p>
+            {% if dataHealth.gapCounts is not empty %}
+              <div class="fqhc-table-wrap">
+                <table class="fqhc-table">
+                  <thead><tr><th>Gap type</th><th>Patients</th></tr></thead>
+                  <tbody>
+                    {% for gap in dataHealth.gapCounts %}
+                      <tr>
+                        <td>{{ gap.label|e('html') }}</td>
+                        <td data-label="Patients">{{ gap.count }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
             <a class="fqhc-button" href="{{ dataHealth.worklistUrl|e('html_attr') }}">Open eligibility worklist</a>
+          {% endif %}
+        </fqhc-card>
+      {% endif %}
+
+      {% if utilization %}
+        <fqhc-card heading="Utilization — {{ utilization.year }} vs {{ utilization.priorYear }}">
+          {% if not utilization.hasActivity %}
+            <fqhc-empty-state message="No visits recorded for {{ utilization.year }} or {{ utilization.priorYear }}."></fqhc-empty-state>
+          {% else %}
+            <fqhc-status-badge variant="{{ utilization.visitsDelta >= 0 ? 'success' : 'warning' }}">
+              {{ utilization.currentVisits }} visit(s) in {{ utilization.year }}
+              ({{ utilization.visitsDelta > 0 ? '+' : '' }}{{ utilization.visitsDelta }} vs {{ utilization.priorYear }})
+            </fqhc-status-badge>
+            <p class="fqhc-note">Countable UDS Table 5 visits by service line, this reporting year against last.</p>
+            <div class="fqhc-table-wrap">
+              <table class="fqhc-table">
+                <thead>
+                  <tr><th>Service line</th><th>{{ utilization.year }}</th><th>{{ utilization.priorYear }}</th><th>Change</th></tr>
+                </thead>
+                <tbody>
+                  {% for category in utilization.categories %}
+                    <tr>
+                      <td>{{ category.label|e('html') }}</td>
+                      <td data-label="{{ utilization.year }}">{{ category.current }}</td>
+                      <td data-label="{{ utilization.priorYear }}">{{ category.prior }}</td>
+                      <td data-label="Change">{{ category.delta > 0 ? '+' : '' }}{{ category.delta }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>All visits</th>
+                    <th data-label="{{ utilization.year }}">{{ utilization.currentVisits }}</th>
+                    <th data-label="{{ utilization.priorYear }}">{{ utilization.priorVisits }}</th>
+                    <th data-label="Change">{{ utilization.visitsDelta > 0 ? '+' : '' }}{{ utilization.visitsDelta }}</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           {% endif %}
         </fqhc-card>
       {% endif %}

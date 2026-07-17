@@ -7,9 +7,10 @@
  *
  * The manager/quality workspace generalizes the module's original home —
  * the UDS surfaces (snapshot, report, eligibility worklist) that previously
- * sat behind the single top-level FQHC menu item. The other roles start from
- * the existing core surfaces for their daily loop; their dedicated
- * workspaces land in issues #36–#38 and plug in here.
+ * sat behind the single top-level FQHC menu item, grown in issue #39 into the
+ * center's UDS-readiness glance. Front desk (#36), clinical support (#37), and
+ * provider (#38) route to their own purpose-built pages from home.php; their
+ * card sets here describe those homes and link into them.
  *
  * @package   OpenEMR
  * @link      https://www.open-emr.org
@@ -119,7 +120,7 @@ final class WorkspaceRegistry
             WorkspaceRole::Manager => new Workspace(
                 WorkspaceRole::Manager,
                 'Manager & Quality Workspace',
-                'UDS reporting and data health for the center. Consolidates into a full quality home in issue #39.',
+                'The center\'s UDS-readiness glance — data health with open gaps by type, a year-over-year utilization snapshot, and the report, worklist, and snapshot (home.php renders this role in place).',
                 [
                     new WorkspaceCard(
                         'UDS Report',
