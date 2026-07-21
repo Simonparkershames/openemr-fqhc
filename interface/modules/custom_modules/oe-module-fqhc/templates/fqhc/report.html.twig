@@ -219,7 +219,18 @@
               </tbody>
             </table>
           </div>
-          <p class="fqhc-note">Measures are mapped to their CY2026 CMS eCQM (docs/fqhc/UDS-DATA-MODEL.md §3); population counts are pending the CQM/AMC engine population-set wiring.</p>
+          {% if table6b.denominatorAlerts is not empty %}
+            <p class="fqhc-note">
+              <strong>Review needed:</strong>
+              {% for alert in table6b.denominatorAlerts %}
+                {{ alert.label|e('html') }} ({{ alert.cmsId|e('html') }}) has a denominator of {{ alert.denominator }}, more than the {{ alert.unduplicatedPatients }} unduplicated patients on the patient tables.{{ not loop.last ? ' ' }}
+              {% endfor %}
+            </p>
+          {% endif %}
+          <p class="fqhc-note">
+            {{ table6b.computedCount }} of {{ table6b.totalCount }} measures computed live by the CQM engine (mapped to their CY2026 CMS eCQM, docs/fqhc/UDS-DATA-MODEL.md §3).
+            A measure shows “Not yet computed” when its eCQM measure files are not installed for the reporting year, the CQM calculation service is unavailable, or its UDS population-set selection is still unresolved (Weight Assessment children/adolescents and SUD Initiation &amp; Engagement).
+          </p>
         </fqhc-card>
 
         <fqhc-card heading="Table 7 — Health outcomes and disparities">

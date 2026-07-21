@@ -68,6 +68,50 @@ enum UdsClinicalMeasure: string
     }
 
     /**
+     * The CQM engine population set whose counts this UDS line reports, or
+     * null while the selection is unresolved against the UDS Manual.
+     *
+     * The engine (src/Services/Qdm/ResultsCalculator) aggregates counts per
+     * population set, keyed "PopulationSet_N" in measure-file order. Most
+     * mapped eCQMs define a single rate, so the UDS line is PopulationSet_1.
+     * The deliberate exceptions:
+     *
+     * - Tobacco (CMS138) defines three rates; the UDS numerator ("screened
+     *   for tobacco use AND received cessation intervention if identified as
+     *   a user") is the measure's combined third rate.
+     * - Weight Assessment children/adolescents (CMS155) defines separate
+     *   rates for BMI-percentile documentation and each counseling type,
+     *   while the UDS numerator is their composite; no single population set
+     *   reports it, so the line stays pending rather than show a near-miss.
+     * - SUD Initiation & Engagement (CMS137) defines initiation and
+     *   engagement as separate rates that UDS reports as separate sub-lines;
+     *   this single-line model cannot yet represent that, so it stays
+     *   pending.
+     *
+     * Like the CMS-version map, treat these selections as versioned data to
+     * re-reconcile against the UDS Manual and eCQM specs each reporting year.
+     */
+    public function reportedPopulationSetId(): ?string
+    {
+        return match ($this) {
+            self::TobaccoUseScreeningCessation => 'PopulationSet_3',
+            self::WeightAssessmentChildrenAdolescents,
+            self::InitiationEngagementOfSudTreatment => null,
+            self::ChildhoodImmunizationStatus,
+            self::CervicalCancerScreening,
+            self::BreastCancerScreening,
+            self::PreventiveCareBmiScreeningFollowUp,
+            self::StatinTherapyForCvdPreventionTreatment,
+            self::ColorectalCancerScreening,
+            self::HivScreening,
+            self::DepressionScreeningFollowUp,
+            self::DepressionRemissionAtTwelveMonths,
+            self::ControllingHighBloodPressure,
+            self::DiabetesGlycemicStatusAssessment => 'PopulationSet_1',
+        };
+    }
+
+    /**
      * Whether this measure's rate also feeds a UDS Table 7 health-outcomes
      * disparity line (docs/fqhc/UDS-DATA-MODEL.md §3). Table 7 also reports
      * early entry into prenatal care and low birth weight, which are not

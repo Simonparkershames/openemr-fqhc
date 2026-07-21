@@ -21,6 +21,7 @@ namespace OpenEMR\FQHC\Reporting;
 
 use OpenEMR\FQHC\Fpl\FplBand;
 use OpenEMR\FQHC\Payer\UdsPayerCategory;
+use OpenEMR\FQHC\Reporting\Clinical\Table6bReconciliation;
 use OpenEMR\FQHC\Reporting\Clinical\Table6bReport;
 use OpenEMR\FQHC\Reporting\Clinical\UdsClinicalMeasure;
 use OpenEMR\FQHC\SpecialPopulation\HomelessStatus;
@@ -33,6 +34,7 @@ use OpenEMR\FQHC\SpecialPopulation\HomelessStatus;
  * @phpstan-type ZipRow array{label: string, uninsured: int, publicInsurance: int, medicare: int, private: int, total: int}
  * @phpstan-type Table5Row array{label: string, clinic: int, virtual: int, visits: int, patients: int}
  * @phpstan-type Table6bRow array{label: string, cmsId: string, computed: bool, denominator: ?int, numerator: ?int, rate: ?float}
+ * @phpstan-type Table6bAlert array{label: string, cmsId: string, denominator: int, unduplicatedPatients: int}
  * @phpstan-type Table7Row array{label: string, computed: bool, rate: ?float}
  */
 final class UdsReportPresenter
@@ -95,15 +97,22 @@ final class UdsReportPresenter
     }
 
     /**
-     * The UDS Table 6B clinical quality measure rows: one per mapped eCQM.
+     * The UDS Table 6B clinical quality measure rows: one per mapped eCQM,
+     * with how much of the table is live and which computed denominators
+     * exceed the patient tables' unduplicated patient count (pass the
+     * patient-characteristics cohort size to enable that reconciliation).
      *
-     * @return array{rows: list<Table6bRow>}
+     * @return array{rows: list<Table6bRow>, computedCount: int, totalCount: int, denominatorAlerts: list<Table6bAlert>}
      */
-    public function table6b(Table6bReport $table6b): array
+    public function table6b(Table6bReport $table6b, ?int $unduplicatedPatients = null): array
     {
         $rows = [];
+        $computedCount = 0;
         foreach (UdsClinicalMeasure::cases() as $measure) {
             $result = $table6b->resultFor($measure);
+            if ($result !== null) {
+                $computedCount++;
+            }
             $rows[] = [
                 'label' => $measure->label(),
                 'cmsId' => $measure->cmsId(),
@@ -114,7 +123,29 @@ final class UdsReportPresenter
             ];
         }
 
-        return ['rows' => $rows];
+        $denominatorAlerts = [];
+        if ($unduplicatedPatients !== null) {
+            $reconciliation = new Table6bReconciliation();
+            foreach ($reconciliation->measuresExceedingPatientUniverse($table6b, $unduplicatedPatients) as $measure) {
+                $result = $table6b->resultFor($measure);
+                if ($result === null) {
+                    continue;
+                }
+                $denominatorAlerts[] = [
+                    'label' => $measure->label(),
+                    'cmsId' => $measure->cmsId(),
+                    'denominator' => $result->denominator,
+                    'unduplicatedPatients' => $unduplicatedPatients,
+                ];
+            }
+        }
+
+        return [
+            'rows' => $rows,
+            'computedCount' => $computedCount,
+            'totalCount' => count($rows),
+            'denominatorAlerts' => $denominatorAlerts,
+        ];
     }
 
     /**

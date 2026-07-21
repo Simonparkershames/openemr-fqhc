@@ -35,6 +35,20 @@ final class UdsClinicalMeasureTest extends TestCase
         self::assertCount(count($ids), array_unique($ids));
     }
 
+    public function testPopulationSetSelectionsFollowTheDocumentedMap(): void
+    {
+        foreach (UdsClinicalMeasure::cases() as $measure) {
+            $expected = match ($measure) {
+                UdsClinicalMeasure::TobaccoUseScreeningCessation => 'PopulationSet_3',
+                UdsClinicalMeasure::WeightAssessmentChildrenAdolescents,
+                UdsClinicalMeasure::InitiationEngagementOfSudTreatment => null,
+                default => 'PopulationSet_1',
+            };
+
+            self::assertSame($expected, $measure->reportedPopulationSetId(), $measure->cmsId());
+        }
+    }
+
     public function testOnlyControllingBloodPressureAndDiabetesGlycemicStatusFeedTable7(): void
     {
         $table7Measures = array_values(array_filter(
