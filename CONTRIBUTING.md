@@ -33,9 +33,10 @@ manually via `workflow_dispatch`):
    branch.
 2. If the merge is clean and there are new upstream commits, it opens (or
    updates) a PR from `chore/upstream-sync` into this fork's `master`. The
-   PR goes through the normal required checks — including the Inferno
-   certification gate — before anyone merges it, so a sync never lands
-   without certification proof it didn't regress.
+   PR goes through the normal required checks before anyone merges it.
+   Note that the Inferno certification gate does **not** run here — see
+   "Certification Safety" below — so a sync carries the same additive-only
+   reasoning and test evidence as any other change, not certification proof.
 3. If the merge has conflicts, the workflow run fails instead of opening a
    PR. A maintainer needs to resolve the conflict manually:
 
