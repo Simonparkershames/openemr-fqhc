@@ -137,10 +137,12 @@ final class CqmExecutionServiceEngine implements CqmCalculationEngine
      * Starts the node cqm-execution service if it is not already up, the same
      * way QrdaReportService does before an export.
      *
-     * Health is re-read from the client on each check rather than the check
-     * being repeated against the same value: starting the service changes the
-     * world outside this process, so the second read is a genuinely different
-     * question from the first.
+     * Health is read into a named value before and after the start, rather
+     * than the same call being repeated in both conditions. Both reads look
+     * side-effect-free to static analysis, so repeating the expression lets it
+     * carry the first check's "was false" narrowing into the second and
+     * conclude the second can only fail. The service's readiness is exactly
+     * what the start is meant to change, so they are separate questions.
      */
     private function ensureCalculationServiceIsRunning(): void
     {
@@ -149,13 +151,16 @@ final class CqmExecutionServiceEngine implements CqmCalculationEngine
             throw new \RuntimeException('Could not construct the CQM calculation service client');
         }
 
-        if ($this->serviceIsUp($client->getHealth())) {
+        $healthBeforeStart = $client->getHealth();
+        if ($this->serviceIsUp($healthBeforeStart)) {
             return;
         }
 
         $client->start();
         sleep(2);
-        if (!$this->serviceIsUp($client->getHealth())) {
+
+        $healthAfterStart = $client->getHealth();
+        if (!$this->serviceIsUp($healthAfterStart)) {
             throw new \RuntimeException('The CQM calculation node service is not running');
         }
     }
