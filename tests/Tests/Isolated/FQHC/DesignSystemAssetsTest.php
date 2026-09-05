@@ -83,7 +83,7 @@ final class DesignSystemAssetsTest extends TestCase
         $urls = $assets->styleUrls();
 
         self::assertCount(count(DesignSystemAssets::STYLES) + 1, $urls);
-        self::assertStringContainsString('showcase.css', end($urls));
+        self::assertStringContainsString('showcase.css', $urls[count($urls) - 1]);
     }
 
     public function testPageStylesAreIncludedInTheMissingFilesCheck(): void
