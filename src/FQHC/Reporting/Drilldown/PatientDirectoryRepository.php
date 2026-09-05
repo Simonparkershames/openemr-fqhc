@@ -42,9 +42,6 @@ final class PatientDirectoryRepository
 
         $entries = [];
         foreach ($rows as $row) {
-            if (!is_array($row)) {
-                continue;
-            }
             $pid = is_numeric($row['pid'] ?? null) ? (int) $row['pid'] : 0;
             if ($pid <= 0) {
                 continue;

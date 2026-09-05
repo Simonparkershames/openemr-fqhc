@@ -532,7 +532,7 @@ final class UdsReportPresenter
             $entry = $directory->find($pid);
             $rows[] = [
                 'pid' => $pid,
-                'name' => $entry?->name ?? ('Patient #' . $pid),
+                'name' => $entry !== null ? $entry->name : ('Patient #' . $pid),
                 'dob' => $entry?->dateOfBirth,
             ];
         }
