@@ -238,6 +238,173 @@ class TwigTemplateRenderTest extends TestCase
             ],
             $fixtureDir . '/appointments-with-future.html',
         ];
+
+        // FQHC design-system style guide. Rendered with a fixed miniature token
+        // set rather than the real tokens.css, so the fixture pins the
+        // template's structure and does not churn every time a token changes —
+        // parsing the real stylesheet is covered by TokenSheetParserTest.
+        yield 'fqhc/showcase populated and passing' => [
+            'fqhc/showcase.html.twig',
+            [
+                'tokenCount' => 5,
+                'tokenGroups' => [
+                    [
+                        'label' => 'Color: brand',
+                        'kind' => 'color',
+                        'tokens' => [
+                            [
+                                'name' => '--fqhc-color-primary',
+                                'shortName' => 'color-primary',
+                                'value' => '#0f766e',
+                                'comment' => 'teal-700',
+                                'kind' => 'color',
+                            ],
+                            [
+                                'name' => '--fqhc-surface-card',
+                                'shortName' => 'surface-card',
+                                'value' => '#ffffff',
+                                'comment' => '',
+                                'kind' => 'color',
+                            ],
+                        ],
+                    ],
+                    [
+                        'label' => 'Typography',
+                        'kind' => 'raw',
+                        'tokens' => [
+                            [
+                                'name' => '--fqhc-font-sans',
+                                'shortName' => 'font-sans',
+                                'value' => '"Inter", system-ui, sans-serif',
+                                'comment' => '',
+                                'kind' => 'font-family',
+                            ],
+                            [
+                                'name' => '--fqhc-font-size-lg',
+                                'shortName' => 'font-size-lg',
+                                'value' => '1.125rem',
+                                'comment' => '18px',
+                                'kind' => 'font-size',
+                            ],
+                            [
+                                'name' => '--fqhc-font-weight-medium',
+                                'shortName' => 'font-weight-medium',
+                                'value' => '500',
+                                'comment' => '',
+                                'kind' => 'font-weight',
+                            ],
+                        ],
+                    ],
+                    [
+                        'label' => 'Spacing',
+                        'kind' => 'space',
+                        'tokens' => [
+                            [
+                                'name' => '--fqhc-space-4',
+                                'shortName' => 'space-4',
+                                'value' => '1rem',
+                                'comment' => '',
+                                'kind' => 'space',
+                            ],
+                        ],
+                    ],
+                    [
+                        'label' => 'Radius',
+                        'kind' => 'radius',
+                        'tokens' => [
+                            [
+                                'name' => '--fqhc-radius-lg',
+                                'shortName' => 'radius-lg',
+                                'value' => '16px',
+                                'comment' => '',
+                                'kind' => 'radius',
+                            ],
+                        ],
+                    ],
+                    [
+                        'label' => 'Elevation',
+                        'kind' => 'shadow',
+                        'tokens' => [
+                            [
+                                'name' => '--fqhc-shadow-md',
+                                'shortName' => 'shadow-md',
+                                'value' => '0 4px 12px rgba(15, 23, 42, 0.08)',
+                                'comment' => '',
+                                'kind' => 'shadow',
+                            ],
+                        ],
+                    ],
+                    [
+                        'label' => 'Layout',
+                        'kind' => 'raw',
+                        'tokens' => [
+                            [
+                                'name' => '--fqhc-container-max',
+                                'shortName' => 'container-max',
+                                'value' => '1200px',
+                                'comment' => '',
+                                'kind' => 'raw',
+                            ],
+                        ],
+                    ],
+                ],
+                'contrast' => [
+                    'total' => 2,
+                    'failing' => 0,
+                    'pairs' => [
+                        [
+                            'usage' => 'Body text on a card',
+                            'foregroundName' => '--fqhc-text',
+                            'foregroundValue' => '#0f172a',
+                            'backgroundName' => '--fqhc-surface-card',
+                            'backgroundValue' => '#ffffff',
+                            'ratio' => 17.85,
+                            'rating' => 'AAA',
+                            'ratingVariant' => 'success',
+                            'largeText' => false,
+                        ],
+                        [
+                            'usage' => 'Metric value on a card',
+                            'foregroundName' => '--fqhc-color-primary-strong',
+                            'foregroundValue' => '#115e59',
+                            'backgroundName' => '--fqhc-surface-card',
+                            'backgroundValue' => '#ffffff',
+                            'ratio' => 7.58,
+                            'rating' => 'AAA',
+                            'ratingVariant' => 'success',
+                            'largeText' => true,
+                        ],
+                    ],
+                ],
+            ],
+            $fixtureDir . '/fqhc-showcase-passing.html',
+        ];
+
+        yield 'fqhc/showcase with no tokens and a failing pairing' => [
+            'fqhc/showcase.html.twig',
+            [
+                'tokenCount' => 0,
+                'tokenGroups' => [],
+                'contrast' => [
+                    'total' => 1,
+                    'failing' => 1,
+                    'pairs' => [
+                        [
+                            'usage' => 'Muted label on a card',
+                            'foregroundName' => '--fqhc-text-muted',
+                            'foregroundValue' => '#94a3b8',
+                            'backgroundName' => '--fqhc-surface-card',
+                            'backgroundValue' => '#ffffff',
+                            'ratio' => 2.32,
+                            'rating' => 'Fail',
+                            'ratingVariant' => 'danger',
+                            'largeText' => false,
+                        ],
+                    ],
+                ],
+            ],
+            $fixtureDir . '/fqhc-showcase-failing.html',
+        ];
     }
 
     /**
@@ -258,7 +425,12 @@ class TwigTemplateRenderTest extends TestCase
         $GLOBALS['date_display_format'] ??= 0;
         $GLOBALS['disable_translation'] = true;
 
-        $twigContainer = new TwigContainer();
+        // The FQHC module keeps its templates alongside the module rather than
+        // in /templates, so its path is added explicitly; template names are
+        // still unique across both roots.
+        $twigContainer = new TwigContainer(
+            self::fileroot() . '/interface/modules/custom_modules/oe-module-fqhc/templates'
+        );
         $twig = $twigContainer->getTwig();
 
         // Override setupHeader() before the first render initializes extensions.

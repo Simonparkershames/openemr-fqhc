@@ -75,6 +75,42 @@ final class DesignSystemAssetsTest extends TestCase
         }
     }
 
+    public function testPageStylesLoadAfterTheSharedBundle(): void
+    {
+        // The style guide's scaffolding CSS overrides nothing, but a page-scoped
+        // sheet must still come last so it can.
+        $assets = new DesignSystemAssets($this->publicRoot, '/base', ['assets/css/showcase.css']);
+        $urls = $assets->styleUrls();
+
+        self::assertCount(count(DesignSystemAssets::STYLES) + 1, $urls);
+        self::assertStringContainsString('showcase.css', end($urls));
+    }
+
+    public function testPageStylesAreIncludedInTheMissingFilesCheck(): void
+    {
+        $assets = new DesignSystemAssets($this->publicRoot, '/base', ['assets/css/not-shipped.css']);
+
+        self::assertSame(
+            [$this->publicRoot . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css'
+                . DIRECTORY_SEPARATOR . 'not-shipped.css'],
+            $assets->missingFiles(),
+        );
+    }
+
+    public function testStyleGuidePageStylesheetExists(): void
+    {
+        $assets = new DesignSystemAssets($this->publicRoot, '/base', ['assets/css/showcase.css']);
+
+        self::assertSame([], $assets->missingFiles());
+    }
+
+    public function testDefaultConstructionAddsNoPageStyles(): void
+    {
+        $assets = new DesignSystemAssets($this->publicRoot, '/base');
+
+        self::assertCount(count(DesignSystemAssets::STYLES), $assets->styleUrls());
+    }
+
     public function testTokensFileDefinesCorePropertiesTheUiDependsOn(): void
     {
         $tokens = (string) file_get_contents($this->publicRoot . '/assets/css/tokens.css');
