@@ -85,7 +85,10 @@ final class EngineBackedCqmMeasureResultSourceTest extends TestCase
 
             public function log($level, \Stringable|string $message, array $context = []): void
             {
-                $this->messages[] = $level . ': ' . $message;
+                // PSR-3 types $level as mixed; the source under test only ever
+                // logs at a LogLevel string, so narrow rather than cast.
+                $label = is_string($level) ? $level : 'log';
+                $this->messages[] = $label . ': ' . $message;
             }
         };
 
