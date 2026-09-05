@@ -141,15 +141,30 @@ and `/interface/`.
   `composer phpunit-isolated` for the host-only subset).
 - The **Inferno Certification Test** workflow
   (`.github/workflows/inferno-test.yml`), which runs the ONC certification
-  test kit against a live instance. This is the authoritative check for
-  certification regressions — a red Inferno run blocks merge.
+  test kit against a live instance. Where it runs, it is the authoritative
+  check for certification regressions and a red run blocks merge.
 - PHPStan (level 10) and phpcs, which catch many regressions in typed
   boundaries before they reach the certification suite.
 
-Repository administrators should configure these as required status
-checks in the `master` branch protection rule so a red run blocks merge
-automatically; this cannot be set from a pull request and must be done in
-repository Settings > Branches.
+> **The Inferno suite does not run in this fork.** It needs the private
+> `openemr/inferno-files` submodule, which only the upstream organization
+> can grant access to, so the job detects that it cannot read the submodule
+> and skips. Certification is therefore validated **upstream**, against
+> `openemr/openemr`, not here.
+>
+> What this fork asserts instead: FQHC work is **additive only** — new code
+> under `OpenEMR\FQHC` and `oe-module-fqhc`, new side tables, new role menus
+> — so the certified paths it would regress are the ones it does not touch.
+> That claim is carried by the per-PR certification-impact checklist below,
+> by PHPStan and phpcs, and by the full test suites. Treat a change that
+> genuinely modifies certified code as needing upstream validation before
+> it lands here.
+
+Repository administrators should configure the checks that *do* run as
+required status checks in the `master` branch protection rule so a red run
+blocks merge automatically; this cannot be set from a pull request and must
+be done in repository Settings > Branches. Do not mark the Inferno job
+required in this fork — it will always be skipped.
 
 **Every PR must state its certification impact** using the checklist in
 the PR template: what certified code was touched (or "none"), why the
