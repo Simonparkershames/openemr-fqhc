@@ -4,11 +4,15 @@
  * FQHC module — role workspace home (issue #33).
  *
  * Resolves the logged-in user to a workspace via the workspace registry
- * (per-user override first, then certified ACL group membership) and renders
- * that role's home: heading, tagline, and card set. Users that resolve to no
- * role see the manager/quality workspace — the generalization of the module's
- * original home page. The manager home also shows a live UDS data-health
- * metric from the eligibility worklist.
+ * (per-user override first, then certified ACL group membership) and routes
+ * each role to its home. Front desk, clinical support, and provider have
+ * purpose-built pages and redirect there; the manager/quality role (and any
+ * user that resolves to no role) renders here.
+ *
+ * The manager/quality home (issue #39) is the center's UDS-readiness glance:
+ * a live data-health metric with its open-gap breakdown from the eligibility
+ * worklist, a year-over-year utilization snapshot from the UDS Table 5
+ * service lines, and shortcuts into the report, worklist, and snapshot.
  *
  * Session state (username) is read here at the entry point and parsed into
  * typed values passed to the domain layer — superglobals do not leak past
@@ -33,7 +37,11 @@ use OpenEMR\Core\Header;
 use OpenEMR\Core\OEGlobalsBag;
 use OpenEMR\FQHC\DesignSystem\DesignSystemAssets;
 use OpenEMR\FQHC\Reporting\DataQuality\DataQualityWorklistGenerator;
+use OpenEMR\FQHC\Reporting\DataQuality\DataQualityWorklistPresenter;
 use OpenEMR\FQHC\Reporting\ReportingPatientRepository;
+use OpenEMR\FQHC\Reporting\Table5ReportGenerator;
+use OpenEMR\FQHC\Reporting\Table5VisitRepository;
+use OpenEMR\FQHC\Reporting\UtilizationComparison;
 use OpenEMR\FQHC\Workspace\WorkspaceCard;
 use OpenEMR\FQHC\Workspace\WorkspaceGlobals;
 use OpenEMR\FQHC\Workspace\WorkspaceRegistry;
@@ -103,14 +111,59 @@ $cards = array_map(
 
 // Every role with a purpose-built home has redirected above, so the only
 // workspace still rendered by the shared card-grid template is the
-// manager/quality home — which carries the live UDS data-health metric.
-$worklistYear = (int) date('Y') - 1;
+// manager/quality home (issue #39) — the center's UDS-readiness glance:
+// the data-health metric with its gap breakdown, a year-over-year
+// utilization snapshot, and the report shortcuts.
+//
+// A UDS report covers a completed calendar year, so default to last year;
+// the prior year is the utilization comparison baseline.
+$reportingYear = (int) date('Y') - 1;
+$priorYear = $reportingYear - 1;
+
 $worklist = (new DataQualityWorklistGenerator(new ReportingPatientRepository()))
-    ->generateForYear($worklistYear);
+    ->generateForYear($reportingYear);
+$worklistView = (new DataQualityWorklistPresenter())->present($worklist);
+
+// Only gap types that actually occur — a summary, not a row of zeros.
+$gapCounts = array_values(array_filter(
+    $worklistView['gapCounts'],
+    static fn(array $gapCount): bool => $gapCount['count'] > 0,
+));
+
 $dataHealth = [
-    'year' => $worklistYear,
-    'total' => $worklist->total(),
-    'worklistUrl' => $publicBaseUrl . '/eligibility-worklist.php?year=' . $worklistYear,
+    'year' => $reportingYear,
+    'total' => $worklistView['total'],
+    'gapCounts' => $gapCounts,
+    'worklistUrl' => $publicBaseUrl . '/eligibility-worklist.php?year=' . $reportingYear,
+];
+
+$table5Generator = new Table5ReportGenerator(new Table5VisitRepository());
+$utilization = new UtilizationComparison(
+    $reportingYear,
+    $priorYear,
+    $table5Generator->generateForYear($reportingYear),
+    $table5Generator->generateForYear($priorYear),
+);
+$utilizationCategories = [];
+foreach ($utilization->categories() as $row) {
+    if (!$row->hasActivity()) {
+        continue;
+    }
+    $utilizationCategories[] = [
+        'label' => $row->category->label(),
+        'current' => $row->currentVisits,
+        'prior' => $row->priorVisits,
+        'delta' => $row->delta(),
+    ];
+}
+$utilizationView = [
+    'year' => $utilization->year,
+    'priorYear' => $utilization->priorYear,
+    'currentVisits' => $utilization->currentVisits(),
+    'priorVisits' => $utilization->priorVisits(),
+    'visitsDelta' => $utilization->visitsDelta(),
+    'hasActivity' => $utilization->hasActivity(),
+    'categories' => $utilizationCategories,
 ];
 
 $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
@@ -125,6 +178,7 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
         ],
         'cards' => $cards,
         'dataHealth' => $dataHealth,
+        'utilization' => $utilizationView,
     ]);
 ?>
 <!DOCTYPE html>
