@@ -34,16 +34,18 @@
     <div class="fqhc-stack">
 
       {% if dataHealth %}
-        <fqhc-card icon="worklist" heading="UDS data health — {{ dataHealth.year }}">
-          {% if dataHealth.total == 0 %}
-            <fqhc-status-badge variant="success">No data-quality gaps</fqhc-status-badge>
-            <p class="fqhc-note">Every {{ dataHealth.year }} patient has complete UDS demographics, income, and payer data.</p>
-          {% else %}
-            <fqhc-status-badge variant="warning">{{ dataHealth.total }} patient(s) with gaps</fqhc-status-badge>
-            <p class="fqhc-note">Gaps in demographics, income, or payer mapping distort UDS counts until resolved.</p>
-            <a class="fqhc-button" href="{{ dataHealth.worklistUrl|e('html_attr') }}">Open eligibility worklist</a>
-          {% endif %}
-        </fqhc-card>
+        {# Converted from a card of text to a metric tile (#62): the number is
+           the point, so it leads rather than sitting inside a sentence. #}
+        <div class="fqhc-grid">
+          <fqhc-stat
+            icon="worklist"
+            label="UDS data health — {{ dataHealth.year }}"
+            value="{{ dataHealth.total }}"
+            caption="{{ dataHealth.total == 0
+              ? 'Every patient has complete demographics, income, and payer data'
+              : 'Patients with gaps that distort UDS counts until resolved' }}"
+            {% if dataHealth.total > 0 %}href="{{ dataHealth.worklistUrl|e('html_attr') }}"{% endif %}></fqhc-stat>
+        </div>
       {% endif %}
 
       <div class="fqhc-grid">

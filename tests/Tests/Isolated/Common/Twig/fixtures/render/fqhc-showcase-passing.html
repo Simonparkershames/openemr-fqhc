@@ -344,6 +344,141 @@
 
       <div class="fqhc-specimen">
         <h3 class="fqhc-specimen-title">
+          &lt;fqhc-stat&gt;
+          <span class="fqhc-specimen-note">Direction decides the colour, so a regression cannot be coloured green by accident</span>
+        </h3>
+        <div class="fqhc-grid">
+          <fqhc-stat icon="patient" label="Patients seen" value="1,284" delta="+8.2%" direction="up" caption="vs. same period last year"></fqhc-stat>
+          <fqhc-stat icon="care-gap" label="Open care gaps" value="37" delta="+6" direction="up-bad" caption="up is bad here"></fqhc-stat>
+          <fqhc-stat icon="worklist" label="Data-quality gaps" value="12" delta="−9" direction="down-good" sparkline="21,19,20,16,14,12"></fqhc-stat>
+          <fqhc-stat icon="income" label="Sliding-fee determinations" value="642" delta="0" direction="flat"></fqhc-stat>
+          <fqhc-stat icon="report" label="A whole tile that is a link" value="6" href="#components" caption="Hover and tab to it"></fqhc-stat>
+          <fqhc-stat label="No value supplied"></fqhc-stat>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-stat icon="patient" label="Patients seen" value="1,284"
+           delta="+8.2%" direction="up|down|up-bad|down-good|flat"
+           caption="…" sparkline="21,19,20,16" href="…"&gt;&lt;/fqhc-stat&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-avatar&gt;
+          <span class="fqhc-specimen-note">Colour is derived from the id, so the same patient is the same colour on every surface</span>
+        </h3>
+        <div class="fqhc-stage">
+          <fqhc-avatar name="Maria Alvarez" id="1043" status="success"></fqhc-avatar>
+          <fqhc-avatar name="James Okafor" id="1044" status="warning"></fqhc-avatar>
+          <fqhc-avatar name="Wei Chen" id="1045" status="info"></fqhc-avatar>
+          <fqhc-avatar name="Aisha Rahman" id="1046" status="danger"></fqhc-avatar>
+          <fqhc-avatar name="Robert Fitzgerald Kennedy" id="1047"></fqhc-avatar>
+          <fqhc-avatar name="Cher" id="1048"></fqhc-avatar>
+          <fqhc-avatar name="" id="1049"></fqhc-avatar>
+          <fqhc-avatar name="Maria Alvarez" id="1043"></fqhc-avatar>
+        </div>
+        <p class="fqhc-showcase-lede">
+          The first and last chips are the same patient id and so are the same colour. An empty name
+          renders <code>?</code> rather than an empty circle.
+        </p>
+        <pre class="fqhc-code">&lt;fqhc-avatar name="Maria Alvarez" id="1043" status="success"&gt;&lt;/fqhc-avatar&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-segmented&gt;
+          <span class="fqhc-specimen-note">Arrow keys move between segments; emits fqhc-change, or navigates when an option carries a URL</span>
+        </h3>
+        <div class="fqhc-stage">
+          <fqhc-segmented label="Range" options="today|Today,week|This week,all|All" value="today"></fqhc-segmented>
+          <fqhc-segmented label="Density" options="comfortable|Comfortable,compact|Compact" value="compact"></fqhc-segmented>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-segmented label="Range" value="today"
+                options="today|Today,week|This week,all|All"&gt;&lt;/fqhc-segmented&gt;
+&lt;!-- fields split on | so a URL keeps its scheme --&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-timeline&gt;
+          <span class="fqhc-specimen-note">The connector stops at the last event rather than trailing into space</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-card fqhc-stage-block">
+          <fqhc-timeline>
+            <fqhc-timeline-event time="9:04" variant="success">Arrived &mdash; checked in at the front desk</fqhc-timeline-event>
+            <fqhc-timeline-event time="9:18" variant="info">Roomed in exam 3, vitals recorded</fqhc-timeline-event>
+            <fqhc-timeline-event time="9:31" variant="info">Seen by Dr. Okonkwo</fqhc-timeline-event>
+            <fqhc-timeline-event time="10:02" variant="warning">Lab order placed &mdash; awaiting draw</fqhc-timeline-event>
+            <fqhc-timeline-event time="10:15" variant="neutral">Checked out</fqhc-timeline-event>
+          </fqhc-timeline>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-timeline&gt;
+  &lt;fqhc-timeline-event time="9:04" variant="success"&gt;Arrived&lt;/fqhc-timeline-event&gt;
+&lt;/fqhc-timeline&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-progress&gt;
+          <span class="fqhc-specimen-note">Always carries its number as text — a bar is not a value</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <fqhc-progress label="Cervical cancer screening" value="72"></fqhc-progress>
+          <fqhc-progress label="Childhood immunization" value="41" variant="warning"></fqhc-progress>
+          <fqhc-progress label="Blood pressure control" value="18" variant="danger"></fqhc-progress>
+          <fqhc-progress label="Depression screening" value="96" variant="success"></fqhc-progress>
+          <fqhc-progress label="Out of range, clamped" value="140"></fqhc-progress>
+        </div>
+        <div class="fqhc-stage">
+          <fqhc-progress ring label="Data health" value="88" variant="success"></fqhc-progress>
+          <fqhc-progress ring label="UDS readiness" value="54"></fqhc-progress>
+          <fqhc-progress ring label="Nothing yet" value="0"></fqhc-progress>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-progress label="Screening rate" value="72" variant="success"&gt;&lt;/fqhc-progress&gt;
+&lt;fqhc-progress ring label="Data health" value="88"&gt;&lt;/fqhc-progress&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-skeleton&gt;
+          <span class="fqhc-specimen-note">Shaped like what is arriving; the shimmer stops under prefers-reduced-motion</span>
+        </h3>
+        <div class="fqhc-grid">
+          <fqhc-card heading="Loading a card">
+            <fqhc-skeleton lines="3"></fqhc-skeleton>
+          </fqhc-card>
+          <fqhc-card heading="A single value">
+            <fqhc-skeleton width="40%"></fqhc-skeleton>
+          </fqhc-card>
+          <fqhc-card heading="An avatar">
+            <fqhc-skeleton circle></fqhc-skeleton>
+          </fqhc-card>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-skeleton lines="3"&gt;&lt;/fqhc-skeleton&gt;
+&lt;fqhc-skeleton circle&gt;&lt;/fqhc-skeleton&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-toast&gt;
+          <span class="fqhc-specimen-note">Announced politely — it confirms what you just did, it should not interrupt</span>
+        </h3>
+        <div class="fqhc-stage">
+          <button type="button" class="fqhc-button"
+                  onclick="document.getElementById('showcase-toast').show('Patient roomed in exam 3')">Show success</button>
+          <button type="button" class="fqhc-button"
+                  onclick="document.getElementById('showcase-toast').show('Income determination is missing', 'warning')">Show warning</button>
+          <button type="button" class="fqhc-button"
+                  onclick="document.getElementById('showcase-toast').show('Could not save — try again', 'danger')">Show danger</button>
+        </div>
+        <fqhc-toast id="showcase-toast"></fqhc-toast>
+        <pre class="fqhc-code">&lt;fqhc-toast id="toast"&gt;&lt;/fqhc-toast&gt;
+document.getElementById('toast').show('Patient roomed', 'success');
+
+&lt;!-- or server-rendered after a redirect --&gt;
+&lt;fqhc-toast message="Saved" variant="success"&gt;&lt;/fqhc-toast&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
           Controls
           <span class="fqhc-specimen-note">Plain CSS classes from fqhc.css, not custom elements</span>
         </h3>
