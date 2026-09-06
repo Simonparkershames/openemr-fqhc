@@ -2,6 +2,7 @@
   <div class="fqhc-container">
 
     <fqhc-page-header
+      icon="design-system"
       heading="FQHC Design System"
       subheading="Every token, component, and pattern the FQHC surfaces are built from — rendered from the real assets, not from a copy.">
       <div slot="actions" class="fqhc-cluster">
@@ -12,6 +13,7 @@
 
     <nav class="fqhc-showcase-nav" aria-label="Style guide sections">
       <a class="fqhc-showcase-nav-link" href="#foundations">Foundations</a>
+      <a class="fqhc-showcase-nav-link" href="#icons">Icons</a>
       <a class="fqhc-showcase-nav-link" href="#components">Components</a>
       <a class="fqhc-showcase-nav-link" href="#patterns">Patterns</a>
       <a class="fqhc-showcase-nav-link" href="#accessibility">Accessibility</a>
@@ -47,6 +49,52 @@
       </div>
     </section>
 
+                <section class="fqhc-showcase-section" id="icons">
+      <h2>Icons</h2>
+      <p class="fqhc-showcase-lede">
+        One name per <em>concept</em>, not per drawing. Templates and server-side code ask for
+        <code>care-gap</code>; which glyph that resolves to is decided once, in
+        <code>assets/js/fqhc-icons.js</code>. The names below come from the <code>Icon</code> enum, so
+        this is exactly the set PHP is allowed to ask for — a test fails if the enum and the
+        stylesheet registry ever disagree. Every icon here is decorative and sits beside text that
+        already carries the meaning.
+      </p>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          The vocabulary
+          <span class="fqhc-specimen-note">0 names · Font Awesome Free 6 (CC BY 4.0), drawn inline so they work inside Shadow DOM</span>
+        </h3>
+        <div class="fqhc-icon-grid">
+                  </div>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Sizing and colour
+          <span class="fqhc-specimen-note">Sizes to 1em and inherits currentColor, so it always matches its text</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <p style="font-size: var(--fqhc-font-size-sm)"><fqhc-icon name="patient"></fqhc-icon> Small text</p>
+          <p><fqhc-icon name="patient"></fqhc-icon> Body text</p>
+          <p style="font-size: var(--fqhc-font-size-xl); color: var(--fqhc-color-primary)"><fqhc-icon name="patient"></fqhc-icon> Large, primary</p>
+          <p style="color: var(--fqhc-color-danger)"><fqhc-icon name="danger"></fqhc-icon> Danger</p>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-icon name="patient"&gt;&lt;/fqhc-icon&gt;                  &lt;!-- decorative (default) --&gt;
+&lt;fqhc-icon name="search" label="Search"&gt;&lt;/fqhc-icon&gt;   &lt;!-- icon-only control --&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          An unknown name
+          <span class="fqhc-specimen-note">Renders nothing rather than a wrong drawing — invisible in production, obvious here</span>
+        </h3>
+        <div class="fqhc-stage">
+          <span>Before<fqhc-icon name="no-such-icon"></fqhc-icon>after &mdash; nothing between the words.</span>
+        </div>
+      </div>
+    </section>
+
                 <section class="fqhc-showcase-section" id="components">
       <h2>Components</h2>
       <p class="fqhc-showcase-lede">
@@ -58,7 +106,7 @@
       <div class="fqhc-specimen">
         <h3 class="fqhc-specimen-title">&lt;fqhc-page-header&gt;</h3>
         <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
-          <fqhc-page-header heading="Front Desk Workspace" subheading="Today&#39;s appointments and arrival readiness.">
+          <fqhc-page-header icon="appointment" heading="Front Desk Workspace" subheading="Today&#39;s appointments and arrival readiness.">
             <div slot="actions" class="fqhc-cluster">
               <fqhc-status-badge variant="info">Front desk</fqhc-status-badge>
               <a class="fqhc-button" href="#components">Primary action</a>
@@ -77,9 +125,12 @@
           <span class="fqhc-specimen-note">Heading optional; body clips overflow, so wide content needs its own scroller</span>
         </h3>
         <div class="fqhc-grid">
-          <fqhc-card heading="With a heading">
+          <fqhc-card icon="care-gap" heading="With a heading and an icon">
             <p>The standard card: an uppercase heading rule, a hairline border, and a shadow that lifts on hover.</p>
-            <a class="fqhc-button" href="#components">Open</a>
+            <a class="fqhc-button" href="#components"><fqhc-icon class="fqhc-icon-lead" name="external"></fqhc-icon>Open</a>
+          </fqhc-card>
+          <fqhc-card heading="Heading, no icon">
+            <p>The <code>icon</code> attribute is optional; the heading sits flush left without one.</p>
           </fqhc-card>
           <fqhc-card>
             <p>No <code>heading</code> attribute — the header rule is omitted entirely rather than left blank.</p>
@@ -110,7 +161,14 @@
           <fqhc-status-badge variant="chartreuse">Unknown variant</fqhc-status-badge>
           <fqhc-status-badge variant="warning">Long label: 14 patients missing an income determination</fqhc-status-badge>
         </div>
-        <pre class="fqhc-code">&lt;fqhc-status-badge variant="success|warning|danger|info|neutral"&gt;Text&lt;/fqhc-status-badge&gt;</pre>
+        <div class="fqhc-stage">
+          <fqhc-status-badge variant="info" icon="pending">Overridden icon</fqhc-status-badge>
+          <fqhc-status-badge variant="success" no-icon>Suppressed icon</fqhc-status-badge>
+          <fqhc-status-badge variant="danger" icon="no-such-icon">Unknown icon name</fqhc-status-badge>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-status-badge variant="success|warning|danger|info|neutral"&gt;Text&lt;/fqhc-status-badge&gt;
+&lt;fqhc-status-badge variant="info" icon="pending"&gt;…&lt;/fqhc-status-badge&gt;   &lt;!-- override --&gt;
+&lt;fqhc-status-badge variant="success" no-icon&gt;…&lt;/fqhc-status-badge&gt;       &lt;!-- suppress --&gt;</pre>
       </div>
 
       <div class="fqhc-specimen">
@@ -134,14 +192,15 @@
       <div class="fqhc-specimen">
         <h3 class="fqhc-specimen-title">&lt;fqhc-empty-state&gt;</h3>
         <div class="fqhc-stage fqhc-stage-column">
-          <fqhc-empty-state message="No patients are waiting to be roomed."></fqhc-empty-state>
-          <fqhc-empty-state message="No data-quality gaps for 2025.">
+          <fqhc-empty-state message="No patients are waiting to be roomed. Defaults to the generic empty-tray icon."></fqhc-empty-state>
+          <fqhc-empty-state icon="care-gap" message="No data-quality gaps for 2025. Names what is missing instead.">
             <a href="#components">Run the report anyway</a>
           </fqhc-empty-state>
         </div>
         <pre class="fqhc-code">&lt;fqhc-empty-state message="No patients are waiting to be roomed."&gt;
   &lt;a href="…"&gt;Optional action&lt;/a&gt;
-&lt;/fqhc-empty-state&gt;</pre>
+&lt;/fqhc-empty-state&gt;
+&lt;fqhc-empty-state icon="care-gap" message="…"&gt;&lt;/fqhc-empty-state&gt;</pre>
       </div>
 
       <div class="fqhc-specimen">
@@ -178,15 +237,15 @@
         </h3>
         <div class="fqhc-grid">
           <a class="fqhc-nav-card" href="#patterns">
-            <span class="fqhc-nav-card-title">Rooming worklist</span>
+            <span class="fqhc-nav-card-title"><fqhc-icon name="roomed"></fqhc-icon>Rooming worklist</span>
             <span class="fqhc-nav-card-desc">Checked-in patients to room, with screenings due.</span>
           </a>
           <a class="fqhc-nav-card" href="#patterns">
-            <span class="fqhc-nav-card-title">Eligibility worklist</span>
+            <span class="fqhc-nav-card-title"><fqhc-icon name="worklist"></fqhc-icon>Eligibility worklist</span>
             <span class="fqhc-nav-card-desc">Patients whose gaps would distort UDS counts.</span>
           </a>
           <a class="fqhc-nav-card" href="#patterns">
-            <span class="fqhc-nav-card-title">UDS report</span>
+            <span class="fqhc-nav-card-title"><fqhc-icon name="report"></fqhc-icon>UDS report</span>
             <span class="fqhc-nav-card-desc">Patient characteristics and utilization tables.</span>
           </a>
         </div>

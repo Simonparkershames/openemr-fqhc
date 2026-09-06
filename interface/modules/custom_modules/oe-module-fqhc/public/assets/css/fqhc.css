@@ -123,6 +123,9 @@
 
 .fqhc-link-button {
   font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fqhc-space-1);
   font-size: var(--fqhc-font-size-xs);
   color: var(--fqhc-color-danger);
   background: none;
@@ -151,6 +154,9 @@
 
 .fqhc-button {
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fqhc-space-2);
   font: inherit;
   font-weight: var(--fqhc-font-weight-semibold);
   color: var(--fqhc-text-on-primary);
@@ -277,9 +283,24 @@
 }
 
 .fqhc-nav-card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--fqhc-space-2);
   font-size: var(--fqhc-font-size-lg);
   font-weight: var(--fqhc-font-weight-semibold);
   color: var(--fqhc-color-primary-strong);
+}
+
+/* Icons in light DOM. <fqhc-icon> sizes itself to 1em and inherits
+   currentColor, so these only adjust weight relative to their text. */
+.fqhc-icon-lead {
+  font-size: 1.1em;
+  opacity: 0.9;
+}
+
+.fqhc-section-heading fqhc-icon,
+.fqhc-nav-card-title fqhc-icon {
+  color: var(--fqhc-color-primary);
 }
 
 .fqhc-nav-card-desc {

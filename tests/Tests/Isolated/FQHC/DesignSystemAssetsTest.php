@@ -145,4 +145,21 @@ final class DesignSystemAssetsTest extends TestCase
             );
         }
     }
+
+    public function testIconScriptLoadsBeforeTheComponentsThatEmitIt(): void
+    {
+        self::assertSame('assets/js/fqhc-icons.js', DesignSystemAssets::SCRIPTS[0]);
+    }
+
+    public function testComponentsEmitTheIconElementRatherThanImportingIt(): void
+    {
+        // The two scripts are coupled only by the element name, which is what
+        // lets them be cache-busted independently. An import here would break
+        // that and is worth failing over.
+        $script = (string) file_get_contents($this->publicRoot . '/assets/js/fqhc-components.js');
+
+        self::assertStringContainsString('<fqhc-icon class=', $script);
+        self::assertDoesNotMatchRegularExpression('/^\s*import\s/m', $script);
+    }
+
 }

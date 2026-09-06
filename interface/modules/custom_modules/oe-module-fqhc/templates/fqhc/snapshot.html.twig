@@ -19,7 +19,7 @@
 <div class="fqhc-root">
   <div class="fqhc-container">
 
-    <fqhc-page-header
+    <fqhc-page-header icon="snapshot"
       heading="UDS Patient Snapshot"
       subheading="{{ (snapshot and snapshot.patientName ? snapshot.patientName : 'Essential UDS fields for the selected patient')|e('html_attr') }}">
       <div slot="actions" class="fqhc-cluster">
@@ -28,13 +28,13 @@
     </fqhc-page-header>
 
     {% if snapshot is null %}
-      <fqhc-card heading="No patient selected">
-        <fqhc-empty-state message="Select a patient first, then open FQHC to view their UDS snapshot."></fqhc-empty-state>
+      <fqhc-card icon="patient" heading="No patient selected">
+        <fqhc-empty-state icon="patient" message="Select a patient first, then open FQHC to view their UDS snapshot."></fqhc-empty-state>
       </fqhc-card>
     {% else %}
       <div class="fqhc-grid">
 
-        <fqhc-card heading="Demographics (reused)">
+        <fqhc-card icon="patient" heading="Demographics (reused)">
           {% for field in snapshot.demographics %}
             <fqhc-field-row
               label="{{ field.label|e('html_attr') }}"
@@ -43,7 +43,7 @@
         </fqhc-card>
 
         {# Interactive Income & FPL card (#15). #}
-        <fqhc-card heading="Income & Federal Poverty Level">
+        <fqhc-card icon="income" heading="Income & Federal Poverty Level">
           {% if incomeSummary and incomeSummary.recorded %}
             <fqhc-field-row label="Household size" value="{{ (incomeSummary.householdSize ?? '')|e('html_attr') }}"></fqhc-field-row>
             <fqhc-field-row label="Annual income" value="{{ (incomeSummary.annualIncomeDisplay ?? '')|e('html_attr') }}"></fqhc-field-row>
@@ -51,7 +51,7 @@
             <fqhc-field-row label="UDS income band" value="{{ incomeSummary.bandLabel|e('html_attr') }}"></fqhc-field-row>
             <fqhc-field-row label="Sliding-fee tier" value="{{ incomeSummary.tierLabel|e('html_attr') }}"></fqhc-field-row>
           {% else %}
-            <fqhc-empty-state message="Not yet recorded — enter household size and annual income below."></fqhc-empty-state>
+            <fqhc-empty-state icon="income" message="Not yet recorded — enter household size and annual income below."></fqhc-empty-state>
           {% endif %}
 
           {% if not guidelineLoaded %}
@@ -79,9 +79,9 @@
         </fqhc-card>
 
         {# Interactive Special populations card (#16). #}
-        <fqhc-card heading="Special populations">
+        <fqhc-card icon="special-population" heading="Special populations">
           {% if specialPopulations is empty %}
-            <fqhc-empty-state message="None recorded — add a status below."></fqhc-empty-state>
+            <fqhc-empty-state icon="special-population" message="None recorded — add a status below."></fqhc-empty-state>
           {% else %}
             <div class="fqhc-stack">
               {% for sp in specialPopulations %}
@@ -131,7 +131,7 @@
         </fqhc-card>
 
         {# Insurance → UDS payer category (#17), derived from existing coverage. #}
-        <fqhc-card heading="Insurance (UDS payer category)">
+        <fqhc-card icon="payer" heading="Insurance (UDS payer category)">
           <div class="fqhc-cluster" style="margin-bottom: var(--fqhc-space-2);">
             {% if not payerSummary.hasCoverage %}
               <fqhc-status-badge variant="warning">{{ payerSummary.categoryLabel|e('html') }}</fqhc-status-badge>
@@ -150,8 +150,8 @@
         </fqhc-card>
 
         {% for section in snapshot.pending %}
-          <fqhc-card heading="{{ section.title|e('html_attr') }}">
-            <fqhc-empty-state message="{{ section.message|e('html_attr') }}"></fqhc-empty-state>
+          <fqhc-card icon="snapshot" heading="{{ section.title|e('html_attr') }}">
+            <fqhc-empty-state icon="snapshot" message="{{ section.message|e('html_attr') }}"></fqhc-empty-state>
           </fqhc-card>
         {% endfor %}
 

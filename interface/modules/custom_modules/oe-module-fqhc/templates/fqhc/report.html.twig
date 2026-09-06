@@ -17,7 +17,7 @@
 <div class="fqhc-root">
   <div class="fqhc-container">
 
-    <fqhc-page-header
+    <fqhc-page-header icon="report"
       heading="UDS Report — {{ year }}"
       subheading="Patient characteristics for {{ report.summary.cohortSize }} patient(s) seen in {{ year }}">
       <div slot="actions" class="fqhc-cluster">
@@ -42,14 +42,14 @@
     </form>
 
     {% if report.summary.cohortSize == 0 %}
-      <fqhc-card heading="No patients">
-        <fqhc-empty-state message="No patients had a visit in {{ year }}."></fqhc-empty-state>
+      <fqhc-card icon="patient" heading="No patients">
+        <fqhc-empty-state icon="patient" message="No patients had a visit in {{ year }}."></fqhc-empty-state>
       </fqhc-card>
     {% else %}
       <div class="fqhc-stack">
 
         {% if not report.summary.consistent %}
-          <fqhc-card heading="Reconciliation">
+          <fqhc-card icon="worklist" heading="Reconciliation">
             <p class="fqhc-note">
               The unduplicated patient totals do not yet agree across all tables
               (patient totals agree: {{ report.summary.patientTotalsAgree ? 'yes' : 'no' }};
@@ -59,7 +59,7 @@
           </fqhc-card>
         {% endif %}
 
-        <fqhc-card heading="Table 4 — Income as a percentage of the Federal Poverty Level">
+        <fqhc-card icon="income" heading="Table 4 — Income as a percentage of the Federal Poverty Level">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>Income band</th><th>Patients</th></tr></thead>
@@ -73,7 +73,7 @@
           </div>
         </fqhc-card>
 
-        <fqhc-card heading="Table 4 — Principal third-party medical insurance">
+        <fqhc-card icon="payer" heading="Table 4 — Principal third-party medical insurance">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>Category</th><th>0–17</th><th>18 and over</th><th>Total</th></tr></thead>
@@ -92,7 +92,7 @@
           </div>
         </fqhc-card>
 
-        <fqhc-card heading="Table 4 — Special populations">
+        <fqhc-card icon="special-population" heading="Table 4 — Special populations">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>Population</th><th>Patients</th></tr></thead>
@@ -105,7 +105,7 @@
           </div>
         </fqhc-card>
 
-        <fqhc-card heading="Table 3A — Patients by age and by sex">
+        <fqhc-card icon="patient" heading="Table 3A — Patients by age and by sex">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>Age group</th><th>Male</th><th>Female</th><th>Total</th></tr></thead>
@@ -126,7 +126,7 @@
           </div>
         </fqhc-card>
 
-        <fqhc-card heading="Table 3B — Race and Hispanic/Latino ethnicity">
+        <fqhc-card icon="patient" heading="Table 3B — Race and Hispanic/Latino ethnicity">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>Race</th><th>Hispanic</th><th>Not Hispanic</th><th>Unreported</th><th>Total</th></tr></thead>
@@ -149,7 +149,7 @@
           <fqhc-field-row label="Best served in a language other than English" value="{{ report.race.language }}"></fqhc-field-row>
         </fqhc-card>
 
-        <fqhc-card heading="Patients by ZIP Code">
+        <fqhc-card icon="report" heading="Patients by ZIP Code">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>ZIP</th><th>Uninsured</th><th>Medicaid / CHIP / Other Public</th><th>Medicare</th><th>Private</th><th>Total</th></tr></thead>
@@ -172,7 +172,7 @@
           </div>
         </fqhc-card>
 
-        <fqhc-card heading="Table 5 — Utilization by service category">
+        <fqhc-card icon="encounter" heading="Table 5 — Utilization by service category">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>Service category</th><th>In-person</th><th>Virtual</th><th>Total visits</th><th>Patients</th></tr></thead>
@@ -195,7 +195,7 @@
           <p class="fqhc-note">Patients are counted once per service category (duplicated across categories), so the patient total is not the unduplicated health-center count. Staffing/FTE (Column A) is not yet included.</p>
         </fqhc-card>
 
-        <fqhc-card heading="Table 6B — Clinical quality measures">
+        <fqhc-card icon="care-gap" heading="Table 6B — Clinical quality measures">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>Measure</th><th>eCQM</th><th>Denominator</th><th>Numerator</th><th>Rate</th><th>Status</th></tr></thead>
@@ -222,7 +222,7 @@
           <p class="fqhc-note">Measures are mapped to their CY2026 CMS eCQM (docs/fqhc/UDS-DATA-MODEL.md §3); population counts are pending the CQM/AMC engine population-set wiring.</p>
         </fqhc-card>
 
-        <fqhc-card heading="Table 7 — Health outcomes and disparities">
+        <fqhc-card icon="care-gap" heading="Table 7 — Health outcomes and disparities">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>Measure</th><th>Rate</th><th>Status</th></tr></thead>

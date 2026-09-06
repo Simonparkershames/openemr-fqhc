@@ -132,6 +132,35 @@ entire design system on one page:
 Build a new component here first: it is faster than seeding data and clicking
 through a role loop, and it is where a reviewer will look for an inconsistency.
 
+## Icons (issue #60)
+
+One name per **concept**, never per drawing. Templates and server-side code ask
+for `care-gap` or `worklist`; what that resolves to is decided once, in
+`assets/js/fqhc-icons.js`. The same vocabulary exists in PHP as the
+`OpenEMR\FQHC\DesignSystem\Icon` enum, so a `WorkspaceCard` can carry its
+concept and the template just passes it through. `IconRegistryTest` fails if
+the enum and the browser-side registry ever drift, or if a template names an
+icon that does not exist.
+
+```twig
+<fqhc-card icon="care-gap" heading="Care gaps">…</fqhc-card>
+<fqhc-icon name="patient"></fqhc-icon>                  {# decorative (default) #}
+<fqhc-icon name="search" label="Search"></fqhc-icon>    {# icon-only control #}
+```
+
+**Why inline SVG and not the Font Awesome classes.** Font Awesome is loaded on
+every module page already, so its classes would have been free — but the
+components render into Shadow DOM, and document stylesheets do not cross a
+shadow boundary. An `<i class="fa fa-user">` inside `fqhc-card`'s shadow root
+is an unstyled empty element, and three of the four components that need icons
+are in exactly that position. The path data is Font Awesome Free 6.7.2 (solid,
+CC BY 4.0), which the project already depends on; each entry records its
+upstream name so a glyph can be traced back.
+
+Icons are decorative by default (`aria-hidden`), because every one of them sits
+beside text that already carries the meaning — status badges keep their labels.
+Pass `label` only for a genuinely icon-only control.
+
 ## Architecture notes
 
 - **Domain/services** live in the core tree under `OpenEMR\FQHC\`
@@ -198,6 +227,7 @@ Docker/DB):
 composer phpunit-isolated -- --filter DesignSystemAssets
 composer phpunit-isolated -- --filter DemoDataSet
 composer phpunit-isolated -- --filter 'ColorContrast|ContrastAudit|TokenSheet'
+composer phpunit-isolated -- --filter IconRegistry
 ```
 
 `DemoDataSetTest` asserts the demo panel actually spans every UDS bucket, payer

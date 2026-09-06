@@ -21,17 +21,18 @@
   <div class="fqhc-container">
 
     <fqhc-page-header
+      icon="{{ workspace.icon|e('html_attr') }}"
       heading="{{ workspace.heading|e('html_attr') }}"
       subheading="{{ workspace.tagline|e('html_attr') }}">
       <div slot="actions" class="fqhc-cluster">
-        <fqhc-status-badge>{{ workspace.roleLabel|e('html') }}</fqhc-status-badge>
+        <fqhc-status-badge icon="{{ workspace.icon|e('html_attr') }}">{{ workspace.roleLabel|e('html') }}</fqhc-status-badge>
       </div>
     </fqhc-page-header>
 
     <div class="fqhc-stack">
 
       {% if dataHealth %}
-        <fqhc-card heading="UDS data health — {{ dataHealth.year }}">
+        <fqhc-card icon="worklist" heading="UDS data health — {{ dataHealth.year }}">
           {% if dataHealth.total == 0 %}
             <fqhc-status-badge variant="success">No data-quality gaps</fqhc-status-badge>
             <p class="fqhc-note">Every {{ dataHealth.year }} patient has complete UDS demographics, income, and payer data.</p>
@@ -45,9 +46,11 @@
 
       <div class="fqhc-grid">
         {% for card in cards %}
-          <fqhc-card heading="{{ card.title|e('html_attr') }}">
+          <fqhc-card icon="{{ card.icon|e('html_attr') }}" heading="{{ card.title|e('html_attr') }}">
             <p>{{ card.description|e('html') }}</p>
-            <a class="fqhc-button" href="{{ card.url|e('html_attr') }}">{{ card.ctaLabel|e('html') }}</a>
+            <a class="fqhc-button" href="{{ card.url|e('html_attr') }}">
+              <fqhc-icon class="fqhc-icon-lead" name="{{ card.icon|e('html_attr') }}"></fqhc-icon>{{ card.ctaLabel|e('html') }}
+            </a>
           </fqhc-card>
         {% endfor %}
       </div>

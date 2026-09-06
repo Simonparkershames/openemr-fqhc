@@ -247,6 +247,7 @@ class TwigTemplateRenderTest extends TestCase
             'fqhc/showcase.html.twig',
             [
                 'tokenCount' => 5,
+                'icons' => ['patient', 'care-gap', 'report', 'success', 'warning'],
                 'tokenGroups' => [
                     [
                         'label' => 'Color: brand',
@@ -384,6 +385,7 @@ class TwigTemplateRenderTest extends TestCase
             'fqhc/showcase.html.twig',
             [
                 'tokenCount' => 0,
+                'icons' => [],
                 'tokenGroups' => [],
                 'contrast' => [
                     'total' => 1,

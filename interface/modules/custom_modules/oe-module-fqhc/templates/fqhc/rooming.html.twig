@@ -57,7 +57,7 @@
 <div class="fqhc-root">
   <div class="fqhc-container">
 
-    <fqhc-page-header
+    <fqhc-page-header icon="roomed"
       heading="Rooming — Today"
       subheading="{{ dateDisplay|e('html_attr') }} · room, vitals, screenings">
       <div slot="actions" class="fqhc-cluster">
@@ -68,13 +68,13 @@
 
     <div class="fqhc-stack">
 
-      <fqhc-card heading="Waiting to be roomed">
+      <fqhc-card icon="arrived" heading="Waiting to be roomed">
         {% if awaitingRooming is empty %}
-          <fqhc-empty-state message="No checked-in patients are waiting. Arrivals appear here the moment the front desk checks them in."></fqhc-empty-state>
+          <fqhc-empty-state icon="arrived" message="No checked-in patients are waiting. Arrivals appear here the moment the front desk checks them in."></fqhc-empty-state>
         {% else %}
           <div class="fqhc-grid">
             {% for entry in awaitingRooming %}
-              <fqhc-card heading="{{ entry.timeDisplay|e('html_attr') }} — {{ entry.patientName|e('html_attr') }}">
+              <fqhc-card icon="patient" heading="{{ entry.timeDisplay|e('html_attr') }} — {{ entry.patientName|e('html_attr') }}">
                 <p class="fqhc-note">{{ entry.categoryName|e('html') }}{% if entry.providerName %} · {{ entry.providerName|e('html') }}{% endif %}</p>
                 {{ ui.glance(entry, cdrEnabled) }}
                 <form method="post" action="{{ actionUrl|e('html_attr') }}" class="fqhc-inline-form">
@@ -101,13 +101,13 @@
         {% endif %}
       </fqhc-card>
 
-      <fqhc-card heading="Roomed — with care team">
+      <fqhc-card icon="roomed" heading="Roomed — with care team">
         {% if withCareTeam is empty %}
-          <fqhc-empty-state message="No patients are in exam rooms right now."></fqhc-empty-state>
+          <fqhc-empty-state icon="roomed" message="No patients are in exam rooms right now."></fqhc-empty-state>
         {% else %}
           <div class="fqhc-grid">
             {% for entry in withCareTeam %}
-              <fqhc-card heading="{{ entry.timeDisplay|e('html_attr') }} — {{ entry.patientName|e('html_attr') }}">
+              <fqhc-card icon="patient" heading="{{ entry.timeDisplay|e('html_attr') }} — {{ entry.patientName|e('html_attr') }}">
                 <div class="fqhc-cluster">
                   {% if entry.roomLabel %}
                     <fqhc-status-badge variant="info">{{ entry.roomLabel|e('html') }}</fqhc-status-badge>
