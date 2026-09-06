@@ -161,6 +161,33 @@ Icons are decorative by default (`aria-hidden`), because every one of them sits
 beside text that already carries the meaning — status badges keep their labels.
 Pass `label` only for a genuinely icon-only control.
 
+## Dark mode (issue #61)
+
+Every FQHC module surface renders in light or dark. The whole thing is a second
+set of **colour tokens** — no component rule is duplicated, because every
+component already draws itself from those names.
+
+- **Choosing.** `<fqhc-theme-toggle>` offers System / Light / Dark. System is
+  the default and follows `prefers-color-scheme`; an explicit choice is stored
+  in `localStorage` under `fqhc-theme` and written to `data-fqhc-theme` on the
+  root element. The palette is declared behind *both* the media query and the
+  attribute, so the toggle wins in both directions — a dark-OS user can pin
+  light and vice versa. It is per-browser rather than per-account on purpose: a
+  workstation and an exam-room tablet reasonably want different answers.
+- **No flash.** The attribute has to land before the first paint, so it is
+  applied by a tiny synchronous snippet in the `<head>` —
+  `DesignSystemAssets::themeBootstrapScript()` — ahead of every stylesheet.
+  `DarkThemeTest` asserts every module page emits it in that position.
+- **Accessible in both.** `ContrastAudit` measures each theme from the values
+  its own cascade produces; all 22 pairings clear WCAG 2.1 AA in light and
+  dark, asserted in CI and shown side by side in the style guide.
+- **Deliberate choices.** Text is softened (`#e2e8f0`, not white) to avoid
+  halation; the brand gets *brighter* in dark with near-black text on it;
+  elevation reads as a lighter surface rather than a darker shadow, since a
+  shadow cannot darken an already-dark ground.
+- **Scope.** Module surfaces only. A deep link out to a legacy screen lands on
+  that screen's own theme; extending the shell is tracked under #68.
+
 ## Architecture notes
 
 - **Domain/services** live in the core tree under `OpenEMR\FQHC\`
@@ -228,6 +255,7 @@ composer phpunit-isolated -- --filter DesignSystemAssets
 composer phpunit-isolated -- --filter DemoDataSet
 composer phpunit-isolated -- --filter 'ColorContrast|ContrastAudit|TokenSheet'
 composer phpunit-isolated -- --filter IconRegistry
+composer phpunit-isolated -- --filter DarkTheme
 ```
 
 `DemoDataSetTest` asserts the demo panel actually spans every UDS bucket, payer

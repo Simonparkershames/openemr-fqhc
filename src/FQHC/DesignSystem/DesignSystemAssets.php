@@ -46,7 +46,14 @@ final readonly class DesignSystemAssets
     public const SCRIPTS = [
         'assets/js/fqhc-icons.js',
         'assets/js/fqhc-components.js',
+        'assets/js/fqhc-theme.js',
     ];
+
+    /** localStorage key holding an explicit theme choice; '' means follow the OS. */
+    public const THEME_STORAGE_KEY = 'fqhc-theme';
+
+    /** Attribute written on the root element to pin a theme. */
+    public const THEME_ATTRIBUTE = 'data-fqhc-theme';
 
     /**
      * @param string       $publicRoot     Absolute filesystem path to the module's `public/` directory.
@@ -80,6 +87,35 @@ final readonly class DesignSystemAssets
     public function scriptUrls(): array
     {
         return $this->urls(self::SCRIPTS);
+    }
+
+    /**
+     * A synchronous snippet for the document `<head>`, before any stylesheet.
+     *
+     * The theme attribute has to be on the root element before the first paint
+     * or a dark-preferring user sees a white page for a frame. Nothing loaded
+     * with `defer` or as a module is early enough, so this one runs inline and
+     * blocking — it is deliberately tiny, touches only the root element, and
+     * swallows any storage error (private browsing, blocked site data) by
+     * falling back to the operating-system preference.
+     *
+     * Returned without the surrounding `<script>` tag so the caller controls
+     * escaping and any nonce.
+     */
+    public static function themeBootstrapScript(): string
+    {
+        return <<<'JS'
+        (function () {
+            try {
+                var choice = window.localStorage.getItem('fqhc-theme');
+                if (choice === 'light' || choice === 'dark') {
+                    document.documentElement.setAttribute('data-fqhc-theme', choice);
+                }
+            } catch (e) {
+                /* No stored preference available; prefers-color-scheme decides. */
+            }
+        })();
+        JS;
     }
 
     /**

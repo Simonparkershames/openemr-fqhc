@@ -7,8 +7,9 @@
       subheading="Every token, component, and pattern the FQHC surfaces are built from — rendered from the real assets, not from a copy.">
       <div slot="actions" class="fqhc-cluster">
         <fqhc-status-badge variant="info">5 tokens</fqhc-status-badge>
-                  <fqhc-status-badge variant="success">2 pairings pass AA</fqhc-status-badge>
-              </div>
+                  <fqhc-status-badge variant="success">2 pairings pass AA in both themes</fqhc-status-badge>
+                <fqhc-theme-toggle></fqhc-theme-toggle>
+      </div>
     </fqhc-page-header>
 
     <nav class="fqhc-showcase-nav" aria-label="Style guide sections">
@@ -130,6 +131,23 @@
                 </div>
                           </div>
                   </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Theme
+          <span class="fqhc-specimen-note">Follows the operating system until you choose; an explicit choice is remembered in this browser</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <fqhc-theme-toggle></fqhc-theme-toggle>
+          <p class="fqhc-showcase-lede" style="margin: 0">
+            Dark redefines <em>only</em> colour-carrying tokens — surfaces, text, semantic colours,
+            shadows, and the focus ring — never a component rule. Everything on this page is drawing
+            itself from those names, so flipping the toggle re-themes the entire system without a
+            single duplicated selector. Scoped to FQHC module surfaces: a deep link out to a legacy
+            screen lands on that screen&rsquo;s own theme.
+          </p>
+        </div>
+      </div>
 
       <div class="fqhc-specimen">
         <h3 class="fqhc-specimen-title">
@@ -434,13 +452,24 @@
         from the token values in <code>tokens.css</code>. AA is the bar: 4.5:1 for normal text, 3:1
         for large text (18pt+, or 14pt bold). A pairing that fails here is a bug in the palette.
       </p>
+      <p class="fqhc-showcase-lede">
+        <strong>Both themes are measured</strong>, each from the values its own cascade produces —
+        not just whichever one you happen to be looking at. The dark palette was chosen against a
+        dark ground, and the semantic <code>*-soft</code> tints are where AA is most easily lost, so
+        neither theme is assumed to inherit the other&rsquo;s result.
+      </p>
 
-      <fqhc-card heading="Contrast audit">
+            <fqhc-card icon="success" heading="Contrast audit — Light theme">
                   <fqhc-status-badge variant="success">All 2 pairings meet WCAG 2.1 AA</fqhc-status-badge>
+                          <fqhc-status-badge variant="neutral">Base palette</fqhc-status-badge>
 
         <div class="fqhc-table-wrap fqhc-home-rows">
           <table class="fqhc-table">
-            <caption class="fqhc-swatch-comment">Contrast ratios computed from the declared token values.</caption>
+            <caption class="fqhc-swatch-comment">
+              Ratios computed from the token values this theme resolves to. The samples are painted
+              with those literal values rather than <code>var(--token)</code>, so each table shows its
+              own theme whichever one you are currently viewing the page in.
+            </caption>
             <thead>
               <tr>
                 <th scope="col">Usage</th>
@@ -456,7 +485,7 @@
                   <td>Body text on a card</td>
                   <td class="fqhc-contrast-cell" data-label="Sample">
                     <span class="fqhc-contrast-sample"
-                          style="color: var(--fqhc-text); background: var(--fqhc-surface-card)">Aa sample</span>
+                          style="color: &#x23;0f172a; background: &#x23;ffffff">Aa sample</span>
                   </td>
                   <td class="fqhc-contrast-cell" data-label="Foreground">
                     <span class="fqhc-spec-name">--fqhc-text</span>
@@ -475,7 +504,7 @@
                   <td>Metric value on a card <span class="fqhc-swatch-comment">(large text)</span></td>
                   <td class="fqhc-contrast-cell" data-label="Sample">
                     <span class="fqhc-contrast-sample"
-                          style="color: var(--fqhc-color-primary-strong); background: var(--fqhc-surface-card)">Aa sample</span>
+                          style="color: &#x23;115e59; background: &#x23;ffffff">Aa sample</span>
                   </td>
                   <td class="fqhc-contrast-cell" data-label="Foreground">
                     <span class="fqhc-spec-name">--fqhc-color-primary-strong</span>
@@ -494,7 +523,71 @@
           </table>
         </div>
       </fqhc-card>
-    </section>
+            <fqhc-card icon="success" heading="Contrast audit — Dark theme">
+                  <fqhc-status-badge variant="success">All 2 pairings meet WCAG 2.1 AA</fqhc-status-badge>
+                          <fqhc-status-badge variant="neutral">24 tokens overridden</fqhc-status-badge>
+
+        <div class="fqhc-table-wrap fqhc-home-rows">
+          <table class="fqhc-table">
+            <caption class="fqhc-swatch-comment">
+              Ratios computed from the token values this theme resolves to. The samples are painted
+              with those literal values rather than <code>var(--token)</code>, so each table shows its
+              own theme whichever one you are currently viewing the page in.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Usage</th>
+                <th scope="col">Sample</th>
+                <th scope="col">Foreground</th>
+                <th scope="col">Background</th>
+                <th scope="col">Ratio</th>
+                <th scope="col">Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+                              <tr>
+                  <td>Body text on a card</td>
+                  <td class="fqhc-contrast-cell" data-label="Sample">
+                    <span class="fqhc-contrast-sample"
+                          style="color: &#x23;e2e8f0; background: &#x23;1e293b">Aa sample</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Foreground">
+                    <span class="fqhc-spec-name">--fqhc-text</span>
+                    <span class="fqhc-swatch-value">#e2e8f0</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Background">
+                    <span class="fqhc-spec-name">--fqhc-surface-card</span>
+                    <span class="fqhc-swatch-value">#1e293b</span>
+                  </td>
+                  <td data-label="Ratio"><span class="fqhc-contrast-ratio">11.86:1</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Rating">
+                    <fqhc-status-badge variant="success">AAA</fqhc-status-badge>
+                  </td>
+                </tr>
+                              <tr>
+                  <td>Metric value on a card <span class="fqhc-swatch-comment">(large text)</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Sample">
+                    <span class="fqhc-contrast-sample"
+                          style="color: &#x23;2dd4bf; background: &#x23;1e293b">Aa sample</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Foreground">
+                    <span class="fqhc-spec-name">--fqhc-color-primary-strong</span>
+                    <span class="fqhc-swatch-value">#2dd4bf</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Background">
+                    <span class="fqhc-spec-name">--fqhc-surface-card</span>
+                    <span class="fqhc-swatch-value">#1e293b</span>
+                  </td>
+                  <td data-label="Ratio"><span class="fqhc-contrast-ratio">7.85:1</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Rating">
+                    <fqhc-status-badge variant="success">AAA</fqhc-status-badge>
+                  </td>
+                </tr>
+                          </tbody>
+          </table>
+        </div>
+      </fqhc-card>
+          </section>
 
   </div>
 </div>

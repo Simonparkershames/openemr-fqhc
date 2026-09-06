@@ -15,6 +15,16 @@
   box-sizing: border-box;
 }
 
+/* The module pages set these on <html> and <body>. Both are needed: .fqhc-root
+   paints only as far as its content reaches, and the legacy theme puts a
+   background on <html> itself, which stops <body>'s from propagating to the
+   canvas. In dark that left a light band below the fold and behind scroll
+   overshoot. */
+.fqhc-page,
+.fqhc-body {
+  background: var(--fqhc-surface-page);
+}
+
 .fqhc-root {
   font-family: var(--fqhc-font-sans);
   font-size: var(--fqhc-font-size-base);
