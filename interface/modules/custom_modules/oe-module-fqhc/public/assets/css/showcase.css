@@ -1,0 +1,277 @@
+/**
+ * FQHC Design System — style-guide page styles
+ *
+ * Loaded by showcase.php only, never by a workspace page: this is the
+ * scaffolding that puts specimens on a page (swatch grids, spec rows, code
+ * blocks), not part of the design system itself. Everything the guide is
+ * *documenting* lives in tokens.css and fqhc.css.
+ *
+ * Consumes tokens only — a hard-coded colour here would let the guide show a
+ * value the system does not actually have. The two exceptions are the
+ * checkerboard behind transparent samples and the specimen borders, which are
+ * measurement aids rather than design.
+ *
+ * @license https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
+ */
+
+/* ----- Page scaffolding ----- */
+
+.fqhc-showcase-nav {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fqhc-space-1);
+  margin-bottom: var(--fqhc-space-5);
+  padding: var(--fqhc-space-2) 0;
+  background: var(--fqhc-surface-page);
+  border-bottom: 1px solid var(--fqhc-border);
+}
+
+.fqhc-root a.fqhc-showcase-nav-link {
+  padding: var(--fqhc-space-1) var(--fqhc-space-3);
+  border-radius: var(--fqhc-radius-pill);
+  font-size: var(--fqhc-font-size-sm);
+  font-weight: var(--fqhc-font-weight-medium);
+  color: var(--fqhc-text-muted);
+  text-decoration: none;
+}
+
+.fqhc-root a.fqhc-showcase-nav-link:hover {
+  background: var(--fqhc-surface-sunken);
+  color: var(--fqhc-color-primary-strong);
+  text-decoration: none;
+}
+
+.fqhc-showcase-section {
+  margin-top: var(--fqhc-space-8);
+  scroll-margin-top: var(--fqhc-space-8);
+}
+
+.fqhc-showcase-section > h2 {
+  margin: 0 0 var(--fqhc-space-1);
+  font-size: var(--fqhc-font-size-xl);
+  font-weight: var(--fqhc-font-weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--fqhc-text);
+}
+
+.fqhc-showcase-lede {
+  margin: 0 0 var(--fqhc-space-5);
+  max-width: 68ch;
+  color: var(--fqhc-text-muted);
+  font-size: var(--fqhc-font-size-sm);
+}
+
+/* A titled specimen: one component, token group, or pattern under study. */
+.fqhc-specimen {
+  margin-bottom: var(--fqhc-space-5);
+}
+
+.fqhc-specimen-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--fqhc-space-3);
+  margin: 0 0 var(--fqhc-space-2);
+  font-size: var(--fqhc-font-size-xs);
+  font-weight: var(--fqhc-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fqhc-color-primary-strong);
+}
+
+.fqhc-specimen-note {
+  font-size: var(--fqhc-font-size-xs);
+  font-weight: var(--fqhc-font-weight-regular);
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--fqhc-text-muted);
+}
+
+/* The stage a specimen sits on, so a white component is visible on a white
+   page and a transparent one shows its own bounds. */
+.fqhc-stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--fqhc-space-4);
+  padding: var(--fqhc-space-4);
+  background: var(--fqhc-surface-page);
+  border: 1px solid var(--fqhc-border);
+  border-radius: var(--fqhc-radius-md);
+}
+
+.fqhc-stage-block {
+  display: block;
+}
+
+.fqhc-stage-card {
+  background: var(--fqhc-surface-card);
+}
+
+.fqhc-stage-column {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Markup sample shown beneath a specimen. */
+.fqhc-code {
+  margin: var(--fqhc-space-2) 0 0;
+  padding: var(--fqhc-space-3) var(--fqhc-space-4);
+  overflow-x: auto;
+  background: var(--fqhc-surface-sunken);
+  border: 1px solid var(--fqhc-border);
+  border-radius: var(--fqhc-radius-sm);
+  color: var(--fqhc-text);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: var(--fqhc-font-size-xs);
+  line-height: 1.6;
+  white-space: pre;
+  tab-size: 2;
+}
+
+/* ----- Token specimens ----- */
+
+.fqhc-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--fqhc-space-3);
+}
+
+.fqhc-swatch {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--fqhc-surface-card);
+  border: 1px solid var(--fqhc-border);
+  border-radius: var(--fqhc-radius-md);
+}
+
+.fqhc-swatch-chip {
+  height: 56px;
+  border-bottom: 1px solid var(--fqhc-border);
+}
+
+.fqhc-swatch-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--fqhc-space-2) var(--fqhc-space-3);
+}
+
+.fqhc-swatch-name {
+  font-size: var(--fqhc-font-size-sm);
+  font-weight: var(--fqhc-font-weight-medium);
+  color: var(--fqhc-text);
+  overflow-wrap: anywhere;
+}
+
+.fqhc-swatch-value {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: var(--fqhc-font-size-xs);
+  color: var(--fqhc-text-muted);
+}
+
+.fqhc-swatch-comment {
+  font-size: var(--fqhc-font-size-xs);
+  color: var(--fqhc-text-muted);
+}
+
+/* Generic token row: name, live sample, literal value. */
+.fqhc-specs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fqhc-space-1);
+}
+
+.fqhc-spec {
+  display: grid;
+  grid-template-columns: minmax(9rem, 14rem) 1fr minmax(6rem, auto);
+  align-items: center;
+  gap: var(--fqhc-space-4);
+  padding: var(--fqhc-space-2) var(--fqhc-space-3);
+  background: var(--fqhc-surface-card);
+  border: 1px solid var(--fqhc-border);
+  border-radius: var(--fqhc-radius-sm);
+}
+
+@media (max-width: 639px) {
+  .fqhc-spec {
+    grid-template-columns: 1fr;
+    gap: var(--fqhc-space-2);
+  }
+}
+
+.fqhc-spec-name,
+.fqhc-spec-value {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: var(--fqhc-font-size-xs);
+  color: var(--fqhc-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.fqhc-spec-value {
+  text-align: right;
+}
+
+.fqhc-spec-sample {
+  min-width: 0;
+  color: var(--fqhc-text);
+}
+
+.fqhc-spec-sample-truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Spacing steps are drawn to width so the scale is visible, not asserted. */
+.fqhc-space-bar {
+  height: 14px;
+  background: var(--fqhc-color-primary);
+  border-radius: 2px;
+}
+
+.fqhc-radius-box {
+  width: 88px;
+  height: 44px;
+  background: var(--fqhc-color-primary-soft);
+  border: 1px solid var(--fqhc-color-primary);
+}
+
+.fqhc-shadow-box {
+  width: 120px;
+  height: 44px;
+  background: var(--fqhc-surface-card);
+  border-radius: var(--fqhc-radius-md);
+}
+
+/* ----- Contrast audit ----- */
+
+.fqhc-contrast-sample {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--fqhc-space-1) var(--fqhc-space-3);
+  border: 1px solid var(--fqhc-border);
+  border-radius: var(--fqhc-radius-sm);
+  font-weight: var(--fqhc-font-weight-medium);
+  white-space: nowrap;
+}
+
+.fqhc-contrast-ratio {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--fqhc-font-weight-semibold);
+}
+
+.fqhc-table td.fqhc-contrast-cell {
+  text-align: left;
+}
+
+/* ----- Overflow / long-content probes ----- */
+
+.fqhc-probe-narrow {
+  width: 260px;
+  max-width: 100%;
+}

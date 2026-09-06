@@ -38,7 +38,7 @@
   --fqhc-border: #e2e8f0;                 /* slate-200 */
   --fqhc-border-strong: #cbd5e1;          /* slate-300 */
   --fqhc-text: #0f172a;                   /* slate-900 */
-  --fqhc-text-muted: #64748b;             /* slate-500 */
+  --fqhc-text-muted: #5b6879;             /* slate-500, darkened to clear AA on the sunken surface */
   --fqhc-text-on-primary: #ffffff;
 
   /* ----- Typography ----- */
