@@ -116,9 +116,11 @@
 
       <div class="fqhc-grid">
         {% for card in quickActions %}
-          <fqhc-card icon="external" heading="{{ card.title|e('html_attr') }}">
+          <fqhc-card icon="{{ card.icon|e('html_attr') }}" heading="{{ card.title|e('html_attr') }}">
             <p>{{ card.description|e('html') }}</p>
-            <a class="fqhc-button" href="{{ card.url|e('html_attr') }}" onclick="top.restoreSession()">{{ card.ctaLabel|e('html') }}</a>
+            <a class="fqhc-button" href="{{ card.url|e('html_attr') }}" onclick="top.restoreSession()">
+              <fqhc-icon class="fqhc-icon-lead" name="{{ card.icon|e('html_attr') }}"></fqhc-icon>{{ card.ctaLabel|e('html') }}
+            </a>
           </fqhc-card>
         {% endfor %}
       </div>

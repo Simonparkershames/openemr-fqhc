@@ -87,6 +87,7 @@ $quickActions = array_map(
         'description' => $card->description,
         'url' => $webroot . $card->url,
         'ctaLabel' => $card->ctaLabel,
+        'icon' => $card->icon->value,
     ],
     $workspace->cards,
 );
