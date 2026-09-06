@@ -148,7 +148,13 @@ final class DesignSystemAssetsTest extends TestCase
 
     public function testIconScriptLoadsBeforeTheComponentsThatEmitIt(): void
     {
-        self::assertSame('assets/js/fqhc-icons.js', DesignSystemAssets::SCRIPTS[0]);
+        // Asserted against the emitted URLs rather than the SCRIPTS constant:
+        // the constant is a literal PHPStan can prove, so comparing it to
+        // another literal is a test that can never fail.
+        $urls = (new DesignSystemAssets($this->publicRoot, '/base'))->scriptUrls();
+
+        self::assertStringContainsString('fqhc-icons.js', $urls[0]);
+        self::assertStringContainsString('fqhc-components.js', $urls[1]);
     }
 
     public function testComponentsEmitTheIconElementRatherThanImportingIt(): void
