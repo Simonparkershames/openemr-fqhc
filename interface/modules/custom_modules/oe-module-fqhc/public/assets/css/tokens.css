@@ -89,3 +89,95 @@
     --fqhc-transition: 0ms;
   }
 }
+
+/**
+ * Dark theme (issue #61).
+ *
+ * Only colour-carrying tokens are redefined — never a component rule. Every
+ * component already draws itself from these names, so the whole system flips
+ * without a single duplicated selector.
+ *
+ * Three things are deliberate here:
+ *
+ *  - **Text is softened, not white.** #e2e8f0 rather than #ffffff: pure white
+ *    on a dark ground haloes, and 14.5:1 is already far past AA.
+ *  - **The brand gets brighter, not darker.** A teal that reads as "strong" on
+ *    white disappears on slate, so primary moves up the ramp and
+ *    `text-on-primary` becomes near-black — a bright fill needs dark text.
+ *  - **Elevation is lighter surface, not darker shadow.** A shadow cannot
+ *    darken an already-dark ground, so cards separate by being lighter than
+ *    the page; the shadows stay only to soften the edge.
+ *
+ * The values are declared twice on purpose: once behind the OS preference
+ * (skipped when the user has explicitly chosen light) and once behind the
+ * explicit attribute, so the toggle wins in both directions. `DarkThemeTest`
+ * asserts the two blocks stay identical and that every pairing still clears
+ * WCAG AA in dark.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fqhc-theme="light"]) {
+    --fqhc-color-primary: #14b8a6;
+    --fqhc-color-primary-strong: #2dd4bf;
+    --fqhc-color-primary-soft: #134e4a;
+    --fqhc-color-accent: #a5b4fc;
+
+    --fqhc-color-success: #4ade80;
+    --fqhc-color-success-soft: #14532d;
+    --fqhc-color-warning: #fbbf24;
+    --fqhc-color-warning-soft: #451a03;
+    --fqhc-color-danger: #f87171;
+    --fqhc-color-danger-soft: #450a0a;
+    --fqhc-color-info: #60a5fa;
+    --fqhc-color-info-soft: #172554;
+    --fqhc-color-neutral: #cbd5e1;
+    --fqhc-color-neutral-soft: #334155;
+
+    --fqhc-surface-page: #0f172a;
+    --fqhc-surface-card: #1e293b;
+    --fqhc-surface-sunken: #172033;
+    --fqhc-border: #334155;
+    --fqhc-border-strong: #475569;
+    --fqhc-text: #e2e8f0;
+    --fqhc-text-muted: #94a3b8;
+    --fqhc-text-on-primary: #042f2e;
+
+    --fqhc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --fqhc-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --fqhc-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+    --fqhc-focus-ring: 0 0 0 3px rgba(165, 180, 252, 0.5);
+  }
+}
+
+:root[data-fqhc-theme="dark"] {
+  --fqhc-color-primary: #14b8a6;
+  --fqhc-color-primary-strong: #2dd4bf;
+  --fqhc-color-primary-soft: #134e4a;
+  --fqhc-color-accent: #a5b4fc;
+
+  --fqhc-color-success: #4ade80;
+  --fqhc-color-success-soft: #14532d;
+  --fqhc-color-warning: #fbbf24;
+  --fqhc-color-warning-soft: #451a03;
+  --fqhc-color-danger: #f87171;
+  --fqhc-color-danger-soft: #450a0a;
+  --fqhc-color-info: #60a5fa;
+  --fqhc-color-info-soft: #172554;
+  --fqhc-color-neutral: #cbd5e1;
+  --fqhc-color-neutral-soft: #334155;
+
+  --fqhc-surface-page: #0f172a;
+  --fqhc-surface-card: #1e293b;
+  --fqhc-surface-sunken: #172033;
+  --fqhc-border: #334155;
+  --fqhc-border-strong: #475569;
+  --fqhc-text: #e2e8f0;
+  --fqhc-text-muted: #94a3b8;
+  --fqhc-text-on-primary: #042f2e;
+
+  --fqhc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --fqhc-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --fqhc-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+  --fqhc-focus-ring: 0 0 0 3px rgba(165, 180, 252, 0.5);
+}

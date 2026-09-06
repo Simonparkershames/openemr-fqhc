@@ -101,6 +101,41 @@ final class TokenSheetParserTest extends TestCase
         self::assertSame('space-1', $sheet->groups[2]->tokens[0]->shortName());
     }
 
+    public function testOverridesAreReadFromEveryBlockWithThatSelector(): void
+    {
+        // The dark palette is declared twice — behind the OS preference and
+        // behind the explicit attribute — so overrides merge across blocks.
+        $css = <<<'CSS'
+            :root { --fqhc-a: 1; }
+            @media (prefers-color-scheme: dark) {
+              :root[data-x="dark"] { --fqhc-a: 2; }
+            }
+            :root[data-x="dark"] { --fqhc-b: 3; }
+            CSS;
+
+        self::assertSame(
+            ['--fqhc-a' => '2', '--fqhc-b' => '3'],
+            (new TokenSheetParser())->parseOverrides($css, ':root[data-x="dark"]'),
+        );
+    }
+
+    public function testOverridesForAnAbsentSelectorAreEmpty(): void
+    {
+        self::assertSame(
+            [],
+            (new TokenSheetParser())->parseOverrides(self::SAMPLE, ':root[data-x="dark"]'),
+        );
+    }
+
+    public function testOverridesDoNotDisturbTheBaseSheet(): void
+    {
+        $parser = new TokenSheetParser();
+        $css = ":root { --fqhc-a: 1; }\n:root[data-x=\"dark\"] { --fqhc-a: 2; }";
+
+        self::assertSame(['--fqhc-a' => '1'], $parser->parse($css)->values());
+        self::assertSame(['--fqhc-a' => '2'], $parser->parseOverrides($css, ':root[data-x="dark"]'));
+    }
+
     public function testStylesheetWithoutARootBlockYieldsNoTokens(): void
     {
         $sheet = (new TokenSheetParser())->parse('.card { color: red; }');

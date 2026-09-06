@@ -51,6 +51,38 @@ final readonly class TokenSheetParser
         return $this->parse($css);
     }
 
+    /**
+     * Token values declared by every block written against `$selector`,
+     * merged in source order.
+     *
+     * Used to read a theme override — the dark palette is declared twice, once
+     * behind the OS preference and once behind the explicit attribute — so the
+     * contrast audit can measure a theme rather than assume it inherits.
+     *
+     * @return array<string, string>
+     */
+    public function parseOverrides(string $css, string $selector): array
+    {
+        $values = [];
+        $offset = 0;
+
+        while (($position = strpos($css, $selector, $offset)) !== false) {
+            $offset = $position + strlen($selector);
+            $block = $this->blockAt($css, $position);
+            if ($block === null) {
+                continue;
+            }
+
+            foreach (explode("\n", $block) as $line) {
+                if (preg_match(self::DECLARATION_PATTERN, $line, $declaration) === 1) {
+                    $values[$declaration['name']] = rtrim($declaration['value']);
+                }
+            }
+        }
+
+        return $values;
+    }
+
     public function parse(string $css): TokenSheet
     {
         $block = $this->rootBlock($css);
@@ -106,7 +138,17 @@ final readonly class TokenSheetParser
             return null;
         }
 
-        $open = strpos($css, '{', $selector);
+        return $this->blockAt($css, $selector);
+    }
+
+    /**
+     * The body of the rule whose selector starts at `$from`, brace-matched so a
+     * nested block (none today, but a function value could introduce one) does
+     * not truncate the rule early. Null when no balanced block follows.
+     */
+    private function blockAt(string $css, int $from): ?string
+    {
+        $open = strpos($css, '{', $from);
         if ($open === false) {
             return null;
         }

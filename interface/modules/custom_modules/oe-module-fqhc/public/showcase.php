@@ -30,6 +30,7 @@ use OpenEMR\FQHC\DesignSystem\ContrastPair;
 use OpenEMR\FQHC\DesignSystem\DesignSystemAssets;
 use OpenEMR\FQHC\DesignSystem\DesignToken;
 use OpenEMR\FQHC\DesignSystem\Icon;
+use OpenEMR\FQHC\DesignSystem\Theme;
 use OpenEMR\FQHC\DesignSystem\TokenGroup;
 use OpenEMR\FQHC\DesignSystem\TokenSheetParser;
 
@@ -66,25 +67,50 @@ $tokenGroups = array_map(
     $sheet->groups,
 );
 
+// Both themes are audited, not just the one the reviewer happens to be in:
+// the dark palette was chosen against a dark ground and the soft tints are
+// where AA is most easily lost, so each theme is measured from the values the
+// cascade actually produces for it.
+$css = (string) file_get_contents(__DIR__ . '/assets/css/tokens.css');
 $audit = new ContrastAudit();
-$pairs = $audit->measure($sheet->values());
+
+$themes = [];
+$failingThemes = 0;
+foreach (Theme::cases() as $theme) {
+    $selector = $theme->overrideSelector();
+    $overrides = $selector === null ? [] : (new TokenSheetParser())->parseOverrides($css, $selector);
+    $pairs = $audit->measure($theme->resolvePalette($sheet->values(), $overrides));
+    $failing = count($audit->failures($pairs));
+    $failingThemes += $failing > 0 ? 1 : 0;
+
+    $themes[] = [
+        'key' => $theme->value,
+        'label' => $theme->label(),
+        'total' => count($pairs),
+        'failing' => $failing,
+        'overrideCount' => count($overrides),
+        'pairs' => array_map(
+            static fn(ContrastPair $pair): array => [
+                'usage' => $pair->usage,
+                'foregroundName' => $pair->foregroundName,
+                'foregroundValue' => $pair->foregroundValue,
+                'backgroundName' => $pair->backgroundName,
+                'backgroundValue' => $pair->backgroundValue,
+                'ratio' => $pair->ratio,
+                'rating' => $pair->rating->value,
+                'ratingVariant' => $pair->rating->badgeVariant(),
+                'largeText' => $pair->largeText,
+            ],
+            $pairs,
+        ),
+    ];
+}
+
 $contrast = [
-    'total' => count($pairs),
-    'failing' => count($audit->failures($pairs)),
-    'pairs' => array_map(
-        static fn(ContrastPair $pair): array => [
-            'usage' => $pair->usage,
-            'foregroundName' => $pair->foregroundName,
-            'foregroundValue' => $pair->foregroundValue,
-            'backgroundName' => $pair->backgroundName,
-            'backgroundValue' => $pair->backgroundValue,
-            'ratio' => $pair->ratio,
-            'rating' => $pair->rating->value,
-            'ratingVariant' => $pair->rating->badgeVariant(),
-            'largeText' => $pair->largeText,
-        ],
-        $pairs,
-    ),
+    'themes' => $themes,
+    'total' => $themes[0]['total'],
+    'failing' => array_sum(array_column($themes, 'failing')),
+    'failingThemes' => $failingThemes,
 ];
 
 $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
@@ -99,15 +125,16 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ]);
 ?>
 <!DOCTYPE html>
-<html>
+<html class="fqhc-page">
 <head>
     <title><?php echo xlt('FQHC Design System'); ?></title>
+    <script><?php echo DesignSystemAssets::themeBootstrapScript(); ?></script>
     <?php Header::setupHeader(['common']); ?>
     <?php foreach ($assets->styleUrls() as $styleUrl) { ?>
         <link rel="stylesheet" href="<?php echo attr($styleUrl); ?>">
     <?php } ?>
 </head>
-<body class="body_top">
+<body class="body_top fqhc-body">
     <?php echo $content; ?>
     <?php foreach ($assets->scriptUrls() as $scriptUrl) { ?>
         <script type="module" src="<?php echo attr($scriptUrl); ?>"></script>

@@ -26,6 +26,8 @@
       subheading="{{ workspace.tagline|e('html_attr') }}">
       <div slot="actions" class="fqhc-cluster">
         <fqhc-status-badge icon="{{ workspace.icon|e('html_attr') }}">{{ workspace.roleLabel|e('html') }}</fqhc-status-badge>
+        {# The choice is stored per browser, so setting it here applies to every FQHC surface. #}
+        <fqhc-theme-toggle></fqhc-theme-toggle>
       </div>
     </fqhc-page-header>
 
