@@ -29,6 +29,7 @@ use OpenEMR\FQHC\DesignSystem\ContrastAudit;
 use OpenEMR\FQHC\DesignSystem\ContrastPair;
 use OpenEMR\FQHC\DesignSystem\DesignSystemAssets;
 use OpenEMR\FQHC\DesignSystem\DesignToken;
+use OpenEMR\FQHC\DesignSystem\Icon;
 use OpenEMR\FQHC\DesignSystem\TokenGroup;
 use OpenEMR\FQHC\DesignSystem\TokenSheetParser;
 
@@ -92,6 +93,9 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
         'tokenGroups' => $tokenGroups,
         'tokenCount' => $sheet->count(),
         'contrast' => $contrast,
+        // The vocabulary, straight from the enum, so the guide lists exactly
+        // the names server-side code is allowed to ask for.
+        'icons' => array_map(static fn(Icon $icon): string => $icon->value, Icon::cases()),
     ]);
 ?>
 <!DOCTYPE html>

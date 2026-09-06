@@ -8,11 +8,21 @@
  * without touching any certified page.
  *
  * Components:
- *   <fqhc-page-header heading="..." subheading="...">      [slot: actions]
- *   <fqhc-card heading="..." span-wide>                    [default slot]
- *   <fqhc-field-row label="..." value="...">               (value="" => em-dash)
- *   <fqhc-status-badge variant="success|warning|danger|info|neutral">text</>
- *   <fqhc-empty-state message="...">                       [default slot]
+ *   <fqhc-page-header heading="..." subheading="..." icon="...">  [slot: actions]
+ *   <fqhc-card heading="..." icon="..." span-wide>                [default slot]
+ *   <fqhc-field-row label="..." value="...">                      (value="" => em-dash)
+ *   <fqhc-status-badge variant="success|warning|danger|info|neutral" icon="..." no-icon>
+ *   <fqhc-empty-state message="..." icon="...">                   [default slot]
+ *
+ * Icons: the `icon` attributes take a *semantic* name from fqhc-icons.js
+ * (`patient`, `care-gap`, `report`, …), never a Font Awesome class. These
+ * components emit `<fqhc-icon name="…">` into their shadow DOM and let it
+ * upgrade itself, so there is no import between the two files and either can
+ * be cache-busted alone. If fqhc-icons.js is absent the icon element stays
+ * inert and empty — the text still reads correctly.
+ *
+ * Every icon rendered here is decorative and is never the only carrier of
+ * meaning: a status badge keeps its text, a card keeps its heading.
  *
  * @license https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
  */
@@ -39,6 +49,38 @@
       .replaceAll("'", '&#039;');
   }
 
+  /**
+   * Markup for a decorative icon, or '' when no icon was asked for.
+   *
+   * Icon names are restricted to the shape fqhc-icons.js uses so a caller
+   * cannot smuggle markup through an `icon` attribute; the icon element itself
+   * ignores names it does not know.
+   */
+  function iconMarkup(name, className = 'icon') {
+    if (typeof name !== 'string' || !/^[a-z][a-z0-9-]*$/.test(name)) {
+      return '';
+    }
+
+    return `<fqhc-icon class="${className}" name="${name}"></fqhc-icon>`;
+  }
+
+  /**
+   * The icon a status badge leads with: an explicit `icon` attribute wins,
+   * otherwise the one its variant always uses, unless `no-icon` is set.
+   */
+  function badgeIcon(element, variant) {
+    if (element.hasAttribute('no-icon')) {
+      return '';
+    }
+
+    const explicit = element.getAttribute('icon');
+    if (explicit !== null) {
+      return iconMarkup(explicit);
+    }
+
+    return iconMarkup(window.fqhcIcons?.variantIcon(variant) ?? variant);
+  }
+
   /** Shared base: renders a <style> + template into an open shadow root once. */
   class FqhcElement extends HTMLElement {
     constructor() {
@@ -62,6 +104,7 @@
     render() {
       const heading = this.getAttribute('heading') ?? '';
       const subheading = this.getAttribute('subheading') ?? '';
+      const icon = iconMarkup(this.getAttribute('icon'));
       return html`
         <style>
           :host { display: block; margin-bottom: var(--fqhc-space-5); }
@@ -76,7 +119,9 @@
             font-size: var(--fqhc-font-size-2xl);
             font-weight: var(--fqhc-font-weight-semibold);
             color: var(--fqhc-text); letter-spacing: -0.01em;
+            display: flex; align-items: center; gap: var(--fqhc-space-3);
           }
+          h1 .icon { color: var(--fqhc-color-primary); font-size: 0.8em; }
           p {
             margin: var(--fqhc-space-1) 0 0; color: var(--fqhc-text-muted);
             font-family: var(--fqhc-font-sans); font-size: var(--fqhc-font-size-sm);
@@ -84,7 +129,7 @@
         </style>
         <div class="wrap">
           <div>
-            <h1>${escapeHtml(heading)}</h1>
+            <h1>${icon}<span>${escapeHtml(heading)}</span></h1>
             ${subheading ? `<p>${escapeHtml(subheading)}</p>` : ''}
           </div>
           <slot name="actions"></slot>
@@ -96,6 +141,7 @@
   customElements.define('fqhc-card', class extends FqhcElement {
     render() {
       const heading = this.getAttribute('heading') ?? '';
+      const icon = iconMarkup(this.getAttribute('icon'));
       return html`
         <style>
           :host { display: block; }
@@ -117,11 +163,13 @@
             font-weight: var(--fqhc-font-weight-semibold);
             text-transform: uppercase; letter-spacing: 0.06em;
             color: var(--fqhc-color-primary-strong);
+            display: flex; align-items: center; gap: var(--fqhc-space-2);
           }
+          .head .icon { font-size: 1.25em; opacity: 0.85; }
           .body { padding: var(--fqhc-space-2) var(--fqhc-space-5) var(--fqhc-space-4); }
         </style>
         <div class="card">
-          ${heading ? `<h2 class="head">${escapeHtml(heading)}</h2>` : ''}
+          ${heading ? `<h2 class="head">${icon}<span>${escapeHtml(heading)}</span></h2>` : ''}
           <div class="body"><slot></slot></div>
         </div>
       `;
@@ -161,7 +209,8 @@
 
   customElements.define('fqhc-status-badge', class extends FqhcElement {
     render() {
-      const variant = this.getAttribute('variant') ?? 'neutral';
+      const variant = cssClass(this.getAttribute('variant') ?? 'neutral');
+      const icon = badgeIcon(this, variant);
       return html`
         <style>
           :host { display: inline-block; }
@@ -179,8 +228,9 @@
           .danger  { background: var(--fqhc-color-danger-soft);  color: var(--fqhc-color-danger); }
           .info    { background: var(--fqhc-color-info-soft);    color: var(--fqhc-color-info); }
           .neutral { background: var(--fqhc-color-neutral-soft); color: var(--fqhc-color-neutral); }
+          .icon { font-size: 1.05em; }
         </style>
-        <span class="badge ${cssClass(variant)}"><slot></slot></span>
+        <span class="badge ${variant}">${icon}<slot></slot></span>
       `;
     }
   });
@@ -188,6 +238,9 @@
   customElements.define('fqhc-empty-state', class extends FqhcElement {
     render() {
       const message = this.getAttribute('message') ?? '';
+      // Defaults to the generic empty-tray icon so every empty state reads as
+      // the same kind of moment; pass `icon` to name what is missing instead.
+      const icon = iconMarkup(this.getAttribute('icon') ?? 'empty');
       return html`
         <style>
           :host { display: block; }
@@ -201,13 +254,13 @@
             color: var(--fqhc-text-muted);
             font-family: var(--fqhc-font-sans); font-size: var(--fqhc-font-size-sm);
           }
-          .dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: var(--fqhc-border-strong);
+          .icon {
+            font-size: var(--fqhc-font-size-2xl);
+            color: var(--fqhc-border-strong);
           }
         </style>
         <div class="empty">
-          <span class="dot" aria-hidden="true"></span>
+          ${icon}
           <span>${escapeHtml(message)}</span>
           <slot></slot>
         </div>

@@ -96,6 +96,7 @@ $cards = array_map(
         'description' => $card->description,
         'url' => $webroot . $card->url,
         'ctaLabel' => $card->ctaLabel,
+        'icon' => $card->icon->value,
     ],
     $workspace->cards,
 );
@@ -119,6 +120,7 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
             'roleKey' => $workspace->role->value,
             'roleLabel' => $workspace->role->label(),
             'heading' => $workspace->heading,
+            'icon' => $workspace->icon->value,
             'tagline' => $workspace->tagline,
         ],
         'cards' => $cards,

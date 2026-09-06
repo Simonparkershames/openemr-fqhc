@@ -18,7 +18,7 @@
 <div class="fqhc-root">
   <div class="fqhc-container">
 
-    <fqhc-page-header
+    <fqhc-page-header icon="worklist"
       heading="Eligibility Worklist — {{ year }}"
       subheading="{{ worklist.total }} patient(s) with a data-quality gap in {{ year }}">
       <div slot="actions" class="fqhc-cluster">
@@ -44,7 +44,7 @@
 
     <div class="fqhc-stack">
 
-      <fqhc-card heading="Gaps by type">
+      <fqhc-card icon="worklist" heading="Gaps by type">
         <div class="fqhc-table-wrap">
           <table class="fqhc-table">
             <thead><tr><th>Gap</th><th>Patients</th></tr></thead>
@@ -58,11 +58,11 @@
       </fqhc-card>
 
       {% if worklist.total == 0 %}
-        <fqhc-card heading="Patients">
-          <fqhc-empty-state message="No patients had a data-quality gap in {{ year }}."></fqhc-empty-state>
+        <fqhc-card icon="patient" heading="Patients">
+          <fqhc-empty-state icon="patient" message="No patients had a data-quality gap in {{ year }}."></fqhc-empty-state>
         </fqhc-card>
       {% else %}
-        <fqhc-card heading="Patients needing follow-up">
+        <fqhc-card icon="patient" heading="Patients needing follow-up">
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
               <thead><tr><th>Patient</th><th>Gaps</th><th></th></tr></thead>

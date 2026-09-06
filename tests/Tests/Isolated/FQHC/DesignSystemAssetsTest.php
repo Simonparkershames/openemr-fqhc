@@ -145,4 +145,27 @@ final class DesignSystemAssetsTest extends TestCase
             );
         }
     }
+
+    public function testIconScriptLoadsBeforeTheComponentsThatEmitIt(): void
+    {
+        // Asserted against the emitted URLs rather than the SCRIPTS constant:
+        // the constant is a literal PHPStan can prove, so comparing it to
+        // another literal is a test that can never fail.
+        $urls = (new DesignSystemAssets($this->publicRoot, '/base'))->scriptUrls();
+
+        self::assertStringContainsString('fqhc-icons.js', $urls[0]);
+        self::assertStringContainsString('fqhc-components.js', $urls[1]);
+    }
+
+    public function testComponentsEmitTheIconElementRatherThanImportingIt(): void
+    {
+        // The two scripts are coupled only by the element name, which is what
+        // lets them be cache-busted independently. An import here would break
+        // that and is worth failing over.
+        $script = (string) file_get_contents($this->publicRoot . '/assets/js/fqhc-components.js');
+
+        self::assertStringContainsString('<fqhc-icon class=', $script);
+        self::assertDoesNotMatchRegularExpression('/^\s*import\s/m', $script);
+    }
+
 }

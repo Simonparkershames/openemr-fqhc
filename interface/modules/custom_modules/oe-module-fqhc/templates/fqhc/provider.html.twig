@@ -29,7 +29,7 @@
 <div class="fqhc-root">
   <div class="fqhc-container">
 
-    <fqhc-page-header
+    <fqhc-page-header icon="provider"
       heading="My Day"
       subheading="{{ dateDisplay|e('html_attr') }} · schedule, encounters, results, care gaps">
       <div slot="actions" class="fqhc-cluster">
@@ -41,15 +41,15 @@
 
     {% if not hasProvider %}
       <fqhc-card>
-        <fqhc-empty-state message="This workspace shows the schedule and inbox for a provider account. Your login isn't linked to a provider, so there's nothing scheduled to you."></fqhc-empty-state>
+        <fqhc-empty-state icon="provider" message="This workspace shows the schedule and inbox for a provider account. Your login isn't linked to a provider, so there's nothing scheduled to you."></fqhc-empty-state>
       </fqhc-card>
     {% endif %}
 
     <div class="fqhc-stack">
 
-      <fqhc-card heading="Today's schedule">
+      <fqhc-card icon="calendar" heading="Today's schedule">
         {% if schedule is empty %}
-          <fqhc-empty-state message="No visits are scheduled to you today. Patients appear here as the front desk books and checks them in."></fqhc-empty-state>
+          <fqhc-empty-state icon="calendar" message="No visits are scheduled to you today. Patients appear here as the front desk books and checks them in."></fqhc-empty-state>
         {% else %}
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
@@ -87,9 +87,9 @@
         {% endif %}
       </fqhc-card>
 
-      <fqhc-card heading="Open encounters — awaiting your note">
+      <fqhc-card icon="encounter" heading="Open encounters — awaiting your note">
         {% if openEncounters is empty %}
-          <fqhc-empty-state message="No visits are waiting to be documented. Encounters you start today appear here until they're finished."></fqhc-empty-state>
+          <fqhc-empty-state icon="encounter" message="No visits are waiting to be documented. Encounters you start today appear here until they're finished."></fqhc-empty-state>
         {% else %}
           <div class="fqhc-stack">
             {% for encounter in openEncounters %}
@@ -105,9 +105,9 @@
         {% endif %}
       </fqhc-card>
 
-      <fqhc-card heading="Results to review">
+      <fqhc-card icon="result" heading="Results to review">
         {% if results is empty %}
-          <fqhc-empty-state message="No lab or diagnostic results are waiting for your review."></fqhc-empty-state>
+          <fqhc-empty-state icon="result" message="No lab or diagnostic results are waiting for your review."></fqhc-empty-state>
           <a class="fqhc-link-button" href="{{ messagesUrl|e('html_attr') }}" onclick="top.restoreSession()">Open message center</a>
         {% else %}
           <div class="fqhc-stack">
@@ -129,9 +129,9 @@
         {% endif %}
       </fqhc-card>
 
-      <fqhc-card heading="Care gaps on today's panel">
+      <fqhc-card icon="care-gap" heading="Care gaps on today's panel">
         {% if not cdrEnabled %}
-          <fqhc-empty-state message="Clinical reminders are turned off for this site, so care gaps aren't computed. Enable the CDR reminder engine to surface UDS clinical-measure gaps here."></fqhc-empty-state>
+          <fqhc-empty-state icon="care-gap" message="Clinical reminders are turned off for this site, so care gaps aren't computed. Enable the CDR reminder engine to surface UDS clinical-measure gaps here."></fqhc-empty-state>
         {% elseif careGaps is empty %}
           <fqhc-status-badge variant="success">No open care gaps on today's panel</fqhc-status-badge>
         {% else %}

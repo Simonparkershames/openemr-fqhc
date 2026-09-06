@@ -36,9 +36,15 @@ final readonly class DesignSystemAssets
     /**
      * Scripts (ES modules) relative to the module's `public/` directory.
      *
+     * `fqhc-icons.js` loads first so `<fqhc-icon>` is defined before the
+     * components emit it. Order is belt-and-braces rather than a requirement:
+     * custom elements upgrade whenever their definition arrives, so a
+     * component rendered first still gets its icons.
+     *
      * @var list<string>
      */
     public const SCRIPTS = [
+        'assets/js/fqhc-icons.js',
         'assets/js/fqhc-components.js',
     ];
 
