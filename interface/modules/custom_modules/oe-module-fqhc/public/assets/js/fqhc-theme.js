@@ -41,7 +41,6 @@
   const MODES = ['system', 'light', 'dark'];
 
   const LABELS = { system: 'System', light: 'Light', dark: 'Dark' };
-  const ICONS = { system: 'design-system', light: 'success', dark: 'pending' };
 
   /**
    * Storage can throw outright (Safari private browsing, blocked site data),
@@ -80,82 +79,33 @@
     document.dispatchEvent(new CustomEvent('fqhc-theme-change', { detail: { mode } }));
   }
 
+  /**
+   * The control itself is `<fqhc-segmented>` from the component library — this
+   * element only owns the *meaning* of the three positions (read the stored
+   * preference, write it, apply it to the root). When the segmented control
+   * was hand-rolled here it was a second implementation of the same widget;
+   * now there is one, and it is documented in the style guide.
+   */
   customElements.define('fqhc-theme-toggle', class extends HTMLElement {
-    constructor() {
-      super();
-      this.attachShadow({ mode: 'open' });
-    }
-
     connectedCallback() {
-      this.shadowRoot.innerHTML = this.template();
-      this.shadowRoot.addEventListener('click', (event) => {
-        const button = event.target.closest('button[data-mode]');
-        if (button === null) {
-          return;
-        }
+      if (this._wired) {
+        return;
+      }
+      this._wired = true;
 
-        const mode = button.dataset.mode;
+      const options = MODES.map((mode) => `${mode}|${LABELS[mode]}`).join(',');
+      const control = document.createElement('fqhc-segmented');
+      control.setAttribute('label', 'Colour theme');
+      control.setAttribute('options', options);
+      control.setAttribute('value', readMode());
+
+      control.addEventListener('fqhc-change', (event) => {
+        const mode = event.detail.value;
         writeMode(mode);
         applyMode(mode);
-        this.reflect(mode);
       });
 
-      this.reflect(readMode());
-    }
-
-    /** Mark the active segment, for both sighted users and assistive tech. */
-    reflect(mode) {
-      this.shadowRoot.querySelectorAll('button[data-mode]').forEach((button) => {
-        const active = button.dataset.mode === mode;
-        button.classList.toggle('active', active);
-        button.setAttribute('aria-pressed', active ? 'true' : 'false');
-      });
-    }
-
-    template() {
-      const buttons = MODES.map((mode) => `
-        <button type="button" data-mode="${mode}" aria-pressed="false">
-          <fqhc-icon name="${ICONS[mode]}"></fqhc-icon>
-          <span>${LABELS[mode]}</span>
-        </button>
-      `).join('');
-
-      return `
-        <style>
-          :host { display: inline-block; }
-          .group {
-            display: inline-flex;
-            padding: 2px;
-            gap: 2px;
-            background: var(--fqhc-surface-sunken);
-            border: 1px solid var(--fqhc-border);
-            border-radius: var(--fqhc-radius-pill);
-          }
-          button {
-            display: inline-flex; align-items: center; gap: var(--fqhc-space-1);
-            padding: var(--fqhc-space-1) var(--fqhc-space-3);
-            border: none; border-radius: var(--fqhc-radius-pill);
-            background: transparent;
-            color: var(--fqhc-text-muted);
-            font-family: var(--fqhc-font-sans);
-            font-size: var(--fqhc-font-size-xs);
-            font-weight: var(--fqhc-font-weight-medium);
-            cursor: pointer;
-            transition: background var(--fqhc-transition), color var(--fqhc-transition);
-          }
-          button:hover { color: var(--fqhc-text); }
-          button.active {
-            background: var(--fqhc-surface-card);
-            color: var(--fqhc-color-primary-strong);
-            box-shadow: var(--fqhc-shadow-sm);
-          }
-          button:focus-visible {
-            outline: none;
-            box-shadow: var(--fqhc-focus-ring);
-          }
-        </style>
-        <div class="group" role="group" aria-label="Colour theme">${buttons}</div>
-      `;
+      this.replaceChildren(control);
     }
   });
 })();

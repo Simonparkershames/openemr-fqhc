@@ -188,6 +188,37 @@ component already draws itself from those names.
 - **Scope.** Module surfaces only. A deep link out to a legacy screen lands on
   that screen's own theme; extending the shell is tracked under #68.
 
+## Component library v2 (issue #62)
+
+The original five elements were enough to build a page of cards holding text —
+which is exactly why every workspace home *was* a page of cards holding text.
+These are the pieces a dashboard needs instead:
+
+| Element | For |
+|---|---|
+| `fqhc-stat` | A metric tile: value, label, delta with direction, optional sparkline, optional whole-tile link |
+| `fqhc-avatar` | Initials chip, colour derived from the patient id, optional status dot |
+| `fqhc-segmented` | Segmented control for today/week/all and similar switches |
+| `fqhc-timeline` + `fqhc-timeline-event` | Vertical event list with a time gutter — a visit's arrival → roomed → seen → checked-out |
+| `fqhc-skeleton` | Loading placeholder shaped like what is arriving |
+| `fqhc-progress` | Linear and ring, for measure rates and completeness |
+| `fqhc-toast` | Transient confirmation after an action |
+
+Two details worth knowing:
+
+- **`fqhc-stat` decides the delta colour from `direction`, not the caller.**
+  `up`/`down` mean the obvious thing; `up-bad` and `down-good` exist so a
+  measure where rising is a regression (open care gaps) cannot be coloured
+  green by accident.
+- **`fqhc-avatar` derives its hue from the patient id**, at fixed saturation and
+  lightness. The point is recognising the same patient across surfaces, which a
+  random or sequential colour would defeat.
+
+`ComponentLibraryTest` asserts every element is registered, is demonstrated in
+the style guide, extends `FqhcElement` (so it is Shadow-DOM encapsulated), and
+that the library hard-codes no colour — the one sanctioned exception being the
+avatar's derived hue.
+
 ## Architecture notes
 
 - **Domain/services** live in the core tree under `OpenEMR\FQHC\`
@@ -256,6 +287,7 @@ composer phpunit-isolated -- --filter DemoDataSet
 composer phpunit-isolated -- --filter 'ColorContrast|ContrastAudit|TokenSheet'
 composer phpunit-isolated -- --filter IconRegistry
 composer phpunit-isolated -- --filter DarkTheme
+composer phpunit-isolated -- --filter ComponentLibrary
 ```
 
 `DemoDataSetTest` asserts the demo panel actually spans every UDS bucket, payer
