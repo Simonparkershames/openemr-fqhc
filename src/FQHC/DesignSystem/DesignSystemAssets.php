@@ -43,12 +43,16 @@ final readonly class DesignSystemAssets
     ];
 
     /**
-     * @param string $publicRoot    Absolute filesystem path to the module's `public/` directory.
-     * @param string $publicBaseUrl Browser-facing base URL for that same directory.
+     * @param string       $publicRoot     Absolute filesystem path to the module's `public/` directory.
+     * @param string       $publicBaseUrl  Browser-facing base URL for that same directory.
+     * @param list<string> $pageStyles     Extra stylesheets for one page only, relative to `public/`,
+     *                                     appended after the shared bundle. Keeps single-page CSS (the
+     *                                     style guide) off every other module page.
      */
     public function __construct(
         private string $publicRoot,
         private string $publicBaseUrl,
+        private array $pageStyles = [],
     ) {
     }
 
@@ -59,7 +63,7 @@ final readonly class DesignSystemAssets
      */
     public function styleUrls(): array
     {
-        return $this->urls(self::STYLES);
+        return $this->urls([...self::STYLES, ...$this->pageStyles]);
     }
 
     /**
@@ -82,7 +86,7 @@ final readonly class DesignSystemAssets
     public function missingFiles(): array
     {
         $missing = [];
-        foreach ([...self::STYLES, ...self::SCRIPTS] as $relativePath) {
+        foreach ([...self::STYLES, ...$this->pageStyles, ...self::SCRIPTS] as $relativePath) {
             $path = $this->path($relativePath);
             if (!is_file($path)) {
                 $missing[] = $path;

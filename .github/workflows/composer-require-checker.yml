@@ -11,16 +11,22 @@ on:
     - .github/workflows/composer-require-checker.yml
     - composer.json
     - composer.lock
+  # Deliberately NOT path-filtered, unlike the push trigger above.
+  #
+  # `composer-require-checker` is one of master's required status checks. A
+  # path-filtered workflow does not run at all when nothing matches, so it
+  # reports no status — and GitHub treats a required context with no result as
+  # unsatisfied, not as passed. That made every PR touching no PHP (docs-only,
+  # CI-only) permanently unmergeable regardless of how green everything else
+  # was. Running the job unconditionally costs about a minute on those PRs and
+  # is the cheapest way to make the required context always resolve.
+  #
+  # If the check is ever dropped from the required contexts in branch
+  # protection, the filter can come back. See issue #71.
   pull_request:
     branches:
     - master
     - rel-*
-    paths:
-    - '**.php'
-    - .composer-require-checker.json
-    - .github/workflows/composer-require-checker.yml
-    - composer.json
-    - composer.lock
   workflow_dispatch:
 
 permissions:

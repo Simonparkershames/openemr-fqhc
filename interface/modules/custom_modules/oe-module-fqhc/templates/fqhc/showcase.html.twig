@@ -1,0 +1,401 @@
+{#
+  FQHC design-system style guide (issue #59).
+
+  Renders the whole design system on one page: every token from tokens.css as a
+  live specimen, every fqhc-* component in every variant and state, the layout
+  patterns the workspaces are built from, and a measured WCAG 2.1 contrast
+  audit of the palette.
+
+  Token specimens set their sample style with `var(--token-name)` rather than
+  the literal value, so the page always shows what the browser resolves — if a
+  token were renamed and a consumer missed, the specimen would visibly fall
+  back rather than quietly render the stale value the page was told to print.
+
+  Context:
+    tokenGroups — list of {label, kind, tokens: [{name, shortName, value,
+                  comment, kind}]}, in tokens.css declaration order.
+    tokenCount  — total tokens parsed, for the header badge.
+    contrast    — {pairs: [{usage, foregroundName, foregroundValue,
+                  backgroundName, backgroundValue, ratio, rating,
+                  ratingVariant, largeText}], total, failing}.
+
+  TwigContainer disables autoescaping, so values are escaped explicitly.
+
+  @license https://github.com/openemr/openemr/blob/master/LICENSE GNU General Public License 3
+#}
+<div class="fqhc-root">
+  <div class="fqhc-container">
+
+    <fqhc-page-header
+      heading="FQHC Design System"
+      subheading="Every token, component, and pattern the FQHC surfaces are built from — rendered from the real assets, not from a copy.">
+      <div slot="actions" class="fqhc-cluster">
+        <fqhc-status-badge variant="info">{{ tokenCount }} tokens</fqhc-status-badge>
+        {% if contrast.failing == 0 %}
+          <fqhc-status-badge variant="success">{{ contrast.total }} pairings pass AA</fqhc-status-badge>
+        {% else %}
+          <fqhc-status-badge variant="danger">{{ contrast.failing }} of {{ contrast.total }} pairings below AA</fqhc-status-badge>
+        {% endif %}
+      </div>
+    </fqhc-page-header>
+
+    <nav class="fqhc-showcase-nav" aria-label="Style guide sections">
+      <a class="fqhc-showcase-nav-link" href="#foundations">Foundations</a>
+      <a class="fqhc-showcase-nav-link" href="#components">Components</a>
+      <a class="fqhc-showcase-nav-link" href="#patterns">Patterns</a>
+      <a class="fqhc-showcase-nav-link" href="#accessibility">Accessibility</a>
+    </nav>
+
+    {# ------------------------------------------------------------------ #}
+    {# Foundations — generated from tokens.css, so a new token appears here #}
+    {# without anyone remembering to register it.                           #}
+    {# ------------------------------------------------------------------ #}
+    <section class="fqhc-showcase-section" id="foundations">
+      <h2>Foundations</h2>
+      <p class="fqhc-showcase-lede">
+        Read straight out of <code>assets/css/tokens.css</code> at render time. Every sample below is
+        styled with <code>var(--token)</code>, so what you see is what the browser resolves.
+      </p>
+
+      {% for group in tokenGroups %}
+        <div class="fqhc-specimen">
+          <h3 class="fqhc-specimen-title">
+            {{ group.label|e('html') }}
+            <span class="fqhc-specimen-note">{{ group.tokens|length }} token{{ group.tokens|length == 1 ? '' : 's' }}</span>
+          </h3>
+
+          {% if group.kind == 'color' %}
+            <div class="fqhc-swatches">
+              {% for token in group.tokens %}
+                <div class="fqhc-swatch">
+                  <div class="fqhc-swatch-chip" style="background: var({{ token.name|e('html_attr') }})" aria-hidden="true"></div>
+                  <div class="fqhc-swatch-meta">
+                    <span class="fqhc-swatch-name">{{ token.shortName|e('html') }}</span>
+                    <span class="fqhc-swatch-value">{{ token.value|e('html') }}</span>
+                    {% if token.comment %}
+                      <span class="fqhc-swatch-comment">{{ token.comment|e('html') }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="fqhc-specs">
+              {% for token in group.tokens %}
+                <div class="fqhc-spec">
+                  <span class="fqhc-spec-name">{{ token.shortName|e('html') }}</span>
+                  <span class="fqhc-spec-sample{{ token.kind == 'font-family' ? ' fqhc-spec-sample-truncate' : '' }}">
+                    {%- if token.kind == 'font-size' -%}
+                      <span style="font-size: var({{ token.name|e('html_attr') }})">Patients seen today</span>
+                    {%- elseif token.kind == 'font-family' -%}
+                      <span style="font-family: var({{ token.name|e('html_attr') }})">Patients seen today &mdash; 0123456789</span>
+                    {%- elseif token.kind == 'font-weight' -%}
+                      <span style="font-weight: var({{ token.name|e('html_attr') }})">Patients seen today</span>
+                    {%- elseif token.kind == 'space' -%}
+                      <span class="fqhc-space-bar" style="width: var({{ token.name|e('html_attr') }})" aria-hidden="true"></span>
+                    {%- elseif token.kind == 'radius' -%}
+                      <span class="fqhc-radius-box" style="border-radius: var({{ token.name|e('html_attr') }})" aria-hidden="true"></span>
+                    {%- elseif token.kind == 'shadow' -%}
+                      <span class="fqhc-shadow-box" style="box-shadow: var({{ token.name|e('html_attr') }})" aria-hidden="true"></span>
+                    {%- else -%}
+                      <span class="fqhc-swatch-comment">{{ (token.comment ?: 'No visual specimen — used in a computed property.')|e('html') }}</span>
+                    {%- endif -%}
+                  </span>
+                  <span class="fqhc-spec-value">{{ token.value|e('html') }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <fqhc-empty-state message="No tokens were parsed from tokens.css.">
+          <span>That means the stylesheet is missing or its :root block changed shape — the guide reads it at render time.</span>
+        </fqhc-empty-state>
+      {% endfor %}
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Focus ring
+          <span class="fqhc-specimen-note">Tab into these — every interactive element shows the same ring</span>
+        </h3>
+        <div class="fqhc-stage">
+          <button type="button" class="fqhc-button">Button</button>
+          <a class="fqhc-nav-card fqhc-probe-narrow" href="#foundations">
+            <span class="fqhc-nav-card-title">Nav card</span>
+            <span class="fqhc-nav-card-desc">A whole card that is one focus target.</span>
+          </a>
+          <label class="fqhc-field">
+            <span>Text input</span>
+            <input type="text" value="Focus me" size="14">
+          </label>
+        </div>
+      </div>
+    </section>
+
+    {# ------------------------------------------------------------------ #}
+    {# Components — every fqhc-* element, in every variant and state.       #}
+    {# ------------------------------------------------------------------ #}
+    <section class="fqhc-showcase-section" id="components">
+      <h2>Components</h2>
+      <p class="fqhc-showcase-lede">
+        Dependency-free custom elements from <code>assets/js/fqhc-components.js</code>. Each uses Shadow
+        DOM for encapsulation and consumes the tokens above. States that are easy to forget — empty
+        values, missing attributes, long content, invalid variants — are shown alongside the happy path.
+      </p>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">&lt;fqhc-page-header&gt;</h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <fqhc-page-header heading="Front Desk Workspace" subheading="Today&#39;s appointments and arrival readiness.">
+            <div slot="actions" class="fqhc-cluster">
+              <fqhc-status-badge variant="info">Front desk</fqhc-status-badge>
+              <a class="fqhc-button" href="#components">Primary action</a>
+            </div>
+          </fqhc-page-header>
+          <fqhc-page-header heading="Heading only, no subheading and no actions"></fqhc-page-header>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-page-header heading="Front Desk Workspace" subheading="…"&gt;
+  &lt;div slot="actions" class="fqhc-cluster"&gt;…&lt;/div&gt;
+&lt;/fqhc-page-header&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-card&gt;
+          <span class="fqhc-specimen-note">Heading optional; body clips overflow, so wide content needs its own scroller</span>
+        </h3>
+        <div class="fqhc-grid">
+          <fqhc-card heading="With a heading">
+            <p>The standard card: an uppercase heading rule, a hairline border, and a shadow that lifts on hover.</p>
+            <a class="fqhc-button" href="#components">Open</a>
+          </fqhc-card>
+          <fqhc-card>
+            <p>No <code>heading</code> attribute — the header rule is omitted entirely rather than left blank.</p>
+          </fqhc-card>
+          <fqhc-card heading="A heading long enough to wrap onto a second line inside a narrow grid track">
+            <p>
+              Supercalifragilisticexpialidocious-Pneumonoultramicroscopicsilicovolcanoconiosis is a single
+              unbroken token, included to prove a long value cannot blow out its grid track.
+            </p>
+          </fqhc-card>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-card heading="Care gaps"&gt;…&lt;/fqhc-card&gt;
+&lt;fqhc-card&gt;…&lt;/fqhc-card&gt;                &lt;!-- headingless --&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-status-badge&gt;
+          <span class="fqhc-specimen-note">Five variants; anything else falls back to neutral rather than rendering unstyled</span>
+        </h3>
+        <div class="fqhc-stage">
+          <fqhc-status-badge variant="success">Complete</fqhc-status-badge>
+          <fqhc-status-badge variant="warning">Needs review</fqhc-status-badge>
+          <fqhc-status-badge variant="danger">Overdue</fqhc-status-badge>
+          <fqhc-status-badge variant="info">Scheduled</fqhc-status-badge>
+          <fqhc-status-badge variant="neutral">Not started</fqhc-status-badge>
+          <fqhc-status-badge>No variant attribute</fqhc-status-badge>
+          <fqhc-status-badge variant="chartreuse">Unknown variant</fqhc-status-badge>
+          <fqhc-status-badge variant="warning">Long label: 14 patients missing an income determination</fqhc-status-badge>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-status-badge variant="success|warning|danger|info|neutral"&gt;Text&lt;/fqhc-status-badge&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-field-row&gt;
+          <span class="fqhc-specimen-note">An empty or absent value renders an em dash, never a blank gap</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <fqhc-field-row label="Date of birth" value="1974-03-02"></fqhc-field-row>
+          <fqhc-field-row label="Preferred language" value="Spanish"></fqhc-field-row>
+          <fqhc-field-row label="Income determination" value=""></fqhc-field-row>
+          <fqhc-field-row label="Payer"></fqhc-field-row>
+          <fqhc-field-row
+            label="A label long enough to compete with its value for the available width"
+            value="Medicaid managed care — Sunshine Health Plan, member since 2019"></fqhc-field-row>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-field-row label="Date of birth" value="1974-03-02"&gt;&lt;/fqhc-field-row&gt;
+&lt;fqhc-field-row label="Payer"&gt;&lt;/fqhc-field-row&gt;   &lt;!-- renders — --&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">&lt;fqhc-empty-state&gt;</h3>
+        <div class="fqhc-stage fqhc-stage-column">
+          <fqhc-empty-state message="No patients are waiting to be roomed."></fqhc-empty-state>
+          <fqhc-empty-state message="No data-quality gaps for 2025.">
+            <a href="#components">Run the report anyway</a>
+          </fqhc-empty-state>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-empty-state message="No patients are waiting to be roomed."&gt;
+  &lt;a href="…"&gt;Optional action&lt;/a&gt;
+&lt;/fqhc-empty-state&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Controls
+          <span class="fqhc-specimen-note">Plain CSS classes from fqhc.css, not custom elements</span>
+        </h3>
+        <div class="fqhc-stage">
+          <a class="fqhc-button" href="#components">Link styled as a button</a>
+          <button type="button" class="fqhc-button">Button element</button>
+          <button type="button" class="fqhc-link-button">Destructive link button</button>
+          <span class="fqhc-metric-value">128</span>
+          <span class="fqhc-metric-label">Metric label</span>
+        </div>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <p class="fqhc-note">A note: warning-coloured explanatory text under a metric or badge.</p>
+          <p class="fqhc-section-heading">Section heading</p>
+          <p><a href="#components">An inline link inside FQHC body copy.</a></p>
+        </div>
+      </div>
+    </section>
+
+    {# ------------------------------------------------------------------ #}
+    {# Patterns — the compositions the workspaces are actually built from.  #}
+    {# ------------------------------------------------------------------ #}
+    <section class="fqhc-showcase-section" id="patterns">
+      <h2>Patterns</h2>
+      <p class="fqhc-showcase-lede">
+        The compositions every workspace page is assembled from. Narrow the window: the grid collapses
+        to one column below 640px, and the data table stops being a table and becomes a card per row.
+      </p>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Card grid
+          <span class="fqhc-specimen-note">1 column &lt; 640px · 2 columns &lt; 1024px · 3 columns above</span>
+        </h3>
+        <div class="fqhc-grid">
+          <a class="fqhc-nav-card" href="#patterns">
+            <span class="fqhc-nav-card-title">Rooming worklist</span>
+            <span class="fqhc-nav-card-desc">Checked-in patients to room, with screenings due.</span>
+          </a>
+          <a class="fqhc-nav-card" href="#patterns">
+            <span class="fqhc-nav-card-title">Eligibility worklist</span>
+            <span class="fqhc-nav-card-desc">Patients whose gaps would distort UDS counts.</span>
+          </a>
+          <a class="fqhc-nav-card" href="#patterns">
+            <span class="fqhc-nav-card-title">UDS report</span>
+            <span class="fqhc-nav-card-desc">Patient characteristics and utilization tables.</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Data table
+          <span class="fqhc-specimen-note">Every cell after the first carries data-label, which becomes its heading on a phone</span>
+        </h3>
+        <fqhc-card heading="Table 3A — patients by age and sex">
+          <div class="fqhc-table-wrap">
+            <table class="fqhc-table">
+              <thead>
+                <tr><th scope="col">Age group</th><th scope="col">Male</th><th scope="col">Female</th><th scope="col">Total</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Under 18</td><td data-label="Male">412</td><td data-label="Female">438</td><td data-label="Total">850</td></tr>
+                <tr><td>18 to 64</td><td data-label="Male">1,204</td><td data-label="Female">1,533</td><td data-label="Total">2,737</td></tr>
+                <tr class="fqhc-table-detail"><td>of which 18 to 24</td><td data-label="Male">188</td><td data-label="Female">241</td><td data-label="Total">429</td></tr>
+                <tr><td>65 and over</td><td data-label="Male">276</td><td data-label="Female">318</td><td data-label="Total">594</td></tr>
+              </tbody>
+              <tfoot>
+                <tr><th scope="row">Total</th><th data-label="Male">1,892</th><th data-label="Female">2,289</th><th data-label="Total">4,181</th></tr>
+              </tfoot>
+            </table>
+          </div>
+        </fqhc-card>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">Form rows</h3>
+        <fqhc-card heading="Income determination">
+          <fqhc-field-row label="Household size" value="4"></fqhc-field-row>
+          <fqhc-field-row label="Annual income" value="$38,400"></fqhc-field-row>
+          <form class="fqhc-form" onsubmit="return false">
+            <label class="fqhc-field">
+              <span>Household size</span>
+              <input type="number" value="4" min="1">
+            </label>
+            <label class="fqhc-field">
+              <span>Determination year</span>
+              <select>
+                <option>2026</option>
+                <option>2025</option>
+              </select>
+            </label>
+            <label class="fqhc-check">
+              <input type="checkbox" checked>
+              <span>Patient declined to report income</span>
+            </label>
+            <div class="fqhc-row-between">
+              <button type="submit" class="fqhc-button">Save determination</button>
+              <button type="button" class="fqhc-link-button">Clear</button>
+            </div>
+          </form>
+        </fqhc-card>
+      </div>
+    </section>
+
+    {# ------------------------------------------------------------------ #}
+    {# Accessibility — measured, not asserted.                              #}
+    {# ------------------------------------------------------------------ #}
+    <section class="fqhc-showcase-section" id="accessibility">
+      <h2>Accessibility</h2>
+      <p class="fqhc-showcase-lede">
+        Every foreground/background pairing the components actually use, measured against WCAG 2.1
+        from the token values in <code>tokens.css</code>. AA is the bar: 4.5:1 for normal text, 3:1
+        for large text (18pt+, or 14pt bold). A pairing that fails here is a bug in the palette.
+      </p>
+
+      <fqhc-card heading="Contrast audit">
+        {% if contrast.failing == 0 %}
+          <fqhc-status-badge variant="success">All {{ contrast.total }} pairings meet WCAG 2.1 AA</fqhc-status-badge>
+        {% else %}
+          <fqhc-status-badge variant="danger">{{ contrast.failing }} of {{ contrast.total }} pairings fail WCAG 2.1 AA</fqhc-status-badge>
+        {% endif %}
+
+        <div class="fqhc-table-wrap fqhc-home-rows">
+          <table class="fqhc-table">
+            <caption class="fqhc-swatch-comment">Contrast ratios computed from the declared token values.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Usage</th>
+                <th scope="col">Sample</th>
+                <th scope="col">Foreground</th>
+                <th scope="col">Background</th>
+                <th scope="col">Ratio</th>
+                <th scope="col">Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pair in contrast.pairs %}
+                <tr>
+                  <td>{{ pair.usage|e('html') }}{% if pair.largeText %} <span class="fqhc-swatch-comment">(large text)</span>{% endif %}</td>
+                  <td class="fqhc-contrast-cell" data-label="Sample">
+                    <span class="fqhc-contrast-sample"
+                          style="color: var({{ pair.foregroundName|e('html_attr') }}); background: var({{ pair.backgroundName|e('html_attr') }})">Aa sample</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Foreground">
+                    <span class="fqhc-spec-name">{{ pair.foregroundName|e('html') }}</span>
+                    <span class="fqhc-swatch-value">{{ pair.foregroundValue|e('html') }}</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Background">
+                    <span class="fqhc-spec-name">{{ pair.backgroundName|e('html') }}</span>
+                    <span class="fqhc-swatch-value">{{ pair.backgroundValue|e('html') }}</span>
+                  </td>
+                  <td data-label="Ratio"><span class="fqhc-contrast-ratio">{{ pair.ratio|number_format(2) }}:1</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Rating">
+                    <fqhc-status-badge variant="{{ pair.ratingVariant|e('html_attr') }}">{{ pair.rating|e('html') }}</fqhc-status-badge>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </fqhc-card>
+    </section>
+
+  </div>
+</div>

@@ -46,6 +46,7 @@ class Bootstrap
     private const SNAPSHOT_MENU_ID = 'fqhc_snapshot0';
     private const REPORT_MENU_ID = 'fqhc_report0';
     private const ELIGIBILITY_WORKLIST_MENU_ID = 'fqhc_eligibility_worklist0';
+    private const SHOWCASE_MENU_ID = 'fqhc_showcase0';
     private const GLOBALS_SECTION = 'FQHC';
 
     public function __construct(
@@ -85,6 +86,7 @@ class Bootstrap
             $this->snapshotMenuItem(),
             $this->reportMenuItem(),
             $this->eligibilityWorklistMenuItem(),
+            $this->showcaseMenuItem(),
         ];
         $fqhc->acl_req = ['patients', 'demo'];
         $fqhc->global_req = [];
@@ -249,5 +251,25 @@ class Bootstrap
         $worklist->global_req = [];
 
         return $worklist;
+    }
+
+    /**
+     * The "Design System" child item that opens the living style guide
+     * (issue #59). Admin-gated: it documents the UI for developers and
+     * designers rather than serving a clinical task.
+     */
+    private function showcaseMenuItem(): stdClass
+    {
+        $showcase = new stdClass();
+        $showcase->requirement = 0;
+        $showcase->target = 'fqhc-showcase';
+        $showcase->menu_id = self::SHOWCASE_MENU_ID;
+        $showcase->label = xlt('Design System');
+        $showcase->url = self::MODULE_INSTALLATION_PATH . '/public/showcase.php';
+        $showcase->children = [];
+        $showcase->acl_req = ['admin', 'super'];
+        $showcase->global_req = [];
+
+        return $showcase;
     }
 }

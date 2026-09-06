@@ -191,6 +191,27 @@
   box-shadow: var(--fqhc-focus-ring);
 }
 
+/* An anchor styled as a button is a button, not a link: the generic link rules
+   above are later in the cascade and at equal specificity, so without this they
+   win and paint accent-on-primary (1.65:1, unreadable) with a hover underline. */
+.fqhc-root a.fqhc-button,
+.fqhc-root a.fqhc-button:hover,
+.fqhc-root a.fqhc-button:focus-visible {
+  color: var(--fqhc-text-on-primary);
+  text-decoration: none;
+}
+
+/* Inline code in FQHC copy. Without this it inherits the legacy theme's pink
+   Bootstrap default, which belongs to no palette in this system. */
+.fqhc-root code {
+  padding: 0 var(--fqhc-space-1);
+  border-radius: 3px;
+  background: var(--fqhc-surface-sunken);
+  color: var(--fqhc-color-primary-strong);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
 /* ----- Workspace home (epic #6) ----- */
 
 /* Section label preceding a group of cards (e.g. "Tools"), styled like an

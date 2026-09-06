@@ -108,6 +108,30 @@ the chart, the message center); the workspace itself is read-only. The pure
 the filtering and ordering rules unit-testable; the SQL and CDR calls live
 at the `provider.php` boundary and in the `Provider` repositories.
 
+## Living style guide (issue #59)
+
+**FQHC → Design System** (`public/showcase.php`, admin/super only) renders the
+entire design system on one page:
+
+- **Foundations** — every token, parsed out of `assets/css/tokens.css` at render
+  time by `OpenEMR\FQHC\DesignSystem\TokenSheetParser` and drawn as a live
+  specimen: colour swatches, the type scale set at size, spacing steps drawn to
+  width, radii, elevations, the focus ring. Add a token to `tokens.css` and it
+  appears here; remove one and it disappears. Nothing to register.
+- **Components** — every `fqhc-*` element in every variant *and* every state
+  that is easy to forget: missing attributes, empty values, unknown badge
+  variants, unbroken long content.
+- **Patterns** — the card grid, data table, and form-row compositions the
+  workspaces are assembled from. Narrow the window to see the responsive rules.
+- **Accessibility** — `ContrastAudit` measures every foreground/background
+  pairing the components actually use and prints the WCAG 2.1 ratio and rating
+  beside each one. `ContrastAuditTest` asserts the same thing in CI, so a token
+  edit that drops a pairing below AA fails the build rather than waiting to be
+  spotted.
+
+Build a new component here first: it is faster than seeding data and clicking
+through a role loop, and it is where a reviewer will look for an inconsistency.
+
 ## Architecture notes
 
 - **Domain/services** live in the core tree under `OpenEMR\FQHC\`
@@ -173,6 +197,7 @@ Docker/DB):
 ```bash
 composer phpunit-isolated -- --filter DesignSystemAssets
 composer phpunit-isolated -- --filter DemoDataSet
+composer phpunit-isolated -- --filter 'ColorContrast|ContrastAudit|TokenSheet'
 ```
 
 `DemoDataSetTest` asserts the demo panel actually spans every UDS bucket, payer
