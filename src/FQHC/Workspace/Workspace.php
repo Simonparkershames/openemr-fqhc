@@ -15,16 +15,21 @@ declare(strict_types=1);
 
 namespace OpenEMR\FQHC\Workspace;
 
+use OpenEMR\FQHC\DesignSystem\Icon;
+
 final readonly class Workspace
 {
     /**
      * @param non-empty-list<WorkspaceCard> $cards
+     * @param Icon                          $icon the concept that names this
+     *                                            workspace in its page header
      */
     public function __construct(
         public WorkspaceRole $role,
         public string $heading,
         public string $tagline,
         public array $cards,
+        public Icon $icon = Icon::Home,
     ) {
     }
 }

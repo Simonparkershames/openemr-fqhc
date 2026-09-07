@@ -75,6 +75,42 @@ final class DesignSystemAssetsTest extends TestCase
         }
     }
 
+    public function testPageStylesLoadAfterTheSharedBundle(): void
+    {
+        // The style guide's scaffolding CSS overrides nothing, but a page-scoped
+        // sheet must still come last so it can.
+        $assets = new DesignSystemAssets($this->publicRoot, '/base', ['assets/css/showcase.css']);
+        $urls = $assets->styleUrls();
+
+        self::assertCount(count(DesignSystemAssets::STYLES) + 1, $urls);
+        self::assertStringContainsString('showcase.css', $urls[count($urls) - 1]);
+    }
+
+    public function testPageStylesAreIncludedInTheMissingFilesCheck(): void
+    {
+        $assets = new DesignSystemAssets($this->publicRoot, '/base', ['assets/css/not-shipped.css']);
+
+        self::assertSame(
+            [$this->publicRoot . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'css'
+                . DIRECTORY_SEPARATOR . 'not-shipped.css'],
+            $assets->missingFiles(),
+        );
+    }
+
+    public function testStyleGuidePageStylesheetExists(): void
+    {
+        $assets = new DesignSystemAssets($this->publicRoot, '/base', ['assets/css/showcase.css']);
+
+        self::assertSame([], $assets->missingFiles());
+    }
+
+    public function testDefaultConstructionAddsNoPageStyles(): void
+    {
+        $assets = new DesignSystemAssets($this->publicRoot, '/base');
+
+        self::assertCount(count(DesignSystemAssets::STYLES), $assets->styleUrls());
+    }
+
     public function testTokensFileDefinesCorePropertiesTheUiDependsOn(): void
     {
         $tokens = (string) file_get_contents($this->publicRoot . '/assets/css/tokens.css');
@@ -109,4 +145,27 @@ final class DesignSystemAssetsTest extends TestCase
             );
         }
     }
+
+    public function testIconScriptLoadsBeforeTheComponentsThatEmitIt(): void
+    {
+        // Asserted against the emitted URLs rather than the SCRIPTS constant:
+        // the constant is a literal PHPStan can prove, so comparing it to
+        // another literal is a test that can never fail.
+        $urls = (new DesignSystemAssets($this->publicRoot, '/base'))->scriptUrls();
+
+        self::assertStringContainsString('fqhc-icons.js', $urls[0]);
+        self::assertStringContainsString('fqhc-components.js', $urls[1]);
+    }
+
+    public function testComponentsEmitTheIconElementRatherThanImportingIt(): void
+    {
+        // The two scripts are coupled only by the element name, which is what
+        // lets them be cache-busted independently. An import here would break
+        // that and is worth failing over.
+        $script = (string) file_get_contents($this->publicRoot . '/assets/js/fqhc-components.js');
+
+        self::assertStringContainsString('<fqhc-icon class=', $script);
+        self::assertDoesNotMatchRegularExpression('/^\s*import\s/m', $script);
+    }
+
 }

@@ -56,11 +56,15 @@ jobs:
           if gh pr view chore/upstream-sync --json number >/dev/null 2>&1; then
             echo "Sync PR already open, branch updated."
           else
+            # Build the body with printf rather than a literal newline inside
+            # this block scalar: an unindented continuation line ends the
+            # scalar and makes the whole workflow unparseable.
+            body=$(printf '%s\n\n%s' \
+              "Automated merge of \`openemr/openemr:master\` (${{ steps.diff.outputs.count }} new commit(s)) into this fork's \`master\`." \
+              "This PR exists to run the full CI suite against the merge before it lands. Note that the Inferno certification gate does not run in this fork (see CONTRIBUTING.md > \"Certification Safety\"). If the merge step in this workflow failed instead of opening this PR, upstream and this fork have diverged with conflicts that need manual resolution; see CONTRIBUTING.md > \"Upstream Sync\".")
             gh pr create \
               --base master \
               --head chore/upstream-sync \
               --title "chore(deps): sync with upstream openemr/openemr" \
-              --body "Automated merge of \`openemr/openemr:master\` (${{ steps.diff.outputs.count }} new commit(s)) into this fork's \`master\`.
-
-This PR exists to run the full CI suite — including the Inferno certification gate — against the merge before it lands. If the merge step in this workflow failed instead of opening this PR, upstream and this fork have diverged with conflicts that need manual resolution; see CONTRIBUTING.md > \"Upstream Sync\"."
+              --body "$body"
           fi
