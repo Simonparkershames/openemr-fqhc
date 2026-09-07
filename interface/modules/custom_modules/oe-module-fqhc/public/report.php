@@ -19,12 +19,15 @@
 
 require_once __DIR__ . '/../../../../globals.php';
 
+use OpenEMR\BC\ServiceContainer;
 use OpenEMR\Common\Acl\AclMain;
 use OpenEMR\Common\Twig\TwigContainer;
 use OpenEMR\Core\Header;
 use OpenEMR\Core\OEGlobalsBag;
 use OpenEMR\FQHC\DesignSystem\DesignSystemAssets;
-use OpenEMR\FQHC\Reporting\Clinical\PendingCqmMeasureResultSource;
+use OpenEMR\FQHC\Reporting\Clinical\CqmExecutionServiceEngine;
+use OpenEMR\FQHC\Reporting\Clinical\EcqmMeasureCatalog;
+use OpenEMR\FQHC\Reporting\Clinical\EngineBackedCqmMeasureResultSource;
 use OpenEMR\FQHC\Reporting\Clinical\Table6bReportGenerator;
 use OpenEMR\FQHC\Reporting\ReportingPatientRepository;
 use OpenEMR\FQHC\Reporting\Table5ReportGenerator;
@@ -53,7 +56,17 @@ $yearOptions = range($currentYear, $currentYear - 6);
 $presenter = new UdsReportPresenter();
 $report = (new UdsReportGenerator(new ReportingPatientRepository()))->generateForYear($year);
 $table5 = (new Table5ReportGenerator(new Table5VisitRepository()))->generateForYear($year);
-$table6b = (new Table6bReportGenerator(new PendingCqmMeasureResultSource()))->generateForYear($year);
+
+// Live Table 6B/7 counts from the CQM engine. Measures without installed
+// eCQM files for the year stay pending at no cost; an engine failure is
+// logged and degrades the clinical tables to pending without breaking the
+// patient tables above.
+$table6bSource = new EngineBackedCqmMeasureResultSource(
+    new EcqmMeasureCatalog($globals->getString('fileroot') . '/ccdaservice/node_modules/oe-cqm-parsers'),
+    new CqmExecutionServiceEngine(),
+    ServiceContainer::getLogger(),
+);
+$table6b = (new Table6bReportGenerator($table6bSource))->generateForYear($year);
 
 $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ->getTwig()
@@ -62,7 +75,7 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
         'yearOptions' => $yearOptions,
         'report' => $presenter->present($report),
         'table5' => $presenter->table5($table5),
-        'table6b' => $presenter->table6b($table6b),
+        'table6b' => $presenter->table6b($table6b, $report->cohortSize),
         'table7' => $presenter->table7($table6b),
     ]);
 ?>

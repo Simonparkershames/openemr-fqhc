@@ -1,21 +1,14 @@
 <?php
 
 /**
- * Default CqmMeasureResultSource: reports every UDS clinical measure as not
- * yet computed.
+ * Null-object CqmMeasureResultSource: reports every UDS clinical measure as
+ * not yet computed.
  *
- * The CQM/AMC engine (src/Services/Qdm/ResultsCalculator) computes population
- * counts per *population set*, and several of the mapped eCQMs define more
- * than one population set or stratification per measure (for example,
- * CMS117v14 Childhood Immunization Status has a separate population set per
- * vaccine combination). UDS reports a single line per measure, so wiring the
- * live engine requires picking the correct population set/stratification for
- * each measure in the map against the current-year UDS Manual and eCQM
- * specification before any number is shown — guessing here would put a wrong
- * compliance figure in front of a health center. This placeholder keeps
- * Table 6B/7 visible with an honest "not yet computed" state (the same
- * pattern the Patient Snapshot used for uncaptured fields) until that
- * measure-by-measure engine wiring ships.
+ * Production wires EngineBackedCqmMeasureResultSource, which pulls live
+ * population counts from the CQM engine for the population set each measure
+ * selects (UdsClinicalMeasure::reportedPopulationSetId()). This
+ * implementation remains the honest "nothing computed" state for tests and
+ * for callers that must render Table 6B/7 without touching the engine.
  *
  * @package   OpenEMR
  * @link      https://www.open-emr.org

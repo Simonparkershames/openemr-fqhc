@@ -156,11 +156,41 @@ final class UdsReportPresenterTest extends TestCase
         self::assertNull($pendingRow['denominator']);
         self::assertNull($pendingRow['rate']);
 
+        self::assertSame(1, $table6bView['computedCount']);
+        self::assertSame(count(UdsClinicalMeasure::cases()), $table6bView['totalCount']);
+        self::assertSame([], $table6bView['denominatorAlerts']);
+
         self::assertCount(2, $table7View['rows']);
         $table7Row = $this->row($table7View['rows'], 'Controlling High Blood Pressure');
         self::assertTrue($table7Row['computed']);
         self::assertEqualsWithDelta(0.7, $table7Row['rate'], 0.0001);
         self::assertFalse($this->row($table7View['rows'], 'Diabetes: Glycemic Status Assessment > 9%')['computed']);
+    }
+
+    public function testFlagsDenominatorsExceedingTheUnduplicatedPatientCount(): void
+    {
+        $table6b = (new Table6bReportBuilder())->build(2025, [
+            UdsClinicalMeasure::ControllingHighBloodPressure->cmsId() => new UdsMeasurePopulationCounts(
+                initialPopulation: 100,
+                denominator: 100,
+                denominatorExclusions: 0,
+                denominatorExceptions: 0,
+                numerator: 70,
+            ),
+        ]);
+
+        $consistent = (new UdsReportPresenter())->table6b($table6b, 100);
+        self::assertSame([], $consistent['denominatorAlerts']);
+
+        $diverged = (new UdsReportPresenter())->table6b($table6b, 80);
+        self::assertSame([
+            [
+                'label' => 'Controlling High Blood Pressure',
+                'cmsId' => 'CMS165v14',
+                'denominator' => 100,
+                'unduplicatedPatients' => 80,
+            ],
+        ], $diverged['denominatorAlerts']);
     }
 
     private function patient(
