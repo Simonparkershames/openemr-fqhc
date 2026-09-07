@@ -75,14 +75,18 @@ $role = (new WorkspaceResolver())->resolve($override, $groupTitles);
 $workspace = $role !== null ? $registry->forRole($role) : $registry->defaultWorkspace();
 
 // Roles with a purpose-built home route there (front desk #36, clinical
-// support #37); the shared card-grid template below serves the roles whose
-// dedicated workspaces haven't landed yet.
+// support #37, provider #38); the shared card-grid template below serves the
+// roles whose dedicated workspaces haven't landed yet.
 if ($workspace->role === WorkspaceRole::FrontDesk) {
     header('Location: ' . $publicBaseUrl . '/frontdesk.php');
     exit;
 }
 if ($workspace->role === WorkspaceRole::ClinicalSupport) {
     header('Location: ' . $publicBaseUrl . '/rooming.php');
+    exit;
+}
+if ($workspace->role === WorkspaceRole::Provider) {
+    header('Location: ' . $publicBaseUrl . '/provider.php');
     exit;
 }
 
@@ -92,22 +96,22 @@ $cards = array_map(
         'description' => $card->description,
         'url' => $webroot . $card->url,
         'ctaLabel' => $card->ctaLabel,
+        'icon' => $card->icon->value,
     ],
     $workspace->cards,
 );
 
-// Live UDS data-health metric for the manager/quality home.
-$dataHealth = null;
-if ($workspace->role === WorkspaceRole::Manager) {
-    $worklistYear = (int) date('Y') - 1;
-    $worklist = (new DataQualityWorklistGenerator(new ReportingPatientRepository()))
-        ->generateForYear($worklistYear);
-    $dataHealth = [
-        'year' => $worklistYear,
-        'total' => $worklist->total(),
-        'worklistUrl' => $publicBaseUrl . '/eligibility-worklist.php?year=' . $worklistYear,
-    ];
-}
+// Every role with a purpose-built home has redirected above, so the only
+// workspace still rendered by the shared card-grid template is the
+// manager/quality home — which carries the live UDS data-health metric.
+$worklistYear = (int) date('Y') - 1;
+$worklist = (new DataQualityWorklistGenerator(new ReportingPatientRepository()))
+    ->generateForYear($worklistYear);
+$dataHealth = [
+    'year' => $worklistYear,
+    'total' => $worklist->total(),
+    'worklistUrl' => $publicBaseUrl . '/eligibility-worklist.php?year=' . $worklistYear,
+];
 
 $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ->getTwig()
@@ -116,6 +120,7 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
             'roleKey' => $workspace->role->value,
             'roleLabel' => $workspace->role->label(),
             'heading' => $workspace->heading,
+            'icon' => $workspace->icon->value,
             'tagline' => $workspace->tagline,
         ],
         'cards' => $cards,
@@ -123,15 +128,16 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ]);
 ?>
 <!DOCTYPE html>
-<html>
+<html class="fqhc-page">
 <head>
     <title><?php echo xlt('FQHC Workspace'); ?></title>
+    <script><?php echo DesignSystemAssets::themeBootstrapScript(); ?></script>
     <?php Header::setupHeader(['common']); ?>
     <?php foreach ($assets->styleUrls() as $styleUrl) { ?>
         <link rel="stylesheet" href="<?php echo attr($styleUrl); ?>">
     <?php } ?>
 </head>
-<body class="body_top">
+<body class="body_top fqhc-body">
     <?php echo $content; ?>
     <?php foreach ($assets->scriptUrls() as $scriptUrl) { ?>
         <script type="module" src="<?php echo attr($scriptUrl); ?>"></script>

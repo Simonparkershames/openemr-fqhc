@@ -28,6 +28,7 @@ final readonly class FrontDeskAppointment
         public string $timeDisplay,
         public string $startTime,
         public int $durationMinutes,
+        public int $providerId,
         public string $providerName,
         public string $categoryName,
         public string $statusTitle,

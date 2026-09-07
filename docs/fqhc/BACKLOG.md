@@ -22,7 +22,7 @@
 | TASK-0.4 UDS data-element specs | [#11](https://github.com/Simonparkershames/openemr-fqhc/issues/11) |
 | TASK-0.5 Design-system foundation decision | [#12](https://github.com/Simonparkershames/openemr-fqhc/issues/12) |
 
-### Pathway 2 — demo-ready role-based experience (current — see [`PATHWAY-2-ROLE-WORKSPACES.md`](./PATHWAY-2-ROLE-WORKSPACES.md))
+### Pathway 2 — demo-ready role-based experience (✅ complete pending PR merges — see [`PATHWAY-2-ROLE-WORKSPACES.md`](./PATHWAY-2-ROLE-WORKSPACES.md))
 
 | Step | Issue |
 |------|-------|
@@ -41,6 +41,36 @@
 |------|-------|
 | Tables 6B/7 live CQM population counts | [#41](https://github.com/Simonparkershames/openemr-fqhc/issues/41) |
 | Patient-level drill-down from report cells | [#42](https://github.com/Simonparkershames/openemr-fqhc/issues/42) |
+
+### Milestone M3 — Design system v2 & dev loop (current, epic [#5](https://github.com/Simonparkershames/openemr-fqhc/issues/5))
+
+Ordered so each step makes the next cheaper. See [`ROADMAP.md`](./ROADMAP.md) Phase 3.
+
+| Step | Issue |
+|------|-------|
+| 1 — Living style-guide page | [#59](https://github.com/Simonparkershames/openemr-fqhc/issues/59) |
+| 2 — Icon system | [#60](https://github.com/Simonparkershames/openemr-fqhc/issues/60) |
+| 3 — Dark mode | [#61](https://github.com/Simonparkershames/openemr-fqhc/issues/61) |
+| 4 — Component library v2 | [#62](https://github.com/Simonparkershames/openemr-fqhc/issues/62) |
+| 5 — Motion & interaction polish | [#63](https://github.com/Simonparkershames/openemr-fqhc/issues/63) |
+| 6 — Data table v2 | [#64](https://github.com/Simonparkershames/openemr-fqhc/issues/64) |
+| 7 — Shell polish pass | [#66](https://github.com/Simonparkershames/openemr-fqhc/issues/66) |
+| Supporting — one-command screenshots + visual regression | [#65](https://github.com/Simonparkershames/openemr-fqhc/issues/65) |
+| Consuming — workspace homes as operational dashboards | [#67](https://github.com/Simonparkershames/openemr-fqhc/issues/67) |
+
+### Milestone M4 — FQHC application shell
+
+| Item | Issue |
+|------|-------|
+| Epic — left rail, global patient search, command palette | [#68](https://github.com/Simonparkershames/openemr-fqhc/issues/68) |
+
+### CI signal (epic [#3](https://github.com/Simonparkershames/openemr-fqhc/issues/3))
+
+| Item | Issue |
+|------|-------|
+| Inferno job fails on every PR (private submodule) | [#57](https://github.com/Simonparkershames/openemr-fqhc/issues/57) |
+| Daily scheduled matrix is flaky and over-broad | [#58](https://github.com/Simonparkershames/openemr-fqhc/issues/58) |
+| CI certification gate (blocked on the two above) | [#8](https://github.com/Simonparkershames/openemr-fqhc/issues/8) |
 
 ### UX-first starter pathway (Milestone 1 — ✅ complete, see [`STARTER-PATHWAY.md`](./STARTER-PATHWAY.md))
 

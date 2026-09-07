@@ -46,6 +46,7 @@ final class RoomingWorklistBuilderTest extends TestCase
             '1990-01-01',
             $startTime,
             900,
+            7,
             'Dana Nguyen',
             'Office Visit',
             $statusCode,

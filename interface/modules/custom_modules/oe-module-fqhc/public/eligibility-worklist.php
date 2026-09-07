@@ -65,15 +65,16 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ]);
 ?>
 <!DOCTYPE html>
-<html>
+<html class="fqhc-page">
 <head>
     <title><?php echo xlt('Eligibility Worklist'); ?></title>
+    <script><?php echo DesignSystemAssets::themeBootstrapScript(); ?></script>
     <?php Header::setupHeader(['common']); ?>
     <?php foreach ($assets->styleUrls() as $styleUrl) { ?>
         <link rel="stylesheet" href="<?php echo attr($styleUrl); ?>">
     <?php } ?>
 </head>
-<body class="body_top">
+<body class="body_top fqhc-body">
     <?php echo $content; ?>
     <?php foreach ($assets->scriptUrls() as $scriptUrl) { ?>
         <script type="module" src="<?php echo attr($scriptUrl); ?>"></script>

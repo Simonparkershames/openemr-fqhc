@@ -31,6 +31,7 @@ final readonly class ScheduleRow
         public ?string $dateOfBirth,
         public string $startTime,
         public int $durationSeconds,
+        public int $providerId,
         public string $providerName,
         public string $categoryName,
         public string $statusCode,

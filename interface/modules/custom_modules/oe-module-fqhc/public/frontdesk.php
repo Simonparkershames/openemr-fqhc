@@ -59,6 +59,14 @@ if (is_string($dateInput)) {
     }
 }
 $date = $day->format('Y-m-d');
+// Capture the display string and today's date before any legacy include:
+// appointments.inc.php pulls in encounter_events.inc.php, whose top-level
+// `$today = date('Y-m-d')` clobbers this global, so anything needed from a
+// DateTimeImmutable must be read up front.
+$dateDisplay = $day->format('l, F j, Y');
+$isToday = $date === $today->format('Y-m-d');
+$prevDate = $day->modify('-1 day')->format('Y-m-d');
+$nextDate = $day->modify('+1 day')->format('Y-m-d');
 
 // The certified calendar code owns the day query (recurrence expansion,
 // calendar filter events); the FQHC repository only adapts its rows into
@@ -79,6 +87,7 @@ $quickActions = array_map(
         'description' => $card->description,
         'url' => $webroot . $card->url,
         'ctaLabel' => $card->ctaLabel,
+        'icon' => $card->icon->value,
     ],
     $workspace->cards,
 );
@@ -123,10 +132,10 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ->getTwig()
     ->render('fqhc/frontdesk.html.twig', [
         'date' => $date,
-        'dateDisplay' => $day->format('l, F j, Y'),
-        'isToday' => $date === $today->format('Y-m-d'),
-        'prevDateUrl' => $publicBaseUrl . '/frontdesk.php?date=' . $day->modify('-1 day')->format('Y-m-d'),
-        'nextDateUrl' => $publicBaseUrl . '/frontdesk.php?date=' . $day->modify('+1 day')->format('Y-m-d'),
+        'dateDisplay' => $dateDisplay,
+        'isToday' => $isToday,
+        'prevDateUrl' => $publicBaseUrl . '/frontdesk.php?date=' . $prevDate,
+        'nextDateUrl' => $publicBaseUrl . '/frontdesk.php?date=' . $nextDate,
         'todayUrl' => $publicBaseUrl . '/frontdesk.php',
         'total' => $schedule->total(),
         'needsAttention' => $schedule->needsAttentionCount(),
@@ -138,15 +147,16 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ]);
 ?>
 <!DOCTYPE html>
-<html>
+<html class="fqhc-page">
 <head>
     <title><?php echo xlt('Front Desk Workspace'); ?></title>
+    <script><?php echo DesignSystemAssets::themeBootstrapScript(); ?></script>
     <?php Header::setupHeader(['common']); ?>
     <?php foreach ($assets->styleUrls() as $styleUrl) { ?>
         <link rel="stylesheet" href="<?php echo attr($styleUrl); ?>">
     <?php } ?>
 </head>
-<body class="body_top">
+<body class="body_top fqhc-body">
     <?php echo $content; ?>
     <?php foreach ($assets->scriptUrls() as $scriptUrl) { ?>
         <script type="module" src="<?php echo attr($scriptUrl); ?>"></script>
