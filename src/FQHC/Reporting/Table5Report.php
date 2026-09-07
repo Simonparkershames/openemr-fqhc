@@ -21,6 +21,8 @@ declare(strict_types=1);
 
 namespace OpenEMR\FQHC\Reporting;
 
+use OpenEMR\FQHC\Reporting\Drilldown\PatientRoster;
+
 final readonly class Table5Report
 {
     /**
@@ -32,6 +34,7 @@ final readonly class Table5Report
         private array $clinicVisits,
         private array $virtualVisits,
         private array $patients,
+        public PatientRoster $roster,
     ) {
     }
 

@@ -20,6 +20,9 @@ declare(strict_types=1);
 
 namespace OpenEMR\FQHC\Reporting;
 
+use OpenEMR\FQHC\Reporting\Drilldown\CharacteristicsCell;
+use OpenEMR\FQHC\Reporting\Drilldown\PatientRoster;
+
 final class Table5ReportBuilder
 {
     /**
@@ -46,11 +49,14 @@ final class Table5ReportBuilder
         }
 
         $patients = [];
+        $rosterCells = [];
         foreach ($patientSets as $key => $pids) {
             $patients[$key] = count($pids);
+            $category = UdsServiceCategory::from($key);
+            $rosterCells[CharacteristicsCell::serviceCategory($category)] = array_keys($pids);
         }
 
-        return new Table5Report($clinicVisits, $virtualVisits, $patients);
+        return new Table5Report($clinicVisits, $virtualVisits, $patients, new PatientRoster($rosterCells));
     }
 
     /**

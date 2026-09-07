@@ -20,6 +20,8 @@ declare(strict_types=1);
 
 namespace OpenEMR\FQHC\Reporting;
 
+use OpenEMR\FQHC\Reporting\Drilldown\CharacteristicsRosterBuilder;
+
 final readonly class UdsReportGenerator
 {
     private UdsPatientRecordFactory $recordFactory;
@@ -54,22 +56,27 @@ final readonly class UdsReportGenerator
         $table3bRecords = [];
         $zipRecords = [];
         $table4Records = [];
+        $rosterBuilder = new CharacteristicsRosterBuilder();
 
         foreach ($cohort as $pid) {
             $patient = $this->source->load($pid, $year);
 
-            $table3a = $this->recordFactory->table3a($patient);
-            if ($table3a !== null) {
-                $table3aRecords[] = $table3a;
+            $table3aRecord = $this->recordFactory->table3a($patient);
+            if ($table3aRecord !== null) {
+                $table3aRecords[] = $table3aRecord;
             }
 
-            $table3bRecords[] = $this->recordFactory->table3b($patient);
-            $zipRecords[] = $this->recordFactory->zip($patient);
+            $table3bRecord = $this->recordFactory->table3b($patient);
+            $zipRecord = $this->recordFactory->zip($patient);
+            $table3bRecords[] = $table3bRecord;
+            $zipRecords[] = $zipRecord;
 
-            $table4 = $this->recordFactory->table4($patient);
-            if ($table4 !== null) {
-                $table4Records[] = $table4;
+            $table4Record = $this->recordFactory->table4($patient);
+            if ($table4Record !== null) {
+                $table4Records[] = $table4Record;
             }
+
+            $rosterBuilder->add($patient->pid, $table3aRecord, $table3bRecord, $table4Record, $zipRecord);
         }
 
         $table3a = $this->table3aBuilder->build($table3aRecords);
@@ -85,6 +92,7 @@ final readonly class UdsReportGenerator
             zipCodeTable: $zip,
             table4: $table4,
             reconciliation: $this->reconciliation->reconcile($table3a, $table3b, $zip, $table4),
+            roster: $rosterBuilder->build(),
         );
     }
 }

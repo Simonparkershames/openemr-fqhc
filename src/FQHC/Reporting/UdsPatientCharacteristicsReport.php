@@ -19,6 +19,8 @@ declare(strict_types=1);
 
 namespace OpenEMR\FQHC\Reporting;
 
+use OpenEMR\FQHC\Reporting\Drilldown\PatientRoster;
+
 final readonly class UdsPatientCharacteristicsReport
 {
     public function __construct(
@@ -29,6 +31,7 @@ final readonly class UdsPatientCharacteristicsReport
         public ZipCodeTableReport $zipCodeTable,
         public Table4Report $table4,
         public CrossTableReconciliationResult $reconciliation,
+        public PatientRoster $roster,
     ) {
     }
 }

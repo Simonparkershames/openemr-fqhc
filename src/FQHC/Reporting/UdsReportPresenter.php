@@ -23,6 +23,9 @@ use OpenEMR\FQHC\Fpl\FplBand;
 use OpenEMR\FQHC\Payer\UdsPayerCategory;
 use OpenEMR\FQHC\Reporting\Clinical\Table6bReport;
 use OpenEMR\FQHC\Reporting\Clinical\UdsClinicalMeasure;
+use OpenEMR\FQHC\Reporting\Drilldown\CharacteristicsCell;
+use OpenEMR\FQHC\Reporting\Drilldown\PatientDirectory;
+use OpenEMR\FQHC\Reporting\Drilldown\PatientRoster;
 use OpenEMR\FQHC\SpecialPopulation\HomelessStatus;
 
 /**
@@ -34,6 +37,8 @@ use OpenEMR\FQHC\SpecialPopulation\HomelessStatus;
  * @phpstan-type Table5Row array{label: string, clinic: int, virtual: int, visits: int, patients: int}
  * @phpstan-type Table6bRow array{label: string, cmsId: string, computed: bool, denominator: ?int, numerator: ?int, rate: ?float}
  * @phpstan-type Table7Row array{label: string, computed: bool, rate: ?float}
+ * @phpstan-type DrilldownPatient array{pid: int, name: string, dob: ?string}
+ * @phpstan-type DrilldownCell array{label: string, count: int, patients: list<DrilldownPatient>}
  */
 final class UdsReportPresenter
 {
@@ -45,11 +50,18 @@ final class UdsReportPresenter
      *     specialPopulations: list<CountRow>,
      *     ageSex: array{rows: list<AgeRow>, male: int, female: int, total: int},
      *     race: array{rows: list<RaceRow>, hispanic: int, notHispanic: int, unreported: int, total: int, language: int},
-     *     zip: array{rows: list<ZipRow>, uninsured: int, publicInsurance: int, medicare: int, private: int, total: int}
+     *     zip: array{rows: list<ZipRow>, uninsured: int, publicInsurance: int, medicare: int, private: int, total: int},
+     *     drilldown: array{
+     *         ageSex: list<DrilldownCell>, race: list<DrilldownCell>, language: list<DrilldownCell>,
+     *         income: list<DrilldownCell>, insurance: list<DrilldownCell>,
+     *         specialPopulations: list<DrilldownCell>, zip: list<DrilldownCell>
+     *     }
      * }
      */
-    public function present(UdsPatientCharacteristicsReport $report): array
-    {
+    public function present(
+        UdsPatientCharacteristicsReport $report,
+        PatientDirectory $directory = new PatientDirectory(),
+    ): array {
         return [
             'summary' => [
                 'year' => $report->year,
@@ -64,17 +76,26 @@ final class UdsReportPresenter
             'ageSex' => $this->ageSex($report->table3a),
             'race' => $this->race($report->table3b),
             'zip' => $this->zip($report->zipCodeTable),
+            'drilldown' => $this->drilldown($report, $directory),
         ];
     }
 
     /**
      * The UDS Table 5 utilization rows (one per service category) plus totals.
      *
-     * @return array{rows: list<Table5Row>, clinic: int, virtual: int, visits: int, patients: int}
+     * The drill-down lists the unduplicated patients seen in each service
+     * category (Column C) — the patient-linked view of utilization; the visit
+     * columns (B/B2) count encounters, not patients, so they are not expanded.
+     *
+     * @return array{
+     *     rows: list<Table5Row>, clinic: int, virtual: int, visits: int, patients: int,
+     *     drilldown: list<DrilldownCell>
+     * }
      */
-    public function table5(Table5Report $table5): array
+    public function table5(Table5Report $table5, PatientDirectory $directory = new PatientDirectory()): array
     {
         $rows = [];
+        $drilldown = [];
         foreach (UdsServiceCategory::cases() as $category) {
             $rows[] = [
                 'label' => $category->label(),
@@ -83,6 +104,15 @@ final class UdsReportPresenter
                 'visits' => $table5->totalVisits($category),
                 'patients' => $table5->patients($category),
             ];
+            $cell = $this->drilldownCell(
+                $category->label(),
+                $table5->roster,
+                CharacteristicsCell::serviceCategory($category),
+                $directory,
+            );
+            if ($cell !== null) {
+                $drilldown[] = $cell;
+            }
         }
 
         return [
@@ -91,6 +121,7 @@ final class UdsReportPresenter
             'virtual' => $table5->totalVirtualVisits(),
             'visits' => $table5->grandTotalVisits(),
             'patients' => $table5->totalPatients(),
+            'drilldown' => $drilldown,
         ];
     }
 
@@ -276,5 +307,242 @@ final class UdsReportPresenter
             'private' => $zipCodeTable->columnTotal(UdsZipInsuranceColumn::Private),
             'total' => $zipCodeTable->total(),
         ];
+    }
+
+    /**
+     * The per-cell patient rosters for the patient-characteristics tables: for
+     * every non-empty cell, the patients behind that count and a link target to
+     * fix their data. Cell keys are derived the same way the roster keyed them,
+     * so each list's size equals the cell's reported count.
+     *
+     * @return array{
+     *     ageSex: list<DrilldownCell>, race: list<DrilldownCell>, language: list<DrilldownCell>,
+     *     income: list<DrilldownCell>, insurance: list<DrilldownCell>,
+     *     specialPopulations: list<DrilldownCell>, zip: list<DrilldownCell>
+     * }
+     */
+    private function drilldown(UdsPatientCharacteristicsReport $report, PatientDirectory $directory): array
+    {
+        $roster = $report->roster;
+
+        return [
+            'ageSex' => $this->ageSexDrilldown($roster, $directory),
+            'race' => $this->raceDrilldown($roster, $directory),
+            'language' => $this->languageDrilldown($roster, $directory),
+            'income' => $this->incomeDrilldown($roster, $directory),
+            'insurance' => $this->insuranceDrilldown($roster, $directory),
+            'specialPopulations' => $this->specialPopulationsDrilldown($roster, $directory),
+            'zip' => $this->zipDrilldown($report->zipCodeTable, $roster, $directory),
+        ];
+    }
+
+    /**
+     * @return list<DrilldownCell>
+     */
+    private function ageSexDrilldown(PatientRoster $roster, PatientDirectory $directory): array
+    {
+        $cells = [];
+        for ($line = Table3aAgeBand::FIRST_LINE; $line <= Table3aAgeBand::LAST_LINE; $line++) {
+            $band = new Table3aAgeBand($line);
+            foreach (UdsSex::cases() as $sex) {
+                $cell = $this->drilldownCell(
+                    $band->label() . ' · ' . $sex->label(),
+                    $roster,
+                    CharacteristicsCell::ageSex($line, $sex),
+                    $directory,
+                );
+                if ($cell !== null) {
+                    $cells[] = $cell;
+                }
+            }
+        }
+
+        return $cells;
+    }
+
+    /**
+     * @return list<DrilldownCell>
+     */
+    private function raceDrilldown(PatientRoster $roster, PatientDirectory $directory): array
+    {
+        $columns = [
+            CharacteristicsCell::RACE_HISPANIC => 'Hispanic / Latino',
+            CharacteristicsCell::RACE_NOT_HISPANIC => 'Not Hispanic / Latino',
+            CharacteristicsCell::RACE_UNREPORTED => 'Unreported',
+        ];
+
+        $cells = [];
+        foreach (UdsRaceCategory::cases() as $race) {
+            foreach ($columns as $column => $columnLabel) {
+                $cell = $this->drilldownCell(
+                    $race->label() . ' · ' . $columnLabel,
+                    $roster,
+                    CharacteristicsCell::raceEthnicity($race, $column),
+                    $directory,
+                );
+                if ($cell !== null) {
+                    $cells[] = $cell;
+                }
+            }
+        }
+
+        return $cells;
+    }
+
+    /**
+     * @return list<DrilldownCell>
+     */
+    private function languageDrilldown(PatientRoster $roster, PatientDirectory $directory): array
+    {
+        $cell = $this->drilldownCell(
+            'Best served in a language other than English',
+            $roster,
+            CharacteristicsCell::language(),
+            $directory,
+        );
+
+        return $cell === null ? [] : [$cell];
+    }
+
+    /**
+     * @return list<DrilldownCell>
+     */
+    private function incomeDrilldown(PatientRoster $roster, PatientDirectory $directory): array
+    {
+        $cells = [];
+        foreach (FplBand::cases() as $band) {
+            $cell = $this->drilldownCell($band->label(), $roster, CharacteristicsCell::income($band), $directory);
+            if ($cell !== null) {
+                $cells[] = $cell;
+            }
+        }
+
+        return $cells;
+    }
+
+    /**
+     * @return list<DrilldownCell>
+     */
+    private function insuranceDrilldown(PatientRoster $roster, PatientDirectory $directory): array
+    {
+        $cells = [];
+        foreach (UdsPayerCategory::cases() as $category) {
+            foreach (UdsAgeGroup::cases() as $ageGroup) {
+                $cell = $this->drilldownCell(
+                    $category->label() . ' · ' . $ageGroup->label(),
+                    $roster,
+                    CharacteristicsCell::insurance($category, $ageGroup),
+                    $directory,
+                );
+                if ($cell !== null) {
+                    $cells[] = $cell;
+                }
+            }
+        }
+
+        return $cells;
+    }
+
+    /**
+     * @return list<DrilldownCell>
+     */
+    private function specialPopulationsDrilldown(PatientRoster $roster, PatientDirectory $directory): array
+    {
+        $targets = [
+            ['Migratory agricultural workers', CharacteristicsCell::agriculturalMigratory()],
+            ['Seasonal agricultural workers', CharacteristicsCell::agriculturalSeasonal()],
+            ['Total agricultural workers', CharacteristicsCell::agriculturalTotal()],
+        ];
+        foreach (HomelessStatus::cases() as $status) {
+            $targets[] = ['Homeless — ' . $status->label(), CharacteristicsCell::homeless($status)];
+        }
+        $targets[] = ['Total homeless', CharacteristicsCell::homelessTotal()];
+        $targets[] = ['School-based', CharacteristicsCell::schoolBased()];
+        $targets[] = ['Veterans', CharacteristicsCell::veterans()];
+        $targets[] = ['Public housing residents', CharacteristicsCell::publicHousing()];
+
+        $cells = [];
+        foreach ($targets as [$label, $cellKey]) {
+            $cell = $this->drilldownCell($label, $roster, $cellKey, $directory);
+            if ($cell !== null) {
+                $cells[] = $cell;
+            }
+        }
+
+        return $cells;
+    }
+
+    /**
+     * @return list<DrilldownCell>
+     */
+    private function zipDrilldown(
+        ZipCodeTableReport $zipCodeTable,
+        PatientRoster $roster,
+        PatientDirectory $directory,
+    ): array {
+        $cells = [];
+        foreach ($zipCodeTable->residences() as $residence) {
+            foreach (UdsZipInsuranceColumn::cases() as $column) {
+                $cell = $this->drilldownCell(
+                    $residence->label() . ' · ' . $column->label(),
+                    $roster,
+                    CharacteristicsCell::zip($residence, $column),
+                    $directory,
+                );
+                if ($cell !== null) {
+                    $cells[] = $cell;
+                }
+            }
+        }
+
+        return $cells;
+    }
+
+    /**
+     * Build one drill-down cell, or null when no patient is behind it (empty
+     * cells are not offered for expansion).
+     *
+     * @return DrilldownCell|null
+     */
+    private function drilldownCell(
+        string $label,
+        PatientRoster $roster,
+        string $cellKey,
+        PatientDirectory $directory,
+    ): ?array {
+        $patients = $this->rosterPatients($roster, $cellKey, $directory);
+        if ($patients === []) {
+            return null;
+        }
+
+        return ['label' => $label, 'count' => count($patients), 'patients' => $patients];
+    }
+
+    /**
+     * Resolve a cell's patient ids to display rows, sorted by name then id so
+     * the list is stable and scannable. A patient the directory cannot name
+     * still appears, keyed by id, so a data gap never hides them.
+     *
+     * @return list<DrilldownPatient>
+     */
+    private function rosterPatients(PatientRoster $roster, string $cellKey, PatientDirectory $directory): array
+    {
+        $rows = [];
+        foreach ($roster->pidsFor($cellKey) as $pid) {
+            $entry = $directory->find($pid);
+            $rows[] = [
+                'pid' => $pid,
+                'name' => $entry !== null ? $entry->name : ('Patient #' . $pid),
+                'dob' => $entry?->dateOfBirth,
+            ];
+        }
+
+        usort(
+            $rows,
+            static fn(array $a, array $b): int
+                => [strtolower($a['name']), $a['pid']] <=> [strtolower($b['name']), $b['pid']],
+        );
+
+        return $rows;
     }
 }

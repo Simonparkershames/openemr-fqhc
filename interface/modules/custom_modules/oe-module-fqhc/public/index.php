@@ -23,6 +23,7 @@ require_once __DIR__ . '/../../../../globals.php';
 
 use OpenEMR\Common\Acl\AclMain;
 use OpenEMR\Common\Csrf\CsrfUtils;
+use OpenEMR\Common\Session\PatientSessionUtil;
 use OpenEMR\Common\Session\SessionWrapperFactory;
 use OpenEMR\Common\Twig\TwigContainer;
 use OpenEMR\Core\Header;
@@ -48,6 +49,17 @@ if (!AclMain::aclCheckCore('patients', 'demo')) {
 $globals = OEGlobalsBag::getInstance();
 $publicBaseUrl = $globals->getString('webroot') . '/interface/modules/custom_modules/oe-module-fqhc/public';
 $assets = new DesignSystemAssets(__DIR__, $publicBaseUrl);
+
+// A patient may be deep-linked here from the UDS report drill-down. Selecting a
+// patient sets the active patient for the session (the same effect as picking
+// them in the finder), so the Snapshot's own save forms — which read the session
+// pid — target the patient being viewed rather than a stale one. Routing through
+// PatientSessionUtil also resets the active encounter and records the view in
+// the audit log, exactly as the standard patient-selection path does.
+$queryPid = filter_input(INPUT_GET, 'pid', FILTER_VALIDATE_INT);
+if (is_int($queryPid) && $queryPid > 0) {
+    PatientSessionUtil::setPid($queryPid);
+}
 
 $sessionPid = $_SESSION['pid'] ?? 0;
 $pid = is_numeric($sessionPid) ? (int) $sessionPid : 0;

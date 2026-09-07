@@ -26,6 +26,7 @@ use OpenEMR\Core\OEGlobalsBag;
 use OpenEMR\FQHC\DesignSystem\DesignSystemAssets;
 use OpenEMR\FQHC\Reporting\Clinical\PendingCqmMeasureResultSource;
 use OpenEMR\FQHC\Reporting\Clinical\Table6bReportGenerator;
+use OpenEMR\FQHC\Reporting\Drilldown\PatientDirectoryRepository;
 use OpenEMR\FQHC\Reporting\ReportingPatientRepository;
 use OpenEMR\FQHC\Reporting\Table5ReportGenerator;
 use OpenEMR\FQHC\Reporting\Table5VisitRepository;
@@ -55,15 +56,25 @@ $report = (new UdsReportGenerator(new ReportingPatientRepository()))->generateFo
 $table5 = (new Table5ReportGenerator(new Table5VisitRepository()))->generateForYear($year);
 $table6b = (new Table6bReportGenerator(new PendingCqmMeasureResultSource()))->generateForYear($year);
 
+// Resolve the display identity of every patient referenced by a drill-down cell
+// in one query, so the report can name the patients behind each count and link
+// each to their UDS Patient Snapshot to fix data-quality gaps.
+$drilldownPids = array_values(array_unique(array_merge(
+    $report->roster->allPids(),
+    $table5->roster->allPids(),
+)));
+$directory = (new PatientDirectoryRepository())->findByPids($drilldownPids);
+
 $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ->getTwig()
     ->render('fqhc/report.html.twig', [
         'year' => $year,
         'yearOptions' => $yearOptions,
-        'report' => $presenter->present($report),
-        'table5' => $presenter->table5($table5),
+        'report' => $presenter->present($report, $directory),
+        'table5' => $presenter->table5($table5, $directory),
         'table6b' => $presenter->table6b($table6b),
         'table7' => $presenter->table7($table6b),
+        'snapshotUrl' => $publicBaseUrl . '/index.php',
     ]);
 ?>
 <!DOCTYPE html>
