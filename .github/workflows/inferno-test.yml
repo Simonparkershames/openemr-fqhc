@@ -25,16 +25,32 @@ jobs:
       has_inferno_pat: ${{ steps.check.outputs.has_inferno_pat }}
       has_codecov_token: ${{ steps.check.outputs.has_codecov_token }}
     steps:
-    - name: Check if INFERNO_PAT is available
+    - name: Check if INFERNO_PAT is available and can reach the private submodule
       id: check
+      env:
+        INFERNO_PAT: ${{ secrets.INFERNO_PAT }}
       run: |
-        if [[ -n '${{ secrets.INFERNO_PAT }}' ]]; then
-          echo 'INFERNO_PAT secret is available. Proceeding with tests.'
-          echo 'has_inferno_pat=true' >> "$GITHUB_OUTPUT"
-        else
+        # The suite needs the private openemr/inferno-files submodule. A secret
+        # that exists is not the same as a secret that grants access to it: a
+        # fork can hold an INFERNO_PAT that reads nothing, and checkout then
+        # fails ~15s in on every single PR. Probe read access before committing
+        # the job to a run it cannot finish, so an unusable token skips the job
+        # instead of reporting a red check that means nothing.
+        if [[ -z "$INFERNO_PAT" ]]; then
           echo '::warning::INFERNO_PAT secret is not set. Inferno certification tests will be skipped.'
           echo 'To run these tests, please set the INFERNO_PAT secret in your repository settings.'
           echo 'has_inferno_pat=false' >> "$GITHUB_OUTPUT"
+        elif [[ "$(curl -sS -o /dev/null -w '%{http_code}' \
+                    -H "Authorization: Bearer $INFERNO_PAT" \
+                    -H 'Accept: application/vnd.github+json' \
+                    https://api.github.com/repos/openemr/inferno-files)" != '200' ]]; then
+          echo '::warning::INFERNO_PAT is set but cannot read openemr/inferno-files.'
+          echo 'This is expected on forks, which cannot be granted access to that private repository.'
+          echo 'Inferno certification tests will be skipped; certification is validated upstream.'
+          echo 'has_inferno_pat=false' >> "$GITHUB_OUTPUT"
+        else
+          echo 'INFERNO_PAT secret is available and can read the submodule. Proceeding with tests.'
+          echo 'has_inferno_pat=true' >> "$GITHUB_OUTPUT"
         fi
 
         # Check for Codecov token (optional - coverage will still work without it)

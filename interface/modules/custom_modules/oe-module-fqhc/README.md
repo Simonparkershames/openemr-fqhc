@@ -108,6 +108,117 @@ the chart, the message center); the workspace itself is read-only. The pure
 the filtering and ordering rules unit-testable; the SQL and CDR calls live
 at the `provider.php` boundary and in the `Provider` repositories.
 
+## Living style guide (issue #59)
+
+**FQHC → Design System** (`public/showcase.php`, admin/super only) renders the
+entire design system on one page:
+
+- **Foundations** — every token, parsed out of `assets/css/tokens.css` at render
+  time by `OpenEMR\FQHC\DesignSystem\TokenSheetParser` and drawn as a live
+  specimen: colour swatches, the type scale set at size, spacing steps drawn to
+  width, radii, elevations, the focus ring. Add a token to `tokens.css` and it
+  appears here; remove one and it disappears. Nothing to register.
+- **Components** — every `fqhc-*` element in every variant *and* every state
+  that is easy to forget: missing attributes, empty values, unknown badge
+  variants, unbroken long content.
+- **Patterns** — the card grid, data table, and form-row compositions the
+  workspaces are assembled from. Narrow the window to see the responsive rules.
+- **Accessibility** — `ContrastAudit` measures every foreground/background
+  pairing the components actually use and prints the WCAG 2.1 ratio and rating
+  beside each one. `ContrastAuditTest` asserts the same thing in CI, so a token
+  edit that drops a pairing below AA fails the build rather than waiting to be
+  spotted.
+
+Build a new component here first: it is faster than seeding data and clicking
+through a role loop, and it is where a reviewer will look for an inconsistency.
+
+## Icons (issue #60)
+
+One name per **concept**, never per drawing. Templates and server-side code ask
+for `care-gap` or `worklist`; what that resolves to is decided once, in
+`assets/js/fqhc-icons.js`. The same vocabulary exists in PHP as the
+`OpenEMR\FQHC\DesignSystem\Icon` enum, so a `WorkspaceCard` can carry its
+concept and the template just passes it through. `IconRegistryTest` fails if
+the enum and the browser-side registry ever drift, or if a template names an
+icon that does not exist.
+
+```twig
+<fqhc-card icon="care-gap" heading="Care gaps">…</fqhc-card>
+<fqhc-icon name="patient"></fqhc-icon>                  {# decorative (default) #}
+<fqhc-icon name="search" label="Search"></fqhc-icon>    {# icon-only control #}
+```
+
+**Why inline SVG and not the Font Awesome classes.** Font Awesome is loaded on
+every module page already, so its classes would have been free — but the
+components render into Shadow DOM, and document stylesheets do not cross a
+shadow boundary. An `<i class="fa fa-user">` inside `fqhc-card`'s shadow root
+is an unstyled empty element, and three of the four components that need icons
+are in exactly that position. The path data is Font Awesome Free 6.7.2 (solid,
+CC BY 4.0), which the project already depends on; each entry records its
+upstream name so a glyph can be traced back.
+
+Icons are decorative by default (`aria-hidden`), because every one of them sits
+beside text that already carries the meaning — status badges keep their labels.
+Pass `label` only for a genuinely icon-only control.
+
+## Dark mode (issue #61)
+
+Every FQHC module surface renders in light or dark. The whole thing is a second
+set of **colour tokens** — no component rule is duplicated, because every
+component already draws itself from those names.
+
+- **Choosing.** `<fqhc-theme-toggle>` offers System / Light / Dark. System is
+  the default and follows `prefers-color-scheme`; an explicit choice is stored
+  in `localStorage` under `fqhc-theme` and written to `data-fqhc-theme` on the
+  root element. The palette is declared behind *both* the media query and the
+  attribute, so the toggle wins in both directions — a dark-OS user can pin
+  light and vice versa. It is per-browser rather than per-account on purpose: a
+  workstation and an exam-room tablet reasonably want different answers.
+- **No flash.** The attribute has to land before the first paint, so it is
+  applied by a tiny synchronous snippet in the `<head>` —
+  `DesignSystemAssets::themeBootstrapScript()` — ahead of every stylesheet.
+  `DarkThemeTest` asserts every module page emits it in that position.
+- **Accessible in both.** `ContrastAudit` measures each theme from the values
+  its own cascade produces; all 22 pairings clear WCAG 2.1 AA in light and
+  dark, asserted in CI and shown side by side in the style guide.
+- **Deliberate choices.** Text is softened (`#e2e8f0`, not white) to avoid
+  halation; the brand gets *brighter* in dark with near-black text on it;
+  elevation reads as a lighter surface rather than a darker shadow, since a
+  shadow cannot darken an already-dark ground.
+- **Scope.** Module surfaces only. A deep link out to a legacy screen lands on
+  that screen's own theme; extending the shell is tracked under #68.
+
+## Component library v2 (issue #62)
+
+The original five elements were enough to build a page of cards holding text —
+which is exactly why every workspace home *was* a page of cards holding text.
+These are the pieces a dashboard needs instead:
+
+| Element | For |
+|---|---|
+| `fqhc-stat` | A metric tile: value, label, delta with direction, optional sparkline, optional whole-tile link |
+| `fqhc-avatar` | Initials chip, colour derived from the patient id, optional status dot |
+| `fqhc-segmented` | Segmented control for today/week/all and similar switches |
+| `fqhc-timeline` + `fqhc-timeline-event` | Vertical event list with a time gutter — a visit's arrival → roomed → seen → checked-out |
+| `fqhc-skeleton` | Loading placeholder shaped like what is arriving |
+| `fqhc-progress` | Linear and ring, for measure rates and completeness |
+| `fqhc-toast` | Transient confirmation after an action |
+
+Two details worth knowing:
+
+- **`fqhc-stat` decides the delta colour from `direction`, not the caller.**
+  `up`/`down` mean the obvious thing; `up-bad` and `down-good` exist so a
+  measure where rising is a regression (open care gaps) cannot be coloured
+  green by accident.
+- **`fqhc-avatar` derives its hue from the patient id**, at fixed saturation and
+  lightness. The point is recognising the same patient across surfaces, which a
+  random or sequential colour would defeat.
+
+`ComponentLibraryTest` asserts every element is registered, is demonstrated in
+the style guide, extends `FqhcElement` (so it is Shadow-DOM encapsulated), and
+that the library hard-codes no colour — the one sanctioned exception being the
+avatar's derived hue.
+
 ## Architecture notes
 
 - **Domain/services** live in the core tree under `OpenEMR\FQHC\`
@@ -173,6 +284,10 @@ Docker/DB):
 ```bash
 composer phpunit-isolated -- --filter DesignSystemAssets
 composer phpunit-isolated -- --filter DemoDataSet
+composer phpunit-isolated -- --filter 'ColorContrast|ContrastAudit|TokenSheet'
+composer phpunit-isolated -- --filter IconRegistry
+composer phpunit-isolated -- --filter DarkTheme
+composer phpunit-isolated -- --filter ComponentLibrary
 ```
 
 `DemoDataSetTest` asserts the demo panel actually spans every UDS bucket, payer
