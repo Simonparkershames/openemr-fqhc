@@ -36,19 +36,36 @@ final readonly class DesignSystemAssets
     /**
      * Scripts (ES modules) relative to the module's `public/` directory.
      *
+     * `fqhc-icons.js` loads first so `<fqhc-icon>` is defined before the
+     * components emit it. Order is belt-and-braces rather than a requirement:
+     * custom elements upgrade whenever their definition arrives, so a
+     * component rendered first still gets its icons.
+     *
      * @var list<string>
      */
     public const SCRIPTS = [
+        'assets/js/fqhc-icons.js',
         'assets/js/fqhc-components.js',
+        'assets/js/fqhc-theme.js',
     ];
 
+    /** localStorage key holding an explicit theme choice; '' means follow the OS. */
+    public const THEME_STORAGE_KEY = 'fqhc-theme';
+
+    /** Attribute written on the root element to pin a theme. */
+    public const THEME_ATTRIBUTE = 'data-fqhc-theme';
+
     /**
-     * @param string $publicRoot    Absolute filesystem path to the module's `public/` directory.
-     * @param string $publicBaseUrl Browser-facing base URL for that same directory.
+     * @param string       $publicRoot     Absolute filesystem path to the module's `public/` directory.
+     * @param string       $publicBaseUrl  Browser-facing base URL for that same directory.
+     * @param list<string> $pageStyles     Extra stylesheets for one page only, relative to `public/`,
+     *                                     appended after the shared bundle. Keeps single-page CSS (the
+     *                                     style guide) off every other module page.
      */
     public function __construct(
         private string $publicRoot,
         private string $publicBaseUrl,
+        private array $pageStyles = [],
     ) {
     }
 
@@ -59,7 +76,7 @@ final readonly class DesignSystemAssets
      */
     public function styleUrls(): array
     {
-        return $this->urls(self::STYLES);
+        return $this->urls([...self::STYLES, ...$this->pageStyles]);
     }
 
     /**
@@ -73,6 +90,35 @@ final readonly class DesignSystemAssets
     }
 
     /**
+     * A synchronous snippet for the document `<head>`, before any stylesheet.
+     *
+     * The theme attribute has to be on the root element before the first paint
+     * or a dark-preferring user sees a white page for a frame. Nothing loaded
+     * with `defer` or as a module is early enough, so this one runs inline and
+     * blocking — it is deliberately tiny, touches only the root element, and
+     * swallows any storage error (private browsing, blocked site data) by
+     * falling back to the operating-system preference.
+     *
+     * Returned without the surrounding `<script>` tag so the caller controls
+     * escaping and any nonce.
+     */
+    public static function themeBootstrapScript(): string
+    {
+        return <<<'JS'
+        (function () {
+            try {
+                var choice = window.localStorage.getItem('fqhc-theme');
+                if (choice === 'light' || choice === 'dark') {
+                    document.documentElement.setAttribute('data-fqhc-theme', choice);
+                }
+            } catch (e) {
+                /* No stored preference available; prefers-color-scheme decides. */
+            }
+        })();
+        JS;
+    }
+
+    /**
      * Absolute filesystem paths of bundle files that are missing. An empty list
      * means the bundle is intact; a non-empty list is a deployment problem the
      * caller (smoke test or health check) should surface.
@@ -82,7 +128,7 @@ final readonly class DesignSystemAssets
     public function missingFiles(): array
     {
         $missing = [];
-        foreach ([...self::STYLES, ...self::SCRIPTS] as $relativePath) {
+        foreach ([...self::STYLES, ...$this->pageStyles, ...self::SCRIPTS] as $relativePath) {
             $path = $this->path($relativePath);
             if (!is_file($path)) {
                 $missing[] = $path;

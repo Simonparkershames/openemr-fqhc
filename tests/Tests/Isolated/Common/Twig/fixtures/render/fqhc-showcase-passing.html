@@ -1,0 +1,728 @@
+<div class="fqhc-root">
+  <div class="fqhc-container">
+
+    <fqhc-page-header
+      icon="design-system"
+      heading="FQHC Design System"
+      subheading="Every token, component, and pattern the FQHC surfaces are built from — rendered from the real assets, not from a copy.">
+      <div slot="actions" class="fqhc-cluster">
+        <fqhc-status-badge variant="info">5 tokens</fqhc-status-badge>
+                  <fqhc-status-badge variant="success">2 pairings pass AA in both themes</fqhc-status-badge>
+                <fqhc-theme-toggle></fqhc-theme-toggle>
+      </div>
+    </fqhc-page-header>
+
+    <nav class="fqhc-showcase-nav" aria-label="Style guide sections">
+      <a class="fqhc-showcase-nav-link" href="#foundations">Foundations</a>
+      <a class="fqhc-showcase-nav-link" href="#icons">Icons</a>
+      <a class="fqhc-showcase-nav-link" href="#components">Components</a>
+      <a class="fqhc-showcase-nav-link" href="#patterns">Patterns</a>
+      <a class="fqhc-showcase-nav-link" href="#accessibility">Accessibility</a>
+    </nav>
+
+                    <section class="fqhc-showcase-section" id="foundations">
+      <h2>Foundations</h2>
+      <p class="fqhc-showcase-lede">
+        Read straight out of <code>assets/css/tokens.css</code> at render time. Every sample below is
+        styled with <code>var(--token)</code>, so what you see is what the browser resolves.
+      </p>
+
+              <div class="fqhc-specimen">
+          <h3 class="fqhc-specimen-title">
+            Color: brand
+            <span class="fqhc-specimen-note">2 tokens</span>
+          </h3>
+
+                      <div class="fqhc-swatches">
+                              <div class="fqhc-swatch">
+                  <div class="fqhc-swatch-chip" style="background: var(--fqhc-color-primary)" aria-hidden="true"></div>
+                  <div class="fqhc-swatch-meta">
+                    <span class="fqhc-swatch-name">color-primary</span>
+                    <span class="fqhc-swatch-value">#0f766e</span>
+                                          <span class="fqhc-swatch-comment">teal-700</span>
+                                      </div>
+                </div>
+                              <div class="fqhc-swatch">
+                  <div class="fqhc-swatch-chip" style="background: var(--fqhc-surface-card)" aria-hidden="true"></div>
+                  <div class="fqhc-swatch-meta">
+                    <span class="fqhc-swatch-name">surface-card</span>
+                    <span class="fqhc-swatch-value">#ffffff</span>
+                                      </div>
+                </div>
+                          </div>
+                  </div>
+              <div class="fqhc-specimen">
+          <h3 class="fqhc-specimen-title">
+            Typography
+            <span class="fqhc-specimen-note">3 tokens</span>
+          </h3>
+
+                      <div class="fqhc-specs">
+                              <div class="fqhc-spec">
+                  <span class="fqhc-spec-name">font-sans</span>
+                  <span class="fqhc-spec-sample fqhc-spec-sample-truncate"><span style="font-family: var(--fqhc-font-sans)">Patients seen today &mdash; 0123456789</span></span>
+                  <span class="fqhc-spec-value">&quot;Inter&quot;, system-ui, sans-serif</span>
+                </div>
+                              <div class="fqhc-spec">
+                  <span class="fqhc-spec-name">font-size-lg</span>
+                  <span class="fqhc-spec-sample"><span style="font-size: var(--fqhc-font-size-lg)">Patients seen today</span></span>
+                  <span class="fqhc-spec-value">1.125rem</span>
+                </div>
+                              <div class="fqhc-spec">
+                  <span class="fqhc-spec-name">font-weight-medium</span>
+                  <span class="fqhc-spec-sample"><span style="font-weight: var(--fqhc-font-weight-medium)">Patients seen today</span></span>
+                  <span class="fqhc-spec-value">500</span>
+                </div>
+                          </div>
+                  </div>
+              <div class="fqhc-specimen">
+          <h3 class="fqhc-specimen-title">
+            Spacing
+            <span class="fqhc-specimen-note">1 token</span>
+          </h3>
+
+                      <div class="fqhc-specs">
+                              <div class="fqhc-spec">
+                  <span class="fqhc-spec-name">space-4</span>
+                  <span class="fqhc-spec-sample"><span class="fqhc-space-bar" style="width: var(--fqhc-space-4)" aria-hidden="true"></span></span>
+                  <span class="fqhc-spec-value">1rem</span>
+                </div>
+                          </div>
+                  </div>
+              <div class="fqhc-specimen">
+          <h3 class="fqhc-specimen-title">
+            Radius
+            <span class="fqhc-specimen-note">1 token</span>
+          </h3>
+
+                      <div class="fqhc-specs">
+                              <div class="fqhc-spec">
+                  <span class="fqhc-spec-name">radius-lg</span>
+                  <span class="fqhc-spec-sample"><span class="fqhc-radius-box" style="border-radius: var(--fqhc-radius-lg)" aria-hidden="true"></span></span>
+                  <span class="fqhc-spec-value">16px</span>
+                </div>
+                          </div>
+                  </div>
+              <div class="fqhc-specimen">
+          <h3 class="fqhc-specimen-title">
+            Elevation
+            <span class="fqhc-specimen-note">1 token</span>
+          </h3>
+
+                      <div class="fqhc-specs">
+                              <div class="fqhc-spec">
+                  <span class="fqhc-spec-name">shadow-md</span>
+                  <span class="fqhc-spec-sample"><span class="fqhc-shadow-box" style="box-shadow: var(--fqhc-shadow-md)" aria-hidden="true"></span></span>
+                  <span class="fqhc-spec-value">0 4px 12px rgba(15, 23, 42, 0.08)</span>
+                </div>
+                          </div>
+                  </div>
+              <div class="fqhc-specimen">
+          <h3 class="fqhc-specimen-title">
+            Layout
+            <span class="fqhc-specimen-note">1 token</span>
+          </h3>
+
+                      <div class="fqhc-specs">
+                              <div class="fqhc-spec">
+                  <span class="fqhc-spec-name">container-max</span>
+                  <span class="fqhc-spec-sample"><span class="fqhc-swatch-comment">No visual specimen — used in a computed property.</span></span>
+                  <span class="fqhc-spec-value">1200px</span>
+                </div>
+                          </div>
+                  </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Theme
+          <span class="fqhc-specimen-note">Follows the operating system until you choose; an explicit choice is remembered in this browser</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <fqhc-theme-toggle></fqhc-theme-toggle>
+          <p class="fqhc-showcase-lede" style="margin: 0">
+            Dark redefines <em>only</em> colour-carrying tokens — surfaces, text, semantic colours,
+            shadows, and the focus ring — never a component rule. Everything on this page is drawing
+            itself from those names, so flipping the toggle re-themes the entire system without a
+            single duplicated selector. Scoped to FQHC module surfaces: a deep link out to a legacy
+            screen lands on that screen&rsquo;s own theme.
+          </p>
+        </div>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Focus ring
+          <span class="fqhc-specimen-note">Tab into these — every interactive element shows the same ring</span>
+        </h3>
+        <div class="fqhc-stage">
+          <button type="button" class="fqhc-button">Button</button>
+          <a class="fqhc-nav-card fqhc-probe-narrow" href="#foundations">
+            <span class="fqhc-nav-card-title">Nav card</span>
+            <span class="fqhc-nav-card-desc">A whole card that is one focus target.</span>
+          </a>
+          <label class="fqhc-field">
+            <span>Text input</span>
+            <input type="text" value="Focus me" size="14">
+          </label>
+        </div>
+      </div>
+    </section>
+
+                <section class="fqhc-showcase-section" id="icons">
+      <h2>Icons</h2>
+      <p class="fqhc-showcase-lede">
+        One name per <em>concept</em>, not per drawing. Templates and server-side code ask for
+        <code>care-gap</code>; which glyph that resolves to is decided once, in
+        <code>assets/js/fqhc-icons.js</code>. The names below come from the <code>Icon</code> enum, so
+        this is exactly the set PHP is allowed to ask for — a test fails if the enum and the
+        stylesheet registry ever disagree. Every icon here is decorative and sits beside text that
+        already carries the meaning.
+      </p>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          The vocabulary
+          <span class="fqhc-specimen-note">5 names · Font Awesome Free 6 (CC BY 4.0), drawn inline so they work inside Shadow DOM</span>
+        </h3>
+        <div class="fqhc-icon-grid">
+                      <div class="fqhc-icon-tile">
+              <fqhc-icon class="fqhc-icon-specimen" name="patient"></fqhc-icon>
+              <span class="fqhc-swatch-value">patient</span>
+            </div>
+                      <div class="fqhc-icon-tile">
+              <fqhc-icon class="fqhc-icon-specimen" name="care-gap"></fqhc-icon>
+              <span class="fqhc-swatch-value">care-gap</span>
+            </div>
+                      <div class="fqhc-icon-tile">
+              <fqhc-icon class="fqhc-icon-specimen" name="report"></fqhc-icon>
+              <span class="fqhc-swatch-value">report</span>
+            </div>
+                      <div class="fqhc-icon-tile">
+              <fqhc-icon class="fqhc-icon-specimen" name="success"></fqhc-icon>
+              <span class="fqhc-swatch-value">success</span>
+            </div>
+                      <div class="fqhc-icon-tile">
+              <fqhc-icon class="fqhc-icon-specimen" name="warning"></fqhc-icon>
+              <span class="fqhc-swatch-value">warning</span>
+            </div>
+                  </div>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Sizing and colour
+          <span class="fqhc-specimen-note">Sizes to 1em and inherits currentColor, so it always matches its text</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <p style="font-size: var(--fqhc-font-size-sm)"><fqhc-icon name="patient"></fqhc-icon> Small text</p>
+          <p><fqhc-icon name="patient"></fqhc-icon> Body text</p>
+          <p style="font-size: var(--fqhc-font-size-xl); color: var(--fqhc-color-primary)"><fqhc-icon name="patient"></fqhc-icon> Large, primary</p>
+          <p style="color: var(--fqhc-color-danger)"><fqhc-icon name="danger"></fqhc-icon> Danger</p>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-icon name="patient"&gt;&lt;/fqhc-icon&gt;                  &lt;!-- decorative (default) --&gt;
+&lt;fqhc-icon name="search" label="Search"&gt;&lt;/fqhc-icon&gt;   &lt;!-- icon-only control --&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          An unknown name
+          <span class="fqhc-specimen-note">Renders nothing rather than a wrong drawing — invisible in production, obvious here</span>
+        </h3>
+        <div class="fqhc-stage">
+          <span>Before<fqhc-icon name="no-such-icon"></fqhc-icon>after &mdash; nothing between the words.</span>
+        </div>
+      </div>
+    </section>
+
+                <section class="fqhc-showcase-section" id="components">
+      <h2>Components</h2>
+      <p class="fqhc-showcase-lede">
+        Dependency-free custom elements from <code>assets/js/fqhc-components.js</code>. Each uses Shadow
+        DOM for encapsulation and consumes the tokens above. States that are easy to forget — empty
+        values, missing attributes, long content, invalid variants — are shown alongside the happy path.
+      </p>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">&lt;fqhc-page-header&gt;</h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <fqhc-page-header icon="appointment" heading="Front Desk Workspace" subheading="Today&#39;s appointments and arrival readiness.">
+            <div slot="actions" class="fqhc-cluster">
+              <fqhc-status-badge variant="info">Front desk</fqhc-status-badge>
+              <a class="fqhc-button" href="#components">Primary action</a>
+            </div>
+          </fqhc-page-header>
+          <fqhc-page-header heading="Heading only, no subheading and no actions"></fqhc-page-header>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-page-header heading="Front Desk Workspace" subheading="…"&gt;
+  &lt;div slot="actions" class="fqhc-cluster"&gt;…&lt;/div&gt;
+&lt;/fqhc-page-header&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-card&gt;
+          <span class="fqhc-specimen-note">Heading optional; body clips overflow, so wide content needs its own scroller</span>
+        </h3>
+        <div class="fqhc-grid">
+          <fqhc-card icon="care-gap" heading="With a heading and an icon">
+            <p>The standard card: an uppercase heading rule, a hairline border, and a shadow that lifts on hover.</p>
+            <a class="fqhc-button" href="#components"><fqhc-icon class="fqhc-icon-lead" name="external"></fqhc-icon>Open</a>
+          </fqhc-card>
+          <fqhc-card heading="Heading, no icon">
+            <p>The <code>icon</code> attribute is optional; the heading sits flush left without one.</p>
+          </fqhc-card>
+          <fqhc-card>
+            <p>No <code>heading</code> attribute — the header rule is omitted entirely rather than left blank.</p>
+          </fqhc-card>
+          <fqhc-card heading="A heading long enough to wrap onto a second line inside a narrow grid track">
+            <p>
+              Supercalifragilisticexpialidocious-Pneumonoultramicroscopicsilicovolcanoconiosis is a single
+              unbroken token, included to prove a long value cannot blow out its grid track.
+            </p>
+          </fqhc-card>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-card heading="Care gaps"&gt;…&lt;/fqhc-card&gt;
+&lt;fqhc-card&gt;…&lt;/fqhc-card&gt;                &lt;!-- headingless --&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-status-badge&gt;
+          <span class="fqhc-specimen-note">Five variants; anything else falls back to neutral rather than rendering unstyled</span>
+        </h3>
+        <div class="fqhc-stage">
+          <fqhc-status-badge variant="success">Complete</fqhc-status-badge>
+          <fqhc-status-badge variant="warning">Needs review</fqhc-status-badge>
+          <fqhc-status-badge variant="danger">Overdue</fqhc-status-badge>
+          <fqhc-status-badge variant="info">Scheduled</fqhc-status-badge>
+          <fqhc-status-badge variant="neutral">Not started</fqhc-status-badge>
+          <fqhc-status-badge>No variant attribute</fqhc-status-badge>
+          <fqhc-status-badge variant="chartreuse">Unknown variant</fqhc-status-badge>
+          <fqhc-status-badge variant="warning">Long label: 14 patients missing an income determination</fqhc-status-badge>
+        </div>
+        <div class="fqhc-stage">
+          <fqhc-status-badge variant="info" icon="pending">Overridden icon</fqhc-status-badge>
+          <fqhc-status-badge variant="success" no-icon>Suppressed icon</fqhc-status-badge>
+          <fqhc-status-badge variant="danger" icon="no-such-icon">Unknown icon name</fqhc-status-badge>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-status-badge variant="success|warning|danger|info|neutral"&gt;Text&lt;/fqhc-status-badge&gt;
+&lt;fqhc-status-badge variant="info" icon="pending"&gt;…&lt;/fqhc-status-badge&gt;   &lt;!-- override --&gt;
+&lt;fqhc-status-badge variant="success" no-icon&gt;…&lt;/fqhc-status-badge&gt;       &lt;!-- suppress --&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-field-row&gt;
+          <span class="fqhc-specimen-note">An empty or absent value renders an em dash, never a blank gap</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <fqhc-field-row label="Date of birth" value="1974-03-02"></fqhc-field-row>
+          <fqhc-field-row label="Preferred language" value="Spanish"></fqhc-field-row>
+          <fqhc-field-row label="Income determination" value=""></fqhc-field-row>
+          <fqhc-field-row label="Payer"></fqhc-field-row>
+          <fqhc-field-row
+            label="A label long enough to compete with its value for the available width"
+            value="Medicaid managed care — Sunshine Health Plan, member since 2019"></fqhc-field-row>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-field-row label="Date of birth" value="1974-03-02"&gt;&lt;/fqhc-field-row&gt;
+&lt;fqhc-field-row label="Payer"&gt;&lt;/fqhc-field-row&gt;   &lt;!-- renders — --&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">&lt;fqhc-empty-state&gt;</h3>
+        <div class="fqhc-stage fqhc-stage-column">
+          <fqhc-empty-state message="No patients are waiting to be roomed. Defaults to the generic empty-tray icon."></fqhc-empty-state>
+          <fqhc-empty-state icon="care-gap" message="No data-quality gaps for 2025. Names what is missing instead.">
+            <a href="#components">Run the report anyway</a>
+          </fqhc-empty-state>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-empty-state message="No patients are waiting to be roomed."&gt;
+  &lt;a href="…"&gt;Optional action&lt;/a&gt;
+&lt;/fqhc-empty-state&gt;
+&lt;fqhc-empty-state icon="care-gap" message="…"&gt;&lt;/fqhc-empty-state&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-stat&gt;
+          <span class="fqhc-specimen-note">Direction decides the colour, so a regression cannot be coloured green by accident</span>
+        </h3>
+        <div class="fqhc-grid">
+          <fqhc-stat icon="patient" label="Patients seen" value="1,284" delta="+8.2%" direction="up" caption="vs. same period last year"></fqhc-stat>
+          <fqhc-stat icon="care-gap" label="Open care gaps" value="37" delta="+6" direction="up-bad" caption="up is bad here"></fqhc-stat>
+          <fqhc-stat icon="worklist" label="Data-quality gaps" value="12" delta="−9" direction="down-good" sparkline="21,19,20,16,14,12"></fqhc-stat>
+          <fqhc-stat icon="income" label="Sliding-fee determinations" value="642" delta="0" direction="flat"></fqhc-stat>
+          <fqhc-stat icon="report" label="A whole tile that is a link" value="6" href="#components" caption="Hover and tab to it"></fqhc-stat>
+          <fqhc-stat label="No value supplied"></fqhc-stat>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-stat icon="patient" label="Patients seen" value="1,284"
+           delta="+8.2%" direction="up|down|up-bad|down-good|flat"
+           caption="…" sparkline="21,19,20,16" href="…"&gt;&lt;/fqhc-stat&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-avatar&gt;
+          <span class="fqhc-specimen-note">Colour is derived from the id, so the same patient is the same colour on every surface</span>
+        </h3>
+        <div class="fqhc-stage">
+          <fqhc-avatar name="Maria Alvarez" id="1043" status="success"></fqhc-avatar>
+          <fqhc-avatar name="James Okafor" id="1044" status="warning"></fqhc-avatar>
+          <fqhc-avatar name="Wei Chen" id="1045" status="info"></fqhc-avatar>
+          <fqhc-avatar name="Aisha Rahman" id="1046" status="danger"></fqhc-avatar>
+          <fqhc-avatar name="Robert Fitzgerald Kennedy" id="1047"></fqhc-avatar>
+          <fqhc-avatar name="Cher" id="1048"></fqhc-avatar>
+          <fqhc-avatar name="" id="1049"></fqhc-avatar>
+          <fqhc-avatar name="Maria Alvarez" id="1043"></fqhc-avatar>
+        </div>
+        <p class="fqhc-showcase-lede">
+          The first and last chips are the same patient id and so are the same colour. An empty name
+          renders <code>?</code> rather than an empty circle.
+        </p>
+        <pre class="fqhc-code">&lt;fqhc-avatar name="Maria Alvarez" id="1043" status="success"&gt;&lt;/fqhc-avatar&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-segmented&gt;
+          <span class="fqhc-specimen-note">Arrow keys move between segments; emits fqhc-change, or navigates when an option carries a URL</span>
+        </h3>
+        <div class="fqhc-stage">
+          <fqhc-segmented label="Range" options="today|Today,week|This week,all|All" value="today"></fqhc-segmented>
+          <fqhc-segmented label="Density" options="comfortable|Comfortable,compact|Compact" value="compact"></fqhc-segmented>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-segmented label="Range" value="today"
+                options="today|Today,week|This week,all|All"&gt;&lt;/fqhc-segmented&gt;
+&lt;!-- fields split on | so a URL keeps its scheme --&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-timeline&gt;
+          <span class="fqhc-specimen-note">The connector stops at the last event rather than trailing into space</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-card fqhc-stage-block">
+          <fqhc-timeline>
+            <fqhc-timeline-event time="9:04" variant="success">Arrived &mdash; checked in at the front desk</fqhc-timeline-event>
+            <fqhc-timeline-event time="9:18" variant="info">Roomed in exam 3, vitals recorded</fqhc-timeline-event>
+            <fqhc-timeline-event time="9:31" variant="info">Seen by Dr. Okonkwo</fqhc-timeline-event>
+            <fqhc-timeline-event time="10:02" variant="warning">Lab order placed &mdash; awaiting draw</fqhc-timeline-event>
+            <fqhc-timeline-event time="10:15" variant="neutral">Checked out</fqhc-timeline-event>
+          </fqhc-timeline>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-timeline&gt;
+  &lt;fqhc-timeline-event time="9:04" variant="success"&gt;Arrived&lt;/fqhc-timeline-event&gt;
+&lt;/fqhc-timeline&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-progress&gt;
+          <span class="fqhc-specimen-note">Always carries its number as text — a bar is not a value</span>
+        </h3>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <fqhc-progress label="Cervical cancer screening" value="72"></fqhc-progress>
+          <fqhc-progress label="Childhood immunization" value="41" variant="warning"></fqhc-progress>
+          <fqhc-progress label="Blood pressure control" value="18" variant="danger"></fqhc-progress>
+          <fqhc-progress label="Depression screening" value="96" variant="success"></fqhc-progress>
+          <fqhc-progress label="Out of range, clamped" value="140"></fqhc-progress>
+        </div>
+        <div class="fqhc-stage">
+          <fqhc-progress ring label="Data health" value="88" variant="success"></fqhc-progress>
+          <fqhc-progress ring label="UDS readiness" value="54"></fqhc-progress>
+          <fqhc-progress ring label="Nothing yet" value="0"></fqhc-progress>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-progress label="Screening rate" value="72" variant="success"&gt;&lt;/fqhc-progress&gt;
+&lt;fqhc-progress ring label="Data health" value="88"&gt;&lt;/fqhc-progress&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-skeleton&gt;
+          <span class="fqhc-specimen-note">Shaped like what is arriving; the shimmer stops under prefers-reduced-motion</span>
+        </h3>
+        <div class="fqhc-grid">
+          <fqhc-card heading="Loading a card">
+            <fqhc-skeleton lines="3"></fqhc-skeleton>
+          </fqhc-card>
+          <fqhc-card heading="A single value">
+            <fqhc-skeleton width="40%"></fqhc-skeleton>
+          </fqhc-card>
+          <fqhc-card heading="An avatar">
+            <fqhc-skeleton circle></fqhc-skeleton>
+          </fqhc-card>
+        </div>
+        <pre class="fqhc-code">&lt;fqhc-skeleton lines="3"&gt;&lt;/fqhc-skeleton&gt;
+&lt;fqhc-skeleton circle&gt;&lt;/fqhc-skeleton&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          &lt;fqhc-toast&gt;
+          <span class="fqhc-specimen-note">Announced politely — it confirms what you just did, it should not interrupt</span>
+        </h3>
+        <div class="fqhc-stage">
+          <button type="button" class="fqhc-button"
+                  onclick="document.getElementById('showcase-toast').show('Patient roomed in exam 3')">Show success</button>
+          <button type="button" class="fqhc-button"
+                  onclick="document.getElementById('showcase-toast').show('Income determination is missing', 'warning')">Show warning</button>
+          <button type="button" class="fqhc-button"
+                  onclick="document.getElementById('showcase-toast').show('Could not save — try again', 'danger')">Show danger</button>
+        </div>
+        <fqhc-toast id="showcase-toast"></fqhc-toast>
+        <pre class="fqhc-code">&lt;fqhc-toast id="toast"&gt;&lt;/fqhc-toast&gt;
+document.getElementById('toast').show('Patient roomed', 'success');
+
+&lt;!-- or server-rendered after a redirect --&gt;
+&lt;fqhc-toast message="Saved" variant="success"&gt;&lt;/fqhc-toast&gt;</pre>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Controls
+          <span class="fqhc-specimen-note">Plain CSS classes from fqhc.css, not custom elements</span>
+        </h3>
+        <div class="fqhc-stage">
+          <a class="fqhc-button" href="#components">Link styled as a button</a>
+          <button type="button" class="fqhc-button">Button element</button>
+          <button type="button" class="fqhc-link-button">Destructive link button</button>
+          <span class="fqhc-metric-value">128</span>
+          <span class="fqhc-metric-label">Metric label</span>
+        </div>
+        <div class="fqhc-stage fqhc-stage-column fqhc-stage-card">
+          <p class="fqhc-note">A note: warning-coloured explanatory text under a metric or badge.</p>
+          <p class="fqhc-section-heading">Section heading</p>
+          <p><a href="#components">An inline link inside FQHC body copy.</a></p>
+        </div>
+      </div>
+    </section>
+
+                <section class="fqhc-showcase-section" id="patterns">
+      <h2>Patterns</h2>
+      <p class="fqhc-showcase-lede">
+        The compositions every workspace page is assembled from. Narrow the window: the grid collapses
+        to one column below 640px, and the data table stops being a table and becomes a card per row.
+      </p>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Card grid
+          <span class="fqhc-specimen-note">1 column &lt; 640px · 2 columns &lt; 1024px · 3 columns above</span>
+        </h3>
+        <div class="fqhc-grid">
+          <a class="fqhc-nav-card" href="#patterns">
+            <span class="fqhc-nav-card-title"><fqhc-icon name="roomed"></fqhc-icon>Rooming worklist</span>
+            <span class="fqhc-nav-card-desc">Checked-in patients to room, with screenings due.</span>
+          </a>
+          <a class="fqhc-nav-card" href="#patterns">
+            <span class="fqhc-nav-card-title"><fqhc-icon name="worklist"></fqhc-icon>Eligibility worklist</span>
+            <span class="fqhc-nav-card-desc">Patients whose gaps would distort UDS counts.</span>
+          </a>
+          <a class="fqhc-nav-card" href="#patterns">
+            <span class="fqhc-nav-card-title"><fqhc-icon name="report"></fqhc-icon>UDS report</span>
+            <span class="fqhc-nav-card-desc">Patient characteristics and utilization tables.</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">
+          Data table
+          <span class="fqhc-specimen-note">Every cell after the first carries data-label, which becomes its heading on a phone</span>
+        </h3>
+        <fqhc-card heading="Table 3A — patients by age and sex">
+          <div class="fqhc-table-wrap">
+            <table class="fqhc-table">
+              <thead>
+                <tr><th scope="col">Age group</th><th scope="col">Male</th><th scope="col">Female</th><th scope="col">Total</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Under 18</td><td data-label="Male">412</td><td data-label="Female">438</td><td data-label="Total">850</td></tr>
+                <tr><td>18 to 64</td><td data-label="Male">1,204</td><td data-label="Female">1,533</td><td data-label="Total">2,737</td></tr>
+                <tr class="fqhc-table-detail"><td>of which 18 to 24</td><td data-label="Male">188</td><td data-label="Female">241</td><td data-label="Total">429</td></tr>
+                <tr><td>65 and over</td><td data-label="Male">276</td><td data-label="Female">318</td><td data-label="Total">594</td></tr>
+              </tbody>
+              <tfoot>
+                <tr><th scope="row">Total</th><th data-label="Male">1,892</th><th data-label="Female">2,289</th><th data-label="Total">4,181</th></tr>
+              </tfoot>
+            </table>
+          </div>
+        </fqhc-card>
+      </div>
+
+      <div class="fqhc-specimen">
+        <h3 class="fqhc-specimen-title">Form rows</h3>
+        <fqhc-card heading="Income determination">
+          <fqhc-field-row label="Household size" value="4"></fqhc-field-row>
+          <fqhc-field-row label="Annual income" value="$38,400"></fqhc-field-row>
+          <form class="fqhc-form" onsubmit="return false">
+            <label class="fqhc-field">
+              <span>Household size</span>
+              <input type="number" value="4" min="1">
+            </label>
+            <label class="fqhc-field">
+              <span>Determination year</span>
+              <select>
+                <option>2026</option>
+                <option>2025</option>
+              </select>
+            </label>
+            <label class="fqhc-check">
+              <input type="checkbox" checked>
+              <span>Patient declined to report income</span>
+            </label>
+            <div class="fqhc-row-between">
+              <button type="submit" class="fqhc-button">Save determination</button>
+              <button type="button" class="fqhc-link-button">Clear</button>
+            </div>
+          </form>
+        </fqhc-card>
+      </div>
+    </section>
+
+                <section class="fqhc-showcase-section" id="accessibility">
+      <h2>Accessibility</h2>
+      <p class="fqhc-showcase-lede">
+        Every foreground/background pairing the components actually use, measured against WCAG 2.1
+        from the token values in <code>tokens.css</code>. AA is the bar: 4.5:1 for normal text, 3:1
+        for large text (18pt+, or 14pt bold). A pairing that fails here is a bug in the palette.
+      </p>
+      <p class="fqhc-showcase-lede">
+        <strong>Both themes are measured</strong>, each from the values its own cascade produces —
+        not just whichever one you happen to be looking at. The dark palette was chosen against a
+        dark ground, and the semantic <code>*-soft</code> tints are where AA is most easily lost, so
+        neither theme is assumed to inherit the other&rsquo;s result.
+      </p>
+
+            <fqhc-card icon="success" heading="Contrast audit — Light theme">
+                  <fqhc-status-badge variant="success">All 2 pairings meet WCAG 2.1 AA</fqhc-status-badge>
+                          <fqhc-status-badge variant="neutral">Base palette</fqhc-status-badge>
+
+        <div class="fqhc-table-wrap fqhc-home-rows">
+          <table class="fqhc-table">
+            <caption class="fqhc-swatch-comment">
+              Ratios computed from the token values this theme resolves to. The samples are painted
+              with those literal values rather than <code>var(--token)</code>, so each table shows its
+              own theme whichever one you are currently viewing the page in.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Usage</th>
+                <th scope="col">Sample</th>
+                <th scope="col">Foreground</th>
+                <th scope="col">Background</th>
+                <th scope="col">Ratio</th>
+                <th scope="col">Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+                              <tr>
+                  <td>Body text on a card</td>
+                  <td class="fqhc-contrast-cell" data-label="Sample">
+                    <span class="fqhc-contrast-sample"
+                          style="color: &#x23;0f172a; background: &#x23;ffffff">Aa sample</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Foreground">
+                    <span class="fqhc-spec-name">--fqhc-text</span>
+                    <span class="fqhc-swatch-value">#0f172a</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Background">
+                    <span class="fqhc-spec-name">--fqhc-surface-card</span>
+                    <span class="fqhc-swatch-value">#ffffff</span>
+                  </td>
+                  <td data-label="Ratio"><span class="fqhc-contrast-ratio">17.85:1</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Rating">
+                    <fqhc-status-badge variant="success">AAA</fqhc-status-badge>
+                  </td>
+                </tr>
+                              <tr>
+                  <td>Metric value on a card <span class="fqhc-swatch-comment">(large text)</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Sample">
+                    <span class="fqhc-contrast-sample"
+                          style="color: &#x23;115e59; background: &#x23;ffffff">Aa sample</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Foreground">
+                    <span class="fqhc-spec-name">--fqhc-color-primary-strong</span>
+                    <span class="fqhc-swatch-value">#115e59</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Background">
+                    <span class="fqhc-spec-name">--fqhc-surface-card</span>
+                    <span class="fqhc-swatch-value">#ffffff</span>
+                  </td>
+                  <td data-label="Ratio"><span class="fqhc-contrast-ratio">7.58:1</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Rating">
+                    <fqhc-status-badge variant="success">AAA</fqhc-status-badge>
+                  </td>
+                </tr>
+                          </tbody>
+          </table>
+        </div>
+      </fqhc-card>
+            <fqhc-card icon="success" heading="Contrast audit — Dark theme">
+                  <fqhc-status-badge variant="success">All 2 pairings meet WCAG 2.1 AA</fqhc-status-badge>
+                          <fqhc-status-badge variant="neutral">24 tokens overridden</fqhc-status-badge>
+
+        <div class="fqhc-table-wrap fqhc-home-rows">
+          <table class="fqhc-table">
+            <caption class="fqhc-swatch-comment">
+              Ratios computed from the token values this theme resolves to. The samples are painted
+              with those literal values rather than <code>var(--token)</code>, so each table shows its
+              own theme whichever one you are currently viewing the page in.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Usage</th>
+                <th scope="col">Sample</th>
+                <th scope="col">Foreground</th>
+                <th scope="col">Background</th>
+                <th scope="col">Ratio</th>
+                <th scope="col">Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+                              <tr>
+                  <td>Body text on a card</td>
+                  <td class="fqhc-contrast-cell" data-label="Sample">
+                    <span class="fqhc-contrast-sample"
+                          style="color: &#x23;e2e8f0; background: &#x23;1e293b">Aa sample</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Foreground">
+                    <span class="fqhc-spec-name">--fqhc-text</span>
+                    <span class="fqhc-swatch-value">#e2e8f0</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Background">
+                    <span class="fqhc-spec-name">--fqhc-surface-card</span>
+                    <span class="fqhc-swatch-value">#1e293b</span>
+                  </td>
+                  <td data-label="Ratio"><span class="fqhc-contrast-ratio">11.86:1</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Rating">
+                    <fqhc-status-badge variant="success">AAA</fqhc-status-badge>
+                  </td>
+                </tr>
+                              <tr>
+                  <td>Metric value on a card <span class="fqhc-swatch-comment">(large text)</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Sample">
+                    <span class="fqhc-contrast-sample"
+                          style="color: &#x23;2dd4bf; background: &#x23;1e293b">Aa sample</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Foreground">
+                    <span class="fqhc-spec-name">--fqhc-color-primary-strong</span>
+                    <span class="fqhc-swatch-value">#2dd4bf</span>
+                  </td>
+                  <td class="fqhc-contrast-cell" data-label="Background">
+                    <span class="fqhc-spec-name">--fqhc-surface-card</span>
+                    <span class="fqhc-swatch-value">#1e293b</span>
+                  </td>
+                  <td data-label="Ratio"><span class="fqhc-contrast-ratio">7.85:1</span></td>
+                  <td class="fqhc-contrast-cell" data-label="Rating">
+                    <fqhc-status-badge variant="success">AAA</fqhc-status-badge>
+                  </td>
+                </tr>
+                          </tbody>
+          </table>
+        </div>
+      </fqhc-card>
+          </section>
+
+  </div>
+</div>

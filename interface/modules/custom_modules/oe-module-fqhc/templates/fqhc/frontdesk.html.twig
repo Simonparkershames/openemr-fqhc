@@ -27,7 +27,7 @@
 <div class="fqhc-root">
   <div class="fqhc-container">
 
-    <fqhc-page-header
+    <fqhc-page-header icon="appointment"
       heading="Front Desk — {{ isToday ? 'Today' : dateDisplay|e('html_attr') }}"
       subheading="{{ total }} appointment(s){{ isToday ? '' : ' on ' ~ dateDisplay|e('html_attr') }} · arrive, verify, check in">
       <div slot="actions" class="fqhc-cluster">
@@ -56,9 +56,9 @@
 
     <div class="fqhc-stack">
 
-      <fqhc-card heading="Schedule — {{ dateDisplay|e('html_attr') }}">
+      <fqhc-card icon="appointment" heading="Schedule — {{ dateDisplay|e('html_attr') }}">
         {% if rows is empty %}
-          <fqhc-empty-state message="No appointments on {{ dateDisplay|e('html_attr') }}. Book one from the calendar below."></fqhc-empty-state>
+          <fqhc-empty-state icon="appointment" message="No appointments on {{ dateDisplay|e('html_attr') }}. Book one from the calendar below."></fqhc-empty-state>
         {% else %}
           <div class="fqhc-table-wrap">
             <table class="fqhc-table">
@@ -116,9 +116,11 @@
 
       <div class="fqhc-grid">
         {% for card in quickActions %}
-          <fqhc-card heading="{{ card.title|e('html_attr') }}">
+          <fqhc-card icon="{{ card.icon|e('html_attr') }}" heading="{{ card.title|e('html_attr') }}">
             <p>{{ card.description|e('html') }}</p>
-            <a class="fqhc-button" href="{{ card.url|e('html_attr') }}" onclick="top.restoreSession()">{{ card.ctaLabel|e('html') }}</a>
+            <a class="fqhc-button" href="{{ card.url|e('html_attr') }}" onclick="top.restoreSession()">
+              <fqhc-icon class="fqhc-icon-lead" name="{{ card.icon|e('html_attr') }}"></fqhc-icon>{{ card.ctaLabel|e('html') }}
+            </a>
           </fqhc-card>
         {% endfor %}
       </div>

@@ -96,6 +96,7 @@ $cards = array_map(
         'description' => $card->description,
         'url' => $webroot . $card->url,
         'ctaLabel' => $card->ctaLabel,
+        'icon' => $card->icon->value,
     ],
     $workspace->cards,
 );
@@ -119,6 +120,7 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
             'roleKey' => $workspace->role->value,
             'roleLabel' => $workspace->role->label(),
             'heading' => $workspace->heading,
+            'icon' => $workspace->icon->value,
             'tagline' => $workspace->tagline,
         ],
         'cards' => $cards,
@@ -126,15 +128,16 @@ $content = (new TwigContainer(__DIR__ . '/../templates', $globals->getKernel()))
     ]);
 ?>
 <!DOCTYPE html>
-<html>
+<html class="fqhc-page">
 <head>
     <title><?php echo xlt('FQHC Workspace'); ?></title>
+    <script><?php echo DesignSystemAssets::themeBootstrapScript(); ?></script>
     <?php Header::setupHeader(['common']); ?>
     <?php foreach ($assets->styleUrls() as $styleUrl) { ?>
         <link rel="stylesheet" href="<?php echo attr($styleUrl); ?>">
     <?php } ?>
 </head>
-<body class="body_top">
+<body class="body_top fqhc-body">
     <?php echo $content; ?>
     <?php foreach ($assets->scriptUrls() as $scriptUrl) { ?>
         <script type="module" src="<?php echo attr($scriptUrl); ?>"></script>
